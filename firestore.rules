@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    function isAdmin() {
+      return isSignedIn() && getUserRole() == 'admin';
+    }
+    function isSenior() {
+      return isSignedIn() && (getUserRole() == 'senior' || getUserRole() == 'admin');
+    }
+
+    // ── Users ──
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Roll Number Ranges (admin-managed) ──
+    match /rollNumberRanges/{rangeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Roadmaps ──
+    match /roadmaps/{roadmapId} {
+      allow read: if isSignedIn();
+      allow create: if isSenior();
+      allow update, delete: if isSignedIn() && (resource.data.createdBy == request.auth.uid || isAdmin());
+    }
+
+    // ── Project Ideas ──
+    match /projectIdeas/{ideaId} {
+      allow read: if isSignedIn();
+      allow create: if isSenior();
+      allow update, delete: if isSignedIn() && (resource.data.createdBy == request.auth.uid || isAdmin());
+    }
+
+    // ── Mentor Profiles ──
+    match /mentorProfiles/{uid} {
+      allow read: if isSignedIn();
+      allow create, update: if isOwner(uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Mentorship Bookings ──
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (
+        resource.data.mentorUid == request.auth.uid ||
+        resource.data.juniorUid == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ── Resume Submissions ──
+    match /resumes/{resumeId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSenior();
+      allow delete: if isAdmin();
+    }
+
+    // ── Recommended Courses ──
+    match /courses/{courseId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSenior();
+    }
+
+    // ── Certifications ──
+    match /certifications/{certId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSenior();
+    }
+
+    // ── Notifications ──
+    match /notifications/{notifId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (
+        resource.data.targetUid == request.auth.uid || isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+  }
+}
