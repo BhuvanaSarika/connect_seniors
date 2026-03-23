@@ -108,9 +108,10 @@ export default function CourseDetail() {
           <section>
             <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2">Why review this course?</h2>
             {course.description ? (
-               <div className="text-gray-700 text-lg sm:text-base ql-snow">
-                 <div className="ql-editor" style={{ padding: 0 }} dangerouslySetInnerHTML={{ __html: course.description }} />
-               </div>
+               <div 
+                 className="text-gray-700 text-lg sm:text-base prose prose-lg prose-primary max-w-none break-words overflow-hidden" 
+                 dangerouslySetInnerHTML={{ __html: course.description }} 
+               />
             ) : (
                <p className="text-gray-400 italic">No description provided by the senior.</p>
             )}

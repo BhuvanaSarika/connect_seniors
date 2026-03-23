@@ -92,9 +92,10 @@ export default function ProjectDetail() {
         <div className="p-8 md:p-10 space-y-10">
           <section>
             <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2">Description</h2>
-            <div className="text-gray-700 text-lg sm:text-base ql-snow">
-              <div className="ql-editor" style={{ padding: 0 }} dangerouslySetInnerHTML={{ __html: project.description }} />
-            </div>
+            <div 
+              className="text-gray-700 text-lg sm:text-base prose prose-lg prose-primary max-w-none break-words overflow-hidden" 
+              dangerouslySetInnerHTML={{ __html: project.description }} 
+            />
           </section>
 
           {project.aiPrompt && (

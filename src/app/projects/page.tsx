@@ -198,7 +198,7 @@ export default function ProjectsPage() {
                 </div>
                 <h3 className="text-lg font-bold text-primary-dark mb-2">{p.title}</h3>
                 <div 
-                  className="text-sm text-gray-500 mb-4 line-clamp-3 prose prose-sm max-w-none" 
+                  className="text-sm text-gray-500 mb-4 line-clamp-3 prose prose-sm max-w-none break-words overflow-hidden" 
                   dangerouslySetInnerHTML={{ __html: p.description }} 
                 />
                 {p.aiPrompt && (

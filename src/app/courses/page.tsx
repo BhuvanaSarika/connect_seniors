@@ -170,11 +170,11 @@ export default function CoursesPage() {
                     <div className="flex items-start justify-between mb-2">
                        <h3 className="font-bold text-primary-dark leading-tight line-clamp-2">{course.title}</h3>
                        {(course.addedBy === appUser.uid || appUser.role === 'admin') && (
-                         <button onClick={() => handleDelete(course.id, 'courses')} className="text-gray-300 hover:text-red-500"><FiTrash2 size={16} /></button>
+                         <button onClick={() => handleDelete(course.id, 'courses')} className="text-gray-300 hover:text-red-500 shrink-0"><FiTrash2 size={16} /></button>
                        )}
                     </div>
                     {course.description && (
-                      <div className="text-sm text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
+                      <div className="text-sm text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none break-words overflow-hidden" dangerouslySetInnerHTML={{ __html: course.description }} />
                     )}
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
                        <p className="text-xs text-gray-400">By {course.addedByName}</p>
@@ -192,15 +192,15 @@ export default function CoursesPage() {
           <div className="space-y-4">
             {certs.map(cert => (
               <div key={cert.id} className="bg-white rounded-2xl shadow-sm border border-muted/20 p-5 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center hover:shadow-md transition-shadow">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 min-w-0">
                   <div className="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
                     <FiAward size={24} />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-primary-dark mb-1">{cert.title}</h3>
-                    <p className="text-sm font-semibold text-primary mb-1">{cert.provider}</p>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-lg text-primary-dark mb-1 truncate">{cert.title}</h3>
+                    <p className="text-sm font-semibold text-primary mb-1 truncate">{cert.provider}</p>
                     {cert.description && (
-                       <div className="text-sm text-gray-600 max-w-2xl prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: cert.description }} />
+                       <div className="text-sm text-gray-600 max-w-2xl prose prose-sm max-w-none break-words overflow-hidden" dangerouslySetInnerHTML={{ __html: cert.description }} />
                     )}
                     <p className="text-xs text-gray-400 mt-2">Added by {cert.addedByName}</p>
                   </div>
