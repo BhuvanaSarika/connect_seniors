@@ -15,7 +15,7 @@ export default function CustomNode({ data, selected }: NodeProps) {
   return (
     <div
       className={`relative group bg-white border-2 px-6 py-4 rounded-2xl shadow-xl transition-all duration-300 min-w-[160px] ${selected
-          ? 'border-slate-900 shadow-slate-200/50 scale-105'
+          ? 'border-slate-900 shadow-slate-200/50 scale-105 z-10'
           : 'border-slate-100 hover:border-slate-300 hover:shadow-slate-100/50'
         }`}
     >

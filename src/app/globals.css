@@ -84,7 +84,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Global transitions for professional feel */
-* {
-  transition-property: color, background-color, border-color, box-shadow;
-  transition-duration: 200ms;
+
+/* Ensure hovered nodes in React Flow are always on top of siblings */
+.react-flow__node:hover {
+  z-index: 1000 !important;
 }
