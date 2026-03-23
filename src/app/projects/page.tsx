@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ProjectIdea, ProjectCategory } from '@/types';
-import { FiPlus, FiTrash2, FiExternalLink, FiGithub, FiYoutube, FiCode, FiX } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiExternalLink, FiGithub, FiYoutube, FiCode, FiX, FiEdit2 } from 'react-icons/fi';
 import Link from 'next/link';
 
 const categories: ProjectCategory[] = ['beginner', 'intermediate', 'advanced', 'pro'];
@@ -51,21 +51,51 @@ export default function ProjectsPage() {
     fetch();
   }, [appUser]);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setTitle(''); setDescription(''); setAiPrompt(''); setReferenceUrl(''); setGithubUrl(''); setYoutubeUrl('');
+    setCategory('beginner');
+  };
+
+  const handleEdit = (project: ProjectIdea) => {
+    setEditingId(project.id);
+    setTitle(project.title);
+    setDescription(project.description);
+    setCategory(project.category);
+    setAiPrompt(project.aiPrompt || '');
+    setReferenceUrl(project.referenceUrl || '');
+    setGithubUrl(project.githubUrl || '');
+    setYoutubeUrl(project.youtubeUrl || '');
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appUser) return;
     setCreating(true);
     try {
-      const newProject: Omit<ProjectIdea, 'id'> = {
+      const projectData = {
         title, description, category, aiPrompt, referenceUrl, githubUrl, youtubeUrl,
-        createdBy: appUser.uid,
-        createdByName: appUser.displayName,
-        createdAt: Timestamp.now(),
       };
-      const docRef = await addDoc(collection(db, 'projectIdeas'), newProject);
-      setProjects((prev) => [{ id: docRef.id, ...newProject } as ProjectIdea, ...prev]);
-      setShowForm(false);
-      setTitle(''); setDescription(''); setAiPrompt(''); setReferenceUrl(''); setGithubUrl(''); setYoutubeUrl('');
+
+      if (editingId) {
+         await import('firebase/firestore').then(({ updateDoc }) => updateDoc(doc(db, 'projectIdeas', editingId), projectData));
+         setProjects(prev => prev.map(p => p.id === editingId ? { ...p, ...projectData } : p));
+      } else {
+         const newProject: Omit<ProjectIdea, 'id'> = {
+           ...projectData,
+           createdBy: appUser.uid,
+           createdByName: appUser.displayName,
+           createdAt: Timestamp.now(),
+         };
+         const docRef = await addDoc(collection(db, 'projectIdeas'), newProject);
+         setProjects((prev) => [{ id: docRef.id, ...newProject } as ProjectIdea, ...prev]);
+      }
+      handleCloseForm();
     } catch (err) { console.error(err); }
     setCreating(false);
   };
@@ -96,11 +126,11 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      {/* Create Form */}
+      {/* Create / Edit Form */}
       {showForm && (
         <div className="mb-8 bg-white rounded-2xl shadow-lg border border-muted/30 p-6">
-          <h3 className="text-lg font-bold text-primary-dark mb-4">New Project Idea</h3>
-          <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h3 className="text-lg font-bold text-primary-dark mb-4">{editingId ? 'Edit Project Idea' : 'New Project Idea'}</h3>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <input type="text" required value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="Project Title" />
             </div>
@@ -125,8 +155,8 @@ export default function ProjectsPage() {
               <input type="url" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="YouTube Link" />
             </div>
             <div className="flex gap-3">
-              <button type="submit" disabled={creating} className="px-6 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark disabled:opacity-60">{creating ? 'Adding...' : 'Add Project'}</button>
-              <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">Cancel</button>
+              <button type="submit" disabled={creating} className="px-6 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark disabled:opacity-60">{creating ? (editingId ? 'Saving...' : 'Adding...') : (editingId ? 'Save Changes' : 'Add Project')}</button>
+              <button type="button" onClick={handleCloseForm} className="px-6 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">Cancel</button>
             </div>
           </form>
         </div>
@@ -153,7 +183,10 @@ export default function ProjectsPage() {
                 <div className="flex items-start justify-between mb-3">
                   <span className={`text-xs px-2 py-1 rounded-full font-semibold capitalize border ${categoryColors[p.category]}`}>{p.category}</span>
                   {(p.createdBy === appUser.uid || appUser.role === 'admin') && (
-                    <button onClick={() => handleDelete(p.id)} className="p-1 rounded text-gray-300 hover:text-red-500"><FiTrash2 size={14} /></button>
+                    <div className="flex gap-1.5">
+                      <button onClick={() => handleEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-50 hover:text-primary transition-colors"><FiEdit2 size={16} /></button>
+                      <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"><FiTrash2 size={16} /></button>
+                    </div>
                   )}
                 </div>
                 <h3 className="text-lg font-bold text-primary-dark mb-2">{p.title}</h3>
