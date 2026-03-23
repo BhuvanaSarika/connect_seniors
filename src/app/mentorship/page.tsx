@@ -6,7 +6,7 @@ import { collection, getDocs, addDoc, doc, updateDoc, Timestamp, query, where } 
 import { db } from '@/lib/firebase';
 import { MentorProfile, TimeSlot, MentorshipBooking } from '@/types';
 import Link from 'next/link';
-import { FiClock, FiUser, FiCalendar, FiCheck } from 'react-icons/fi';
+import { FiClock, FiUser, FiCalendar, FiCheck, FiPlus } from 'react-icons/fi';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -84,15 +84,26 @@ export default function MentorshipPage() {
   const isSenior = appUser.role === 'senior' || appUser.role === 'admin';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-3xl font-bold text-primary-dark">1:1 Mentorship</h1>
-          <p className="text-gray-500 mt-1">Book personalized sessions with approved senior mentors</p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-8 h-1 bg-primary rounded-full" />
+            <span className="text-xs font-bold uppercase tracking-widest text-primary-light">Experts Network</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-gray-900 leading-tight">
+            1:1 <span className="text-gradient">Mentorship</span>
+          </h1>
+          <p className="text-gray-500 mt-2 max-w-lg">
+            Connect with industry-leading seniors for personalized career guidance, technical deep-dives, and resume reviews.
+          </p>
         </div>
         {isSenior && (
-          <Link href="/mentorship/dashboard" className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-light text-white font-semibold shadow-lg hover:shadow-primary/40 hover:scale-105 transition-all">
-            Mentor Dashboard
+          <Link 
+            href="/mentorship/dashboard" 
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-900 text-white font-bold shadow-float hover:bg-primary transition-all hover:scale-[1.02] active:scale-95"
+          >
+            Senior Dashboard
           </Link>
         )}
       </div>
@@ -100,46 +111,50 @@ export default function MentorshipPage() {
       {fetching ? (
         <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>
       ) : mentors.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-muted/20 shadow-sm">
-          <FiUser className="mx-auto text-muted mb-4" size={48} />
-          <p className="text-gray-400 text-lg">No approved mentors found.</p>
-          <p className="text-sm text-gray-400 mt-2">Seniors must set up their profile and wait for admin approval.</p>
+        <div className="text-center py-24 bg-white rounded-[3rem] border border-gray-100 shadow-premium">
+          <FiUser className="mx-auto text-gray-100 mb-6" size={64} />
+          <p className="text-gray-400 text-xl font-medium">No mentors available yet</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {mentors.map(mentor => (
-            <div key={mentor.uid} className="bg-white rounded-2xl shadow-md border border-muted/20 overflow-hidden flex flex-col">
-              <div className="p-6 flex-1">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-full bg-primary-light flex items-center justify-center text-white font-bold text-xl shadow-inner">
+            <div key={mentor.uid} className="group relative bg-white rounded-[2.5rem] p-8 shadow-premium hover:shadow-float border border-gray-100 transition-all duration-500 hover:-translate-y-2 flex flex-col">
+              <div className="flex items-center gap-5 mb-8">
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-display font-bold text-3xl shadow-inner group-hover:bg-primary group-hover:text-white transition-all duration-500">
                     {mentor.displayName.charAt(0)}
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-primary-dark leading-tight">{mentor.displayName}</h3>
-                    <p className="text-xs text-gray-500 font-mono">{mentor.rollNumber}</p>
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-xl bg-white shadow-lg border border-gray-50 flex items-center justify-center text-green-500">
+                     <FiCheck size={16} />
                   </div>
                 </div>
-
-                <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">{mentor.bio}</p>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {mentor.expertise.map((exp, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded-md bg-bg-light text-primary-dark text-xs font-semibold border border-primary/10">
-                      {exp}
-                    </span>
-                  ))}
+                <div>
+                  <h3 className="text-xl font-display font-bold text-gray-900 leading-tight group-hover:text-primary transition-colors">{mentor.displayName}</h3>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">ID: {mentor.rollNumber}</p>
                 </div>
               </div>
 
-              <div className="p-4 bg-bg-light border-t border-muted/20">
-                <div className="flex items-center justify-between mb-3 text-sm">
-                  <span className="text-gray-500 flex items-center gap-1"><FiClock /> Available Slots</span>
-                  <span className="font-semibold text-primary">{mentor.availableSlots?.filter(s => !s.isBooked).length || 0} slots</span>
+              <p className="text-sm text-gray-500 mb-8 line-clamp-3 leading-relaxed flex-1">
+                {mentor.bio}
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-8">
+                {mentor.expertise.slice(0, 3).map((exp, i) => (
+                  <span key={i} className="px-3 py-1.5 rounded-lg bg-gray-50 text-gray-600 text-[10px] font-bold uppercase tracking-widest border border-gray-100">
+                    {exp}
+                  </span>
+                ))}
+              </div>
+
+              <div className="pt-6 border-t border-gray-50 flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter mb-0.5">Availability</span>
+                  <span className="text-sm font-bold text-primary">{mentor.availableSlots?.filter(s => !s.isBooked).length || 0} Slots</span>
                 </div>
                 <button
                   onClick={() => setSelectedMentor(mentor)}
                   disabled={!mentor.availableSlots || mentor.availableSlots.filter(s => !s.isBooked).length === 0}
-                  className="w-full py-2.5 rounded-xl bg-primary text-white font-semibold shadow-sm hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 rounded-xl bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-lg shadow-black/5 disabled:opacity-30"
                 >
                   Book Session
                 </button>
@@ -151,61 +166,69 @@ export default function MentorshipPage() {
 
       {/* Booking Modal */}
       {selectedMentor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-primary-dark">Book Session with {selectedMentor.displayName}</h2>
-              <p className="text-sm text-gray-500 mt-1">Select an available time slot and provide contact info</p>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto transform transition-all p-8 md:p-12 relative">
+            <button onClick={() => setSelectedMentor(null)} className="absolute top-8 right-8 p-2 rounded-xl hover:bg-gray-100 text-gray-400">
+               <FiPlus size={24} className="rotate-45" />
+            </button>
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                <FiCalendar size={32} />
+              </div>
+              <h2 className="text-3xl font-display font-bold text-gray-900">Schedule Session</h2>
+              <p className="text-gray-500 mt-2">Booking with <span className="text-primary font-bold">{selectedMentor.displayName}</span></p>
             </div>
 
-            <form onSubmit={handleBookSlot} className="p-6 space-y-4">
-              <div className="space-y-4 max-h-[40vh] overflow-y-auto mb-2 pr-2">
-                {selectedMentor.availableSlots?.filter(s => !s.isBooked).map(slot => (
-                  <label key={slot.id} className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedSlot?.id === slot.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-primary-light/50 bg-white'
-                    }`}>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="slot"
-                        className="w-4 h-4 text-primary"
-                        checked={selectedSlot?.id === slot.id}
-                        onChange={() => {
-                          setSelectedSlot(slot);
-                          setBookingDate(getNextAvailableDateForDay(slot.dayOfWeek));
-                        }}
-                      />
-                      <div>
-                        <p className="font-bold text-primary-dark">{daysOfWeek[slot.dayOfWeek]}</p>
-                        <p className="text-sm text-gray-500">{slot.startTime} - {slot.endTime}</p>
+            <form onSubmit={handleBookSlot} className="space-y-8">
+              <div className="space-y-3">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Select Available Slot</label>
+                <div className="grid grid-cols-1 gap-3">
+                  {selectedMentor.availableSlots?.filter(s => !s.isBooked).map(slot => (
+                    <label key={slot.id} className={`group flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedSlot?.id === slot.id ? 'border-primary bg-primary/5 shadow-md' : 'border-gray-100 hover:border-primary-light/30 bg-white'}`}>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="radio" name="slot" className="hidden"
+                          checked={selectedSlot?.id === slot.id}
+                          onChange={() => {
+                            setSelectedSlot(slot);
+                            setBookingDate(getNextAvailableDateForDay(slot.dayOfWeek));
+                          }}
+                        />
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedSlot?.id === slot.id ? 'border-primary' : 'border-gray-200'}`}>
+                           {selectedSlot?.id === slot.id && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900 font-display">{daysOfWeek[slot.dayOfWeek]}</p>
+                          <p className="text-sm text-gray-500">{slot.startTime} - {slot.endTime}</p>
+                        </div>
                       </div>
-                    </div>
-                    {selectedSlot?.id === slot.id && (
-                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
-                        Next: {new Date(getNextAvailableDateForDay(slot.dayOfWeek)).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                      </span>
-                    )}
-                  </label>
-                ))}
+                      {selectedSlot?.id === slot.id && (
+                        <span className="text-[10px] font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/10">
+                          Next: {new Date(getNextAvailableDateForDay(slot.dayOfWeek)).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </span>
+                      )}
+                    </label>
+                  ))}
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Your Phone Number</label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
-                  placeholder="For WhatsApp/Call updates"
-                />
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Contact Details</label>
+                <div className="relative">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
+                    <FiClock size={18} />
+                  </div>
+                  <input
+                    type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
+                    className="w-full pl-12 pr-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all font-medium"
+                    placeholder="WhatsApp/Phone Number"
+                  />
+                </div>
               </div>
 
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setSelectedMentor(null)} className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50">
-                  Cancel
-                </button>
-                <button type="submit" disabled={!selectedSlot || !phone || bookingLoading} className="flex-1 py-3 rounded-xl bg-primary text-white font-semibold shadow-lg hover:shadow-primary/40 focus:ring-2 focus:ring-primary/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
-                  {bookingLoading ? 'Sending Request...' : <><FiCalendar /> Request Booking</>}
+              <div className="flex gap-4 pt-4">
+                <button type="submit" disabled={!selectedSlot || !phone || bookingLoading} className="flex-1 py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark transition-all disabled:opacity-50">
+                  {bookingLoading ? 'Requesting...' : 'Confirm Booking'}
                 </button>
               </div>
             </form>

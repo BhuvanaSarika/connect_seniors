@@ -17,40 +17,54 @@ export default function HomePage() {
   const { appUser } = useAuth();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pt-20">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-dark via-primary to-primary-light text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-accent rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-muted rounded-full blur-3xl" />
+      <section className="relative px-4 pt-16 pb-24 sm:pt-24 sm:pb-32 overflow-hidden">
+        {/* Subtle Background Elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-accent/5 rounded-full blur-[100px]" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 py-24 sm:py-32 text-center">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
-            <span className="text-accent">Connect</span>Seniors
+
+        <div className="max-w-5xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 mb-8 animate-fade-in">
+             <span className="relative flex h-2 w-2">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+             </span>
+             <span className="text-xs font-bold tracking-wider text-primary uppercase">The Hub for Growth</span>
+          </div>
+          
+          <h1 className="text-5xl sm:text-7xl font-display font-extrabold tracking-tight text-gray-900 mb-8 leading-[1.1]">
+            Empowering the <br />
+            <span className="text-gradient">Next Generation</span>
           </h1>
-          <p className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10">
-            Bridge the gap between juniors and seniors. Get personalized roadmaps,
-            mentorship sessions, resume reviews, and curated learning resources — all in one platform.
+          
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+            ConnectSeniors is the elite bridge for students. Access custom roadmaps, 
+            personalized mentorship, and industry-standard resume validations.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             {appUser ? (
               <Link
                 href="/dashboard"
-                className="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-accent text-bg-dark font-semibold text-lg shadow-lg shadow-accent/30 hover:shadow-accent/50 hover:scale-105 transform transition-all"
+                className="group relative inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark transition-all duration-300"
               >
                 Go to Dashboard
+                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
             ) : (
               <>
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-accent text-bg-dark font-semibold text-lg shadow-lg shadow-accent/30 hover:shadow-accent/50 hover:scale-105 transform transition-all"
+                  className="inline-flex items-center justify-center px-10 py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark hover:scale-[1.02] transition-all"
                 >
-                  Get Started
+                  Start Your Journey
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center px-8 py-3 rounded-xl border-2 border-white/30 text-white font-semibold text-lg hover:bg-white/10 transition-all"
+                  className="inline-flex items-center justify-center px-10 py-4 rounded-2xl border border-gray-200 bg-white text-gray-900 font-bold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
                 >
                   Sign In
                 </Link>
@@ -60,37 +74,82 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="max-w-7xl mx-auto px-4 py-20">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center text-primary-dark mb-4">
-          Everything You Need to <span className="text-accent">Grow</span>
-        </h2>
-        <p className="text-center text-primary-light mb-14 max-w-xl mx-auto">
-          Whether you&apos;re a junior seeking guidance or a senior wanting to give back, ConnectSeniors has you covered.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl border border-muted/30 hover:border-primary-light/50 transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${f.color} text-white mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
-                <f.icon size={24} />
+      {/* Bento Grid Features */}
+      <section className="max-w-7xl mx-auto px-4 py-24 border-t border-gray-100">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-display font-bold text-gray-900 mb-4 tracking-tight">Focus on what matters</h2>
+          <p className="text-gray-500 max-w-lg mx-auto">High-performance tools meticulously designed for student success and senior contribution.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-6 grid-rows-2 gap-4 h-full md:h-[600px]">
+          {/* Main Feature - Roadmaps */}
+          <div className="md:col-span-3 md:row-span-2 group relative overflow-hidden bg-white rounded-3xl p-8 border border-gray-100 shadow-premium hover:shadow-float transition-all duration-500">
+            <div className="relative z-10 h-full flex flex-col">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <FiMap size={24} />
               </div>
-              <h3 className="text-lg font-bold text-primary-dark mb-2">{f.title}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{f.desc}</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 font-display">Custom Roadmaps</h3>
+              <p className="text-gray-600 leading-relaxed mb-auto">
+                Move beyond generic guides. Our seniors build branching, node-based learning paths tailored specifically for your academic and career goals.
+              </p>
+              <div className="mt-8 pt-8 border-t border-gray-50">
+                <div className="flex -space-x-2">
+                   {[1,2,3,4].map(i => (
+                     <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200" />
+                   ))}
+                   <div className="pl-4 text-xs font-bold text-gray-400 self-center">+ 500+ Juniors growing</div>
+                </div>
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* Mentorship */}
+          <div className="md:col-span-3 group relative overflow-hidden bg-[#1e293b] rounded-3xl p-8 shadow-premium hover:shadow-float transition-all duration-500 text-white">
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 text-white flex items-center justify-center mb-6">
+                <FiUsers size={24} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 font-display">1:1 Elite Mentorship</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">Book deep-dive sessions with approved seniors. Real-time guidance on your specific blockers.</p>
+              </div>
+            </div>
+            {/* Abstract Graphic */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-20 blur-3xl rounded-full" />
+          </div>
+
+          {/* Projects */}
+          <div className="md:col-span-3 flex gap-4">
+            <div className="flex-1 group bg-white rounded-3xl p-6 border border-gray-100 shadow-premium hover:shadow-float transition-all duration-500">
+                <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-4">
+                  <FiCode size={20} />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Projects</h3>
+                <p className="text-gray-500 text-xs">AI-powered prompts & resources.</p>
+            </div>
+            <div className="flex-1 group bg-white rounded-3xl p-6 border border-gray-100 shadow-premium hover:shadow-float transition-all duration-500">
+                <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-4">
+                  <FiFileText size={20} />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Resumes</h3>
+                <p className="text-gray-500 text-xs">Industry-standard validations.</p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-bg-dark text-white/60 py-10">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="font-semibold text-white mb-1">
-            <span className="text-accent">Connect</span>Seniors
-          </p>
-          <p className="text-sm">Empowering the next generation of developers through mentorship.</p>
+      <footer className="bg-white border-t border-gray-100 py-16">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="font-display font-bold text-2xl tracking-tight text-gray-900">
+            <span className="text-primary">Connect</span>Seniors
+          </div>
+          <p className="text-gray-400 text-sm">© 2026 ConnectSeniors Platform. Meticulously crafted for developers.</p>
+          <div className="flex gap-6 text-gray-400 text-sm font-semibold">
+            <a href="#" className="hover:text-primary transition-colors">Privacy</a>
+            <a href="#" className="hover:text-primary transition-colors">Terms</a>
+            <a href="#" className="hover:text-primary transition-colors">Support</a>
+          </div>
         </div>
       </footer>
     </div>

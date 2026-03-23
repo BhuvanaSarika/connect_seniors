@@ -42,95 +42,89 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-dark via-primary to-primary-light px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-primary/5 rounded-full -mr-60 -mt-60 blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-fuchsia-500/5 rounded-full -ml-60 -mb-60 blur-3xl" />
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 p-10 md:p-12">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-primary-dark">
-              <span className="text-accent">Connect</span>Seniors
+          <div className="text-center mb-10">
+            <h1 className="text-4xl font-display font-black text-gray-900 leading-tight">
+               Join <span className="text-gradient">Connect</span>
             </h1>
-            <p className="text-gray-500 mt-2">Create your account</p>
+            <p className="text-gray-500 mt-2 font-medium">Create your professional profile.</p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+            <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-[10px] font-bold uppercase tracking-widest text-center animate-in fade-in slide-in-from-top-2">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Roll Number</label>
-              <input
-                type="text"
-                required
-                value={rollNumber}
-                onChange={(e) => setRollNumber(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light uppercase"
-                placeholder="e.g. 22A91A4401"
-              />
-              <p className="text-xs text-gray-400 mt-1">Only authorized roll numbers can register</p>
+            <div className="grid grid-cols-2 gap-4">
+               <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Roll Number</label>
+                  <input
+                     type="text" required value={rollNumber} onChange={(e) => setRollNumber(e.target.value)}
+                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50 uppercase"
+                     placeholder="22A91A..."
+                  />
+               </div>
+               <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Full Name</label>
+                  <input
+                     type="text" required value={displayName} onChange={(e) => setDisplayName(e.target.value)}
+                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                     placeholder="John Doe"
+                  />
+               </div>
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Academic Email</label>
               <input
-                type="text"
-                required
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
-                placeholder="John Doe"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
-                placeholder="you@example.com"
+                type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                placeholder="university@email.edu"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
-                placeholder="Min 6 characters"
-              />
+
+            <div className="grid grid-cols-2 gap-4">
+               <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Password</label>
+                  <input
+                     type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                     placeholder="••••••••"
+                  />
+               </div>
+               <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Verify</label>
+                  <input
+                     type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                     placeholder="••••••••"
+                  />
+               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-              <input
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
-                placeholder="Re-enter password"
-              />
-            </div>
+
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary-light text-white font-semibold text-lg shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.02] active:scale-[0.98] transform transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              type="submit" disabled={loading}
+              className="w-full py-4 mt-2 rounded-2xl bg-gray-900 text-white font-bold text-sm uppercase tracking-widest shadow-float hover:bg-primary transition-all active:scale-95 disabled:opacity-50"
             >
-              {loading ? 'Creating Account...' : 'Register'}
+              {loading ? 'Processing...' : 'Register Account'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Already have an account?{' '}
-            <Link href="/login" className="text-primary font-semibold hover:underline">
-              Sign In
-            </Link>
-          </p>
+          <div className="mt-10 pt-8 border-t border-gray-50 flex flex-col items-center gap-4">
+             <p className="text-xs text-gray-500 font-medium">Already transitioned?</p>
+             <Link href="/login" className="text-sm font-bold text-primary hover:underline underline-offset-4 decoration-2">
+                Sign In to Platform &rarr;
+             </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -141,6 +141,7 @@ export default function ResumePage() {
 
       setRating(5);
       setFeedback('');
+      setViewingResume(null); // Close modal on success
     } catch (err) {
       console.error(err);
       alert('Failed to submit review');
@@ -150,226 +151,256 @@ export default function ResumePage() {
 
   if (loading || !appUser) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>;
 
+  const isSenior = appUser.role === 'senior' || appUser.role === 'admin';
   const isJunior = appUser.role === 'junior';
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary-dark">Resume Validation</h1>
-        <p className="text-gray-500 mt-1">
-          {isJunior ? 'Upload your resume for review by experienced seniors' : 'Review and validate junior resumes'}
-        </p>
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-8 h-1 bg-fuchsia-500 rounded-full" />
+            <span className="text-xs font-bold uppercase tracking-widest text-fuchsia-500/60">Career Accelerator</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-gray-900 leading-tight">
+            Resume <span className="text-gradient">Intelligence</span>
+          </h1>
+          <p className="text-gray-500 mt-2 max-w-lg">
+            Get expert feedback from seniors to optimize your resume for high-tier engineering roles.
+          </p>
+        </div>
       </div>
 
-      {/* Junior Upload Section */}
-      {isJunior && (
-        <div className="bg-white rounded-2xl shadow-sm border border-muted/20 p-6 mb-10">
-          <label className="block text-sm font-medium text-gray-700 mb-4">Upload New Resume (PDF, Max 5MB)</label>
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="flex-1 w-full relative">
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={handleFileSelect}
-                ref={fileInputRef}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                disabled={uploading}
-              />
-              <div className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed transition-all ${file ? 'border-primary bg-primary/5' : 'border-gray-300 bg-gray-50 hover:border-primary-light'
-                }`}>
-                <FiUploadCloud className={`text-2xl ${file ? 'text-primary' : 'text-gray-400'}`} />
-                <span className={`text-sm font-medium truncate ${file ? 'text-primary' : 'text-gray-500'}`}>
-                  {file ? file.name : 'Click or drag PDF here'}
-                </span>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Left Column: Upload or Stats */}
+        <div className="lg:col-span-4 space-y-8">
+          {isJunior && (
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-premium border border-gray-100 group relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/5 rounded-full -mr-16 -mt-16 transition-all group-hover:scale-150" />
+               <h2 className="text-2xl font-display font-bold text-gray-900 mb-6 relative z-10">New Submission</h2>
+               
+               <div 
+                 onClick={() => fileInputRef.current?.click()}
+                 className={`relative z-10 border-2 border-dashed rounded-[2rem] p-8 text-center cursor-pointer transition-all duration-500 ${
+                   file ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-primary/30 hover:bg-gray-50/50'
+                 }`}
+               >
+                 <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept=".pdf" className="hidden" />
+                 <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center transition-all duration-500 ${
+                   file ? 'bg-primary text-white scale-110 shadow-lg' : 'bg-gray-50 text-gray-400 group-hover:text-primary'
+                 }`}>
+                   <FiUploadCloud size={32} />
+                 </div>
+                 {file ? (
+                   <div className="animate-in fade-in slide-in-from-bottom-2">
+                     <p className="text-sm font-bold text-primary truncate max-w-[200px] mx-auto">{file.name}</p>
+                     <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Ready to upload</p>
+                   </div>
+                 ) : (
+                   <div>
+                     <p className="text-sm font-bold text-gray-900">Drop PDF here</p>
+                     <p className="text-xs text-gray-400 mt-1">or click to browse library</p>
+                   </div>
+                 )}
+               </div>
+
+               <button
+                 onClick={handleUpload}
+                 disabled={!file || uploading}
+                 className="w-full mt-6 py-4 rounded-2xl bg-gray-900 text-white font-bold text-sm uppercase tracking-widest shadow-float hover:bg-primary transition-all active:scale-95 disabled:opacity-30"
+               >
+                 {uploading ? 'Processing Assets...' : 'Analyze My Resume'}
+               </button>
+               <p className="text-[10px] text-center text-gray-400 mt-4 font-bold uppercase tracking-tighter">Only PDF files (max 5MB)</p>
             </div>
-            <button
-              onClick={handleUpload}
-              disabled={!file || uploading}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary text-white font-semibold shadow-lg hover:shadow-primary/40 disabled:opacity-50 transition-all"
-            >
-              {uploading ? 'Uploading...' : 'Upload & Notify'}
-            </button>
+          )}
+
+          <div className="bg-gray-900 rounded-[2.5rem] p-8 text-white shadow-premium relative overflow-hidden">
+             <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mb-24" />
+             <div className="relative z-10">
+                <FiMessageSquare className="text-primary mb-6" size={32} />
+                <h3 className="text-2xl font-display font-bold mb-2">Expert Insights</h3>
+                <p className="text-white/60 text-sm leading-relaxed mb-6">Seniors look for impact, technical depth, and clarity. Make sure your project descriptions highlight your unique contribution.</p>
+                <div className="flex items-center gap-3">
+                   <div className="h-1 w-12 bg-primary rounded-full" />
+                   <span className="text-[10px] font-bold uppercase tracking-widest">ConnectSeniors Standard</span>
+                </div>
+             </div>
           </div>
         </div>
-      )}
 
-      {/* Resumes List */}
-      <div>
-        <h2 className="text-xl font-bold text-primary-dark flex items-center gap-2 mb-6">
-          <FiFileText className="text-primary-light" />
-          {isJunior ? 'My Submissions' : 'Pending & Reviewed Resumes'}
-        </h2>
-
-        {fetching ? (
-          <div className="flex justify-center py-10"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>
-        ) : resumes.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-muted/20">
-            <p className="text-gray-400">No resumes found.</p>
+        {/* Right Column: List */}
+        <div className="lg:col-span-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-display font-bold text-gray-900">
+              {isSenior ? 'Pending Assessments' : 'My Analysis Log'}
+            </h2>
+            <div className="px-4 py-1.5 rounded-full bg-gray-50 border border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              {resumes.length} Records
+            </div>
           </div>
-        ) : (
-          <div className="space-y-6">
-            {resumes.map(resume => (
-              <div key={resume.id} className="bg-white rounded-2xl shadow-md border border-muted/20 overflow-hidden">
-                {/* Header */}
-                <div className="p-5 border-b border-gray-100 flex flex-wrap gap-4 items-center justify-between bg-bg-light/50">
-                  <div>
-                    <h3 className="font-bold text-primary-dark">{resume.juniorName} <span className="text-sm font-normal text-gray-500 uppercase">({resume.juniorRollNumber})</span></h3>
-                    <p className="text-sm text-gray-600 mt-1 flex items-center gap-2">
-                      <FiFileText /> {resume.fileName}
-                      <span className="text-muted">•</span>
-                      {new Date(resume.createdAt.toMillis()).toLocaleDateString()}
-                    </p>
+
+          {fetching ? (
+            <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>
+          ) : resumes.length === 0 ? (
+            <div className="text-center py-24 bg-white rounded-[3rem] border border-gray-100 shadow-premium">
+              <FiFileText className="mx-auto text-gray-100 mb-6" size={64} />
+              <p className="text-gray-400 text-xl font-medium">No resumes found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {resumes.map(resume => (
+                <div key={resume.id} className="group relative bg-white rounded-[2.5rem] p-6 shadow-premium hover:shadow-float border border-gray-100 transition-all duration-500 flex flex-col cursor-pointer" onClick={() => setViewingResume(resume)}>
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
+                      <FiFileText size={24} />
+                    </div>
+                    {resume.reviews && resume.reviews.length > 0 ? (
+                      <span className="flex items-center gap-1 text-emerald-500 bg-emerald-50 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                        <FiCheckCircle size={10} /> Reviewed
+                      </span>
+                    ) : (
+                      <span className="text-amber-500 bg-amber-50 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-amber-100">
+                        Pending
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-semibold capitalize ${resume.status === 'reviewed' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                      }`}>
-                      {resume.status}
+                  
+                  <div className="flex-1">
+                    <h3 className="text-lg font-display font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors truncate">{resume.fileName}</h3>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">By {resume.juniorName}</p>
+                    
+                    {resume.reviews && resume.reviews.length > 0 && (
+                      <div className="mt-4 flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <FiStar
+                            key={star}
+                            size={12}
+                            className={star <= (resume.reviews?.[0]?.rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-6 pt-5 border-t border-gray-50 flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
+                       {new Date(resume.createdAt.toMillis()).toLocaleDateString()}
+                    </span>
+                    <span className="text-xs font-bold text-primary group-hover:translate-x-1 transition-transform">
+                       View Analysis &rarr;
                     </span>
                   </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
-                <button
-                  onClick={() => {
-                    setViewingResume(resume);
-                    setCurrentImageIndex(0);
-                    if (!isJunior && reviewStatus !== 'submitting') {
-                        setRating(5);
-                        setFeedback('');
-                    }
-                  }}
-                  className="mt-4 mb-4 flex items-center gap-2 text-sm font-semibold text-primary bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 hover:bg-primary/10 transition-all hover:scale-[1.02]"
-                >
-                  <FiExternalLink size={16} /> Open Resume Viewer ({resume.fileUrls?.length || 0} Pages)
-                </button>
+      {/* Modern Resume Viewer Modal */}
+      {viewingResume && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[3rem] w-full max-w-6xl h-[95vh] flex flex-col md:flex-row shadow-2xl overflow-hidden relative">
+            <button onClick={() => setViewingResume(null)} className="absolute top-6 right-6 z-[160] p-3 rounded-2xl bg-white/10 text-white md:bg-gray-100 md:text-gray-400 hover:scale-110 transition-all backdrop-blur-xl">
+               <FiX size={24} />
+            </button>
 
-                {/* Reviews List */}
-                {resume.reviews && resume.reviews.length > 0 && (
-                  <div className="p-5 bg-white space-y-4">
-                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Feedback</h4>
-                    {resume.reviews.map((review, i) => (
-                      <div key={i} className="bg-bg-light rounded-xl p-4 border border-muted/20">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-primary">{review.seniorName}</span>
-                          <div className="flex items-center gap-1 text-yellow-400">
-                            {Array.from({ length: 5 }).map((_, idx) => (
-                              <FiStar key={idx} className={idx < review.rating ? 'fill-current' : 'text-gray-300'} size={14} />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                          {review.feedback}
-                        </p>
+            {/* Left: Document View */}
+            <div className="flex-1 bg-gray-950 flex flex-col p-6 min-h-0 relative">
+               <div className="flex-1 relative rounded-2xl overflow-hidden bg-white/5 group flex items-center justify-center">
+                  <img 
+                    src={viewingResume.fileUrls[currentImageIndex]} 
+                    alt="Resume page" 
+                    className="max-h-full max-w-full object-contain animate-in zoom-in-95 duration-500"
+                  />
+                  {viewingResume.fileUrls.length > 1 && (
+                    <>
+                      <button onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => Math.max(0, prev - 1)); }} className={`absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-2xl bg-black/40 text-white backdrop-blur-xl hover:bg-primary transition-all ${currentImageIndex === 0 ? 'opacity-0' : 'opacity-100'}`}>
+                         <FiChevronLeft size={24} />
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => Math.min(viewingResume.fileUrls.length - 1, prev + 1)); }} className={`absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-2xl bg-black/40 text-white backdrop-blur-xl hover:bg-primary transition-all ${currentImageIndex === viewingResume.fileUrls.length - 1 ? 'opacity-0' : 'opacity-100'}`}>
+                         <FiChevronRight size={24} />
+                      </button>
+                    </>
+                  )}
+               </div>
+               <div className="flex justify-center mt-6 gap-2">
+                  {viewingResume.fileUrls.map((_, i) => (
+                    <button key={i} onClick={() => setCurrentImageIndex(i)} className={`h-1.5 rounded-full transition-all duration-500 ${currentImageIndex === i ? 'w-8 bg-primary' : 'w-2 bg-white/20'}`} />
+                  ))}
+               </div>
+            </div>
+
+            {/* Right: Insights Panel */}
+            <div className="w-full md:w-96 bg-white flex flex-col p-8 md:p-12 overflow-y-auto border-l border-gray-100">
+               <div className="mb-10">
+                  <h3 className="text-3xl font-display font-bold text-gray-900 mb-2">Analysis</h3>
+                  <p className="text-gray-500 text-sm font-medium">Assessing <span className="text-primary font-bold">{viewingResume.juniorName}</span></p>
+               </div>
+
+               {viewingResume.reviews && viewingResume.reviews.length > 0 ? (
+                  <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                    {viewingResume.reviews.map((rev, i) => (
+                      <div key={i} className="bg-gray-50 rounded-3xl p-6 border border-gray-100">
+                         <div className="flex items-center gap-1 mb-4">
+                            {[1, 2, 3, 4, 5].map(s => <FiStar key={s} size={16} className={s <= rev.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'} />)}
+                         </div>
+                         <p className="text-gray-600 text-sm leading-relaxed mb-6 font-medium italic">"{rev.feedback}"</p>
+                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Assessed by {rev.seniorName}</span>
+                         </div>
                       </div>
                     ))}
                   </div>
-                )}
-
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {viewingResume && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white z-10 shadow-sm relative">
-              <div>
-                <h3 className="font-bold text-xl text-primary-dark flex items-center gap-2">
-                  <FiFileText className="text-primary" /> {viewingResume.juniorName}&apos;s Resume
-                </h3>
-                <p className="text-sm font-semibold text-gray-500 mt-0.5 ml-7 text-primary/80">Page {currentImageIndex + 1} of {viewingResume.fileUrls?.length || 1}</p>
-              </div>
-              <button onClick={() => setViewingResume(null)} className="p-2 text-gray-400 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors">
-                <FiX size={24} />
-              </button>
-            </div>
-
-            {/* Content Body */}
-            <div className="flex-1 overflow-hidden flex bg-gray-100/50 relative">
-               {/* Left/Center: The actual image carousel */}
-               <div className="flex-1 relative flex items-center justify-center p-4">
-                  <div className="relative h-full w-full max-w-4xl max-h-full flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                       src={viewingResume.fileUrls?.[currentImageIndex]} 
-                       alt={`Page ${currentImageIndex + 1}`} 
-                       className="max-h-full max-w-full object-contain shadow-md ring-1 ring-gray-900/5 bg-white scale-[1.01]"
-                    />
-                  </div>
-                  
-                  {/* Navigation Arrows */}
-                  <button 
-                     onClick={() => setCurrentImageIndex(i => Math.max(0, i - 1))}
-                     disabled={currentImageIndex === 0}
-                     className="absolute left-4 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white text-gray-800 shadow-xl hover:bg-gray-50 hover:scale-110 disabled:opacity-0 transition-all z-10 group"
-                  >
-                     <FiChevronLeft size={28} className="group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-                  <button 
-                     onClick={() => setCurrentImageIndex(i => Math.min((viewingResume.fileUrls?.length || 1) - 1, i + 1))}
-                     disabled={currentImageIndex === (viewingResume.fileUrls?.length || 1) - 1}
-                     className="absolute right-4 top-1/2 -translate-y-1/2 p-4 rounded-full bg-primary text-white shadow-xl hover:bg-primary-dark hover:scale-110 disabled:opacity-0 transition-all z-10 group"
-                  >
-                     <FiChevronRight size={28} className="group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-               </div>
-
-               {/* Right Side: Review Form (Shows dynamically on the last page for seniors) */}
-               {currentImageIndex === (viewingResume.fileUrls?.length || 1) - 1 && !isJunior && (
-                 <div className="w-full max-w-md bg-white border-l border-gray-100 p-8 flex flex-col shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] overflow-y-auto z-20 animate-in slide-in-from-right-10 duration-300">
-                   <div className="mb-8 border-b border-gray-100 pb-6">
-                     <h3 className="text-2xl font-extrabold text-primary-dark flex items-center gap-2 mb-2">
-                       <FiCheckCircle className="text-green-500" /> Final Review
-                     </h3>
-                     <p className="text-sm text-gray-500 leading-relaxed">
-                       You have reached the end of the document. Provide your comprehensive rating and feedback below.
-                     </p>
-                   </div>
-                   
-                   <div className="flex-1 space-y-6">
-                      <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
-                        <label className="block text-sm font-bold text-gray-700 mb-3">Overall Rating</label>
-                        <div className="flex items-center gap-4">
-                          <input type="range" min="1" max="5" value={rating} onChange={e => setRating(Number(e.target.value))} className="flex-1 accent-primary cursor-pointer" />
-                          <div className="flex flex-col items-center justify-center bg-primary/10 w-12 h-12 rounded-xl border border-primary/20">
-                            <span className="font-bold text-lg text-primary">{rating}</span>
-                          </div>
+               ) : isSenior ? (
+                  <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 flex flex-col flex-1">
+                     <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">Overall Rating</label>
+                        <div className="flex gap-2">
+                           {[1, 2, 3, 4, 5].map(s => (
+                             <button 
+                               key={s} onClick={() => setRating(s)} 
+                               className={`p-3 rounded-xl transition-all ${s <= rating ? 'bg-amber-100 text-amber-500 scale-110 shadow-lg shadow-amber-500/10' : 'bg-gray-50 text-gray-300'}`}
+                             >
+                               <FiStar size={24} className={s <= rating ? 'fill-amber-500' : ''} />
+                             </button>
+                           ))}
                         </div>
-                        <div className="flex justify-between text-xs text-gray-400 mt-2 font-medium">
-                          <span>Needs Work</span>
-                          <span>Excellent</span>
-                        </div>
-                      </div>
+                     </div>
 
-                      <div className="flex flex-col flex-1 min-h-[250px]">
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Constructive Feedback</label>
+                     <div className="flex-1 flex flex-col">
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">Expert Feedback</label>
                         <textarea
-                          value={feedback}
-                          onChange={e => setFeedback(e.target.value)}
-                          className="flex-1 w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary outline-none focus:ring-4 focus:ring-primary/10 bg-white resize-none shadow-sm transition-all"
-                          placeholder="Highlight strengths, point out formatting errors, and provide actionable advice to improve this resume..."
-                          required
+                          value={feedback} onChange={e => setFeedback(e.target.value)}
+                          className="flex-1 w-full px-5 py-4 rounded-[2rem] bg-gray-50 border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-sm font-medium resize-none"
+                          placeholder="Highlight strengths and suggest specific edits..."
                         />
-                      </div>
-                   </div>
+                     </div>
 
-                   <div className="mt-8 pt-6 border-t border-gray-100 flex gap-3">
                      <button
-                        onClick={async () => {
-                           await handleSubmitReview(viewingResume.id);
-                           setViewingResume(null);
-                        }}
-                        disabled={reviewStatus === 'submitting' || !feedback.trim()}
-                        className="flex-1 py-4 rounded-xl bg-gradient-to-r from-primary to-primary-light text-white font-bold shadow-lg hover:shadow-primary/30 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 text-lg"
+                       onClick={() => handleSubmitReview(viewingResume.id)}
+                       disabled={!feedback.trim() || reviewStatus === 'submitting'}
+                       className="w-full py-4 mt-6 rounded-2xl bg-primary text-white font-bold text-sm uppercase tracking-widest shadow-float hover:bg-primary-dark transition-all active:scale-95 disabled:opacity-30"
                      >
-                       {reviewStatus === 'submitting' ? 'Submitting...' : 'Submit Evaluation'}
+                       {reviewStatus === 'submitting' ? 'Submitting Insights...' : 'Publish Assessment'}
                      </button>
-                   </div>
-                 </div>
+                  </div>
+               ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                     <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center mb-6">
+                        <FiMessageSquare size={32} />
+                     </div>
+                     <p className="text-gray-500 font-bold mb-1">Awaiting Expert Insights</p>
+                     <p className="text-xs text-gray-400 max-w-[200px] leading-relaxed">A senior mentor will review your resume shortly. You'll be notified of the rating.</p>
+                  </div>
                )}
+
+               <div className="mt-auto pt-8 border-t border-gray-50">
+                  <a href={viewingResume.fileUrls[0]} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-primary font-bold text-xs uppercase tracking-widest hover:underline">
+                     <FiExternalLink /> Source Document
+                  </a>
+               </div>
             </div>
           </div>
         </div>

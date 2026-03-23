@@ -8,7 +8,7 @@ import { db } from '@/lib/firebase';
 import 'react-quill-new/dist/quill.snow.css';
 import { ProjectIdea } from '@/types';
 import Link from 'next/link';
-import { FiArrowLeft, FiGithub, FiExternalLink, FiYoutube, FiMessageSquare, FiUser, FiCopy, FiCheck } from 'react-icons/fi';
+import { FiArrowLeft, FiGithub, FiExternalLink, FiYoutube, FiMessageSquare, FiUser, FiCopy, FiCheck, FiCode } from 'react-icons/fi';
 
 export default function ProjectDetail() {
   const { appUser, loading } = useAuth();
@@ -76,44 +76,74 @@ export default function ProjectDetail() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <Link href="/projects" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary transition-colors mb-6 font-medium">
-        <FiArrowLeft /> Back to Ideas
+    <div className="max-w-5xl mx-auto px-4 py-12 pb-24">
+      <Link href="/projects" className="group inline-flex items-center gap-2 text-gray-500 hover:text-primary transition-all mb-10 font-bold text-sm uppercase tracking-widest">
+        <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back to Library
       </Link>
 
-      <div className="bg-white rounded-3xl shadow-xl shadow-primary/5 border border-muted/20 overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-primary-light p-8 md:p-10 text-white">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${categoryColors[project.category] || 'bg-gray-100 text-gray-700'}`}>
-              {project.category}
-            </span>
-            <span className="flex items-center gap-1.5 text-xs text-white/80 bg-black/20 px-3 py-1 rounded-full font-medium">
-              <FiUser /> Added by {project.createdByName}
-            </span>
+      <div className="bg-white rounded-[3rem] shadow-premium border border-gray-100 overflow-hidden">
+        {/* Header Section */}
+        <div className="relative p-8 md:p-16 border-b border-gray-50 overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
+          
+          <div className="relative z-10">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border shadow-sm ${categoryColors[project.category] || 'bg-gray-100 text-gray-700'}`}>
+                {project.category}
+              </span>
+              <span className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                <FiUser size={12} className="text-primary" /> Created by {project.createdByName}
+              </span>
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-display font-extrabold text-gray-900 mb-6 leading-tight">
+              {project.title}
+            </h1>
+
+            <div className="flex gap-4">
+               {project.githubUrl && (
+                 <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-900 text-white font-bold text-sm hover:bg-gray-800 transition-all shadow-lg shadow-black/10">
+                   <FiGithub /> Source Code
+                 </a>
+               )}
+               {project.referenceUrl && (
+                 <a href={project.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-gray-200 text-gray-900 font-bold text-sm hover:bg-gray-50 transition-all">
+                   <FiExternalLink /> Live Preview
+                 </a>
+               )}
+            </div>
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">{project.title}</h1>
         </div>
 
-        {/* Content */}
-        <div className="p-8 md:p-10 space-y-10">
+        {/* Content Section */}
+        <div className="p-8 md:p-16 space-y-16">
+          {/* Technical Brief */}
           <section>
-            <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2">Description</h2>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <FiCode size={20} />
+              </div>
+              <h2 className="text-2xl font-display font-bold text-gray-900">Technical Brief</h2>
+            </div>
             <div 
-              className="text-gray-700 text-lg sm:text-base prose prose-lg prose-primary max-w-none break-words overflow-hidden" 
-              dangerouslySetInnerHTML={{ __html: project.description }} 
+              className="prose prose-lg max-w-none text-gray-600 leading-relaxed ql-editor !p-0"
+              dangerouslySetInnerHTML={{ __html: project.description }}
             />
           </section>
 
+          {/* AI Prompt Strategy */}
           {project.aiPrompt && (
-            <section>
-              <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
-                <FiMessageSquare className="text-primary" /> AI Prompt
-              </h2>
-              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-sm text-gray-800 relative group">
-                <button 
+            <section className="relative">
+              <div className="absolute inset-0 bg-primary/5 rounded-[2.5rem] -m-6 -z-10 border border-primary/10" />
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+                    <FiMessageSquare size={20} />
+                  </div>
+                  <h2 className="text-2xl font-display font-bold text-gray-900">AI Collaboration Strategy</h2>
+                </div>
+                <button
                   onClick={handleCopy}
-                  className="absolute top-0 right-0 flex items-center gap-1.5 py-1.5 px-3 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-xs font-sans font-bold rounded-bl-lg rounded-tr-xl cursor-pointer z-10"
                   title="Copy to clipboard"
                 >
                    {copied ? <FiCheck size={14} /> : <FiCopy size={14} />} {copied ? 'Copied!' : 'Copy'}

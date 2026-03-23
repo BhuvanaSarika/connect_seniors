@@ -2,15 +2,20 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #f4f7ff;
-  --foreground: #0f172a;
-  --primary: #2148ba;
-  --primary-light: #5a7be0;
-  --primary-dark: #162f7a;
+  --background: #f8fafc;
+  --foreground: #020617;
+  --primary: #1e40af;
+  --primary-light: #3b82f6;
+  --primary-dark: #1e3a8a;
   --accent: #f59e0b;
-  --muted: #a9b8f5;
-  --bg-light: #f4f7ff;
+  --muted: #94a3b8;
+  --bg-light: #f8fafc;
   --bg-dark: #0f172a;
+  
+  /* Billion Dollar Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-premium: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-float: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 @theme inline {
@@ -23,14 +28,36 @@
   --color-muted: var(--muted);
   --color-bg-light: var(--bg-light);
   --color-bg-dark: var(--bg-dark);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-outfit);
   --font-mono: var(--font-geist-mono);
+  
+  --shadow-premium: var(--shadow-premium);
+  --shadow-float: var(--shadow-float);
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-md border border-white/10;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary-light to-accent;
+  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  @apply antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Custom scrollbar */

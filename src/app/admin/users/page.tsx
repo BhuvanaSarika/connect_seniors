@@ -72,93 +72,152 @@ export default function AdminUsersDirectory() {
   if (loading) return <div className="h-64 flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full" /></div>;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-         <div>
-           <h1 className="text-2xl font-bold text-gray-900 leading-tight">User Directory</h1>
-           <p className="text-gray-500 text-sm mt-1">Manage all students and send mass communications.</p>
-         </div>
-         <button 
-           onClick={handleSendEmail} 
-           disabled={selectedUids.size === 0}
-           className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-semibold disabled:opacity-50 hover:bg-primary-dark transition-colors"
-         >
-           <FiMail /> Mass Email ({selectedUids.size})
-         </button>
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-8 h-1 bg-primary rounded-full" />
+            <span className="text-xs font-bold uppercase tracking-widest text-primary-light">Control Center</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-gray-900 leading-tight">
+            User <span className="text-gradient">Directory</span>
+          </h1>
+          <p className="text-gray-500 mt-2 max-w-lg">
+            Manage the community, monitor student status, and broadcast critical communications across the platform.
+          </p>
+        </div>
+        <button 
+          onClick={handleSendEmail} 
+          disabled={selectedUids.size === 0}
+          className="flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-gray-900 text-white font-bold shadow-float hover:bg-primary transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-30"
+        >
+          <FiMail size={20} /> Broadcast to {selectedUids.size || 'Selection'}
+        </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
-         <div className="relative flex-1">
-           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-           <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, email, roll no..." className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-red-500 text-sm" />
-         </div>
-         <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className="px-4 py-2 rounded-lg border border-gray-200 outline-none text-sm bg-white">
-           <option value="all">All Roles</option>
-           <option value="junior">Juniors</option>
-           <option value="senior">Seniors</option>
-           <option value="admin">Admins</option>
-         </select>
-         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-4 py-2 rounded-lg border border-gray-200 outline-none text-sm bg-white">
-           <option value="all">All Status</option>
-           <option value="active">Active</option>
-           <option value="suspended">Suspended</option>
-         </select>
-      </div>
+      <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 overflow-hidden">
+        {/* Filter Bar */}
+        <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative flex-1 w-full">
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input 
+              type="text" value={search} onChange={e => setSearch(e.target.value)} 
+              placeholder="Search by name, email, or roll number..." 
+              className="w-full pl-12 pr-5 py-3.5 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium" 
+            />
+          </div>
+          <div className="flex gap-3 w-full md:w-auto">
+            <select 
+              value={roleFilter} onChange={e => setRoleFilter(e.target.value)} 
+              className="flex-1 md:flex-none px-6 py-3.5 rounded-2xl border border-gray-200 outline-none focus:border-primary transition-all text-sm font-bold text-gray-700 bg-white"
+            >
+              <option value="all">All Roles</option>
+              <option value="junior">Juniors</option>
+              <option value="senior">Seniors</option>
+              <option value="admin">Admins</option>
+            </select>
+            <select 
+              value={statusFilter} onChange={e => setStatusFilter(e.target.value)} 
+              className="flex-1 md:flex-none px-6 py-3.5 rounded-2xl border border-gray-200 outline-none focus:border-primary transition-all text-sm font-bold text-gray-700 bg-white"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-gray-200 text-sm text-gray-500 bg-gray-50/50">
-              <th className="p-4 font-semibold w-10">
-                <input type="checkbox" checked={selectedUids.size === filteredUsers.length && filteredUsers.length > 0} onChange={handleSelectAll} className="w-4 h-4 rounded border-gray-300 text-primary cursor-pointer" />
-              </th>
-              <th className="p-4 font-semibold">User</th>
-              <th className="p-4 font-semibold">Roll Number</th>
-              <th className="p-4 font-semibold">Role</th>
-              <th className="p-4 font-semibold">Status</th>
-              <th className="p-4 font-semibold text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.length === 0 ? (
-               <tr><td colSpan={6} className="p-8 text-center text-gray-400">No users found matching filters.</td></tr>
-            ) : filteredUsers.map(u => (
-               <tr key={u.uid} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                 <td className="p-4">
-                   <input type="checkbox" checked={selectedUids.has(u.uid)} onChange={() => toggleSelection(u.uid)} className="w-4 h-4 rounded border-gray-300 text-primary cursor-pointer" />
-                 </td>
-                 <td className="p-4">
-                   <p className="font-bold text-gray-900 leading-tight">{u.displayName}</p>
-                   <p className="text-xs text-gray-400">{u.email}</p>
-                 </td>
-                 <td className="p-4 font-mono text-sm text-gray-600">{u.rollNumber}</td>
-                 <td className="p-4">
-                   <span className={`px-2 py-1 rounded-full text-xs font-bold capitalize ${u.role === 'admin' ? 'bg-red-100 text-red-700' : u.role === 'senior' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                     {u.role}
-                   </span>
-                 </td>
-                 <td className="p-4">
-                   {u.status === 'suspended' ? (
-                     <span className="flex items-center gap-1.5 text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full w-max"><FiXCircle /> Suspended</span>
-                   ) : (
-                     <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full w-max"><FiCheckCircle /> Active</span>
-                   )}
-                 </td>
-                 <td className="p-4 text-right">
-                   {u.role !== 'admin' && (
-                     <button
-                       onClick={() => handleToggleStatus(u)}
-                       disabled={actionLoading === u.uid}
-                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${u.status === 'suspended' ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}
-                     >
-                       {actionLoading === u.uid ? 'Working...' : u.status === 'suspended' ? 'Activate' : 'Suspend'}
-                     </button>
-                   )}
-                 </td>
-               </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Table Content */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-50">
+                <th className="px-8 py-5 w-16">
+                   <div className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      checked={selectedUids.size === filteredUsers.length && filteredUsers.length > 0} 
+                      onChange={handleSelectAll} 
+                      className="w-5 h-5 rounded-lg border-gray-200 text-primary focus:ring-primary transition-colors cursor-pointer" 
+                    />
+                   </div>
+                </th>
+                <th className="px-8 py-5">User Identity</th>
+                <th className="px-8 py-5">Roll ID</th>
+                <th className="px-8 py-5">Permission</th>
+                <th className="px-8 py-5">Status</th>
+                <th className="px-8 py-5 text-right">Administrative</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filteredUsers.length === 0 ? (
+                 <tr>
+                   <td colSpan={6} className="px-8 py-12 text-center text-gray-400 font-medium">
+                      No matching records found in user directory.
+                   </td>
+                 </tr>
+              ) : filteredUsers.map(u => (
+                 <tr key={u.uid} className="hover:bg-gray-50/50 transition-colors group">
+                   <td className="px-8 py-5">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedUids.has(u.uid)} 
+                        onChange={() => toggleSelection(u.uid)} 
+                        className="w-5 h-5 rounded-lg border-gray-200 text-primary focus:ring-primary transition-colors cursor-pointer" 
+                      />
+                   </td>
+                   <td className="px-8 py-5">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 font-bold group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                          {u.displayName[0]}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900 leading-tight">{u.displayName}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{u.email}</p>
+                        </div>
+                      </div>
+                   </td>
+                   <td className="px-8 py-5 font-mono text-xs font-bold text-gray-500">{u.rollNumber}</td>
+                   <td className="px-8 py-5">
+                     <span className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border ${
+                       u.role === 'admin' ? 'bg-red-50 text-red-600 border-red-100' : 
+                       u.role === 'senior' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' : 
+                       'bg-emerald-50 text-emerald-600 border-emerald-100'
+                     }`}>
+                       {u.role}
+                     </span>
+                   </td>
+                   <td className="px-8 py-5">
+                     {u.status === 'suspended' ? (
+                       <span className="flex items-center gap-2 text-[10px] font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-xl w-max border border-red-100">
+                         <FiXCircle size={12} /> Suspended
+                       </span>
+                     ) : (
+                       <span className="flex items-center gap-2 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl w-max border border-emerald-100">
+                         <FiCheckCircle size={12} /> Active
+                       </span>
+                     )}
+                   </td>
+                   <td className="px-8 py-5 text-right">
+                     {u.role !== 'admin' && (
+                       <button
+                         onClick={() => handleToggleStatus(u)}
+                         disabled={actionLoading === u.uid}
+                         className={`px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
+                           u.status === 'suspended' 
+                             ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20' 
+                             : 'bg-white text-red-600 border border-red-100 hover:bg-red-50'
+                         }`}
+                       >
+                         {actionLoading === u.uid ? 'Working...' : u.status === 'suspended' ? 'Activate' : 'Suspend'}
+                       </button>
+                     )}
+                   </td>
+                 </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

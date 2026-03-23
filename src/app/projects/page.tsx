@@ -117,110 +117,180 @@ export default function ProjectsPage() {
   const isSenior = appUser.role === 'senior' || appUser.role === 'admin';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-3xl font-bold text-primary-dark">Project Ideas</h1>
-          <p className="text-gray-500 mt-1">Curated project ideas across all skill levels</p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-8 h-1 bg-primary rounded-full" />
+            <span className="text-xs font-bold uppercase tracking-widest text-primary-light">Inspiration</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-gray-900 leading-tight">
+            Project <span className="text-gradient">Ideas</span>
+          </h1>
+          <p className="text-gray-500 mt-2 max-w-lg">
+            A curated library of technical challenges divided by difficulty to help you grow your portfolio.
+          </p>
         </div>
-        {isSenior && (
-          <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-light text-white font-semibold shadow-lg hover:shadow-primary/40 hover:scale-105 transition-all">
-            {showForm ? <FiX size={18} /> : <FiPlus size={18} />} {showForm ? 'Close' : 'Add Project'}
+        {(appUser.role === 'senior' || appUser.role === 'admin') && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold shadow-float hover:bg-primary-dark transition-all hover:scale-[1.02] active:scale-95"
+          >
+            <FiPlus size={20} /> Create Idea
           </button>
         )}
       </div>
 
-      {/* Create / Edit Form */}
-      {showForm && (
-        <div className="mb-8 bg-white rounded-2xl shadow-lg border border-muted/30 p-6">
-          <h3 className="text-lg font-bold text-primary-dark mb-4">{editingId ? 'Edit Project Idea' : 'New Project Idea'}</h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <input type="text" required value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="Project Title" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
-              <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
-                <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '160px', marginBottom: '40px' }} placeholder="Detailed rich text description..." />
-              </div>
-            </div>
-            <div>
-              <select value={category} onChange={(e) => setCategory(e.target.value as ProjectCategory)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary outline-none bg-bg-light capitalize">
-                {categories.map((c) => <option key={c} value={c} className="capitalize">{c}</option>)}
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">AI Prompt (optional)</label>
-              <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
-                <ReactQuill theme="snow" value={aiPrompt} onChange={setAiPrompt} style={{ height: '100px', marginBottom: '40px' }} placeholder="Provide a helpful AI prompt for juniors..." />
-              </div>
-            </div>
-            <div>
-              <input type="url" value={referenceUrl} onChange={(e) => setReferenceUrl(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="Reference Website URL" />
-            </div>
-            <div>
-              <input type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="GitHub Link" />
-            </div>
-            <div>
-              <input type="url" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="YouTube Link" />
-            </div>
-            <div className="flex gap-3">
-              <button type="submit" disabled={creating} className="px-6 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark disabled:opacity-60">{creating ? (editingId ? 'Saving...' : 'Adding...') : (editingId ? 'Save Changes' : 'Add Project')}</button>
-              <button type="button" onClick={handleCloseForm} className="px-6 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">Cancel</button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${filter === 'all' ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-500 border border-muted/30 hover:border-primary-light'}`}>All</button>
-        {categories.map((c) => (
-          <button key={c} onClick={() => setFilter(c)} className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-all ${filter === c ? 'bg-primary text-white shadow-lg' : 'bg-white text-gray-500 border border-muted/30 hover:border-primary-light'}`}>{c}</button>
+      {/* Modern Filter Pills */}
+      <div className="flex flex-wrap items-center gap-2 mb-10 overflow-x-auto pb-2 -mx-1 px-1">
+        <button
+          onClick={() => setFilter('all')}
+          className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${
+            filter === 'all'
+              ? 'bg-primary text-white shadow-lg shadow-primary/20'
+              : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-100'
+          }`}
+        >
+          All Projects
+        </button>
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setFilter(cat)}
+            className={`px-5 py-2 rounded-xl text-sm font-bold capitalize transition-all ${
+              filter === cat
+                ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-100'
+            }`}
+          >
+            {cat}
+          </button>
         ))}
       </div>
 
-      {/* Projects Grid */}
+      {/* Creation/Edit Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all p-8 md:p-10 relative">
+            <button onClick={handleCloseForm} className="absolute top-6 right-6 p-2 rounded-xl hover:bg-gray-100 text-gray-400">
+              <FiX size={24} />
+            </button>
+            <h3 className="text-2xl font-display font-bold text-gray-900 mb-8">
+              {editingId ? 'Refine Project Idea' : 'Draft New Idea'}
+            </h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Title</label>
+                   <input
+                    type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    placeholder="e.g. Real-time Chat Engine"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Difficulty</label>
+                  <select
+                    value={category} onChange={(e) => setCategory(e.target.value as ProjectCategory)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary outline-none transition-all appearance-none"
+                  >
+                    {categories.map((c) => (
+                      <option key={c} value={c} className="capitalize">{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Technical Brief</label>
+                <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
+                  <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '150px', marginBottom: '40px' }} />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">AI Prompt Strategy</label>
+                <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
+                  <ReactQuill theme="snow" value={aiPrompt} onChange={setAiPrompt} style={{ height: '120px', marginBottom: '40px' }} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="url" placeholder="Reference URL" value={referenceUrl} onChange={(e) => setReferenceUrl(e.target.value)} className="px-4 py-3 rounded-xl border border-gray-200 text-sm" />
+                <input type="url" placeholder="GitHub Repo" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className="px-4 py-3 rounded-xl border border-gray-200 text-sm" />
+                <input type="url" placeholder="YouTube Guide" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className="px-4 py-3 rounded-xl border border-gray-200 text-sm" />
+              </div>
+
+              <button
+                type="submit" disabled={creating}
+                className="w-full py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark transition-all disabled:opacity-60"
+              >
+                {creating ? 'Synchronizing...' : editingId ? 'Update Idea' : 'Deploy Idea'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Grid of Projects */}
       {fetching ? (
         <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-20"><FiCode className="mx-auto text-muted mb-4" size={48} /><p className="text-gray-400 text-lg">No projects found</p></div>
+      ) : projects.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-premium">
+          <FiCode className="mx-auto text-gray-200 mb-4" size={48} />
+          <p className="text-gray-400 text-lg font-medium">No projects drafted yet</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((p) => (
-            <div key={p.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl border border-muted/20 transition-all duration-300 flex flex-col overflow-hidden">
-              <div className="p-6 flex flex-col flex-1">
-                <div className="flex items-start justify-between mb-3">
-                  <span className={`text-xs px-2 py-1 rounded-full font-semibold capitalize border ${categoryColors[p.category]}`}>{p.category}</span>
-                  {(p.createdBy === appUser.uid || appUser.role === 'admin') && (
-                    <div className="flex gap-1.5">
-                      <button onClick={() => handleEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-50 hover:text-primary transition-colors"><FiEdit2 size={16} /></button>
-                      <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"><FiTrash2 size={16} /></button>
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-lg font-bold text-primary-dark mb-2">{p.title}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {projects.filter((p) => filter === 'all' || p.category === filter).map((project) => (
+            <div key={project.id} className="group relative bg-white rounded-[2.5rem] p-5 shadow-premium hover:shadow-float border border-gray-100 transition-all duration-500 hover:-translate-y-2 flex flex-col">
+              <div className="relative aspect-video rounded-3xl bg-gray-50 flex items-center justify-center overflow-hidden mb-6 border border-gray-50">
+                 <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${categoryColors[project.category]}`}>
+                   {project.category}
+                 </div>
+                 <FiCode size={40} className="text-gray-200 group-hover:scale-110 transition-transform duration-500" />
+                 <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors" />
+              </div>
+              
+              <div className="px-3 pb-2 flex flex-col flex-1">
+                <h3 className="text-xl font-display font-bold text-gray-900 mb-2 truncate group-hover:text-primary transition-colors">{project.title}</h3>
                 <div 
-                  className="text-sm text-gray-500 mb-4 line-clamp-3 prose prose-sm max-w-none break-words overflow-hidden" 
-                  dangerouslySetInnerHTML={{ __html: p.description }} 
+                  className="text-sm text-gray-500 line-clamp-2 mb-6 h-10 overflow-hidden prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: project.description }}
                 />
-                {p.aiPrompt && (
-                  <div className="mb-3 p-3 rounded-lg bg-accent/10 border border-accent/20">
-                    <p className="text-xs font-semibold text-accent mb-1">AI Prompt</p>
-                    <div 
-                      className="text-xs text-accent-dark font-mono line-clamp-2 prose prose-sm max-w-none break-words overflow-hidden" 
-                      dangerouslySetInnerHTML={{ __html: p.aiPrompt }} 
-                    />
-                  </div>
-                )}
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  {p.referenceUrl && <a href={p.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-bg-light text-primary hover:bg-primary hover:text-white transition-colors"><FiExternalLink size={12} /> Reference</a>}
-                  {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-bg-light text-gray-700 hover:bg-gray-800 hover:text-white transition-colors"><FiGithub size={12} /> GitHub</a>}
-                  {p.youtubeUrl && <a href={p.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors"><FiYoutube size={12} /> YouTube</a>}
+                
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {project.githubUrl && <div className="p-2 rounded-lg bg-gray-50 text-gray-400"><FiGithub size={14} /></div>}
+                  {project.youtubeUrl && <div className="p-2 rounded-lg bg-red-50 text-red-400"><FiYoutube size={14} /></div>}
+                  {project.referenceUrl && <div className="p-2 rounded-lg bg-primary/5 text-primary-light"><FiExternalLink size={14} /></div>}
                 </div>
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-50">
-                   <p className="text-xs text-gray-400">By {p.createdByName}</p>
-                   <Link href={`/projects/${p.id}`} className="text-sm font-semibold text-primary hover:text-primary-dark hover:underline">View Details &rarr;</Link>
+
+                <div className="mt-auto flex items-center justify-between pt-5 border-t border-gray-50">
+                   <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary capitalize">
+                        {project.createdByName?.[0] || 'U'}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">By {project.createdByName}</span>
+                   </div>
+                   <div className="flex items-center gap-1">
+                      {(project.createdBy === appUser.uid || appUser.role === 'admin') && (
+                        <div className="flex gap-1 mr-2">
+                           <button onClick={() => handleEdit(project)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-primary transition-all">
+                              <FiEdit2 size={14} />
+                           </button>
+                           <button onClick={() => handleDelete(project.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all">
+                              <FiTrash2 size={14} />
+                           </button>
+                        </div>
+                      )}
+                      <Link
+                        href={`/projects/${project.id}`}
+                        className="px-5 py-2 rounded-xl bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-lg shadow-black/5"
+                      >
+                        Explore
+                      </Link>
+                   </div>
                 </div>
               </div>
             </div>

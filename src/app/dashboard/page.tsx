@@ -67,63 +67,91 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Welcome */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary-dark">
-          Welcome back, <span className="text-accent">{appUser.displayName}</span>
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Roll Number: <span className="font-mono font-semibold text-primary">{appUser.rollNumber}</span>
-          <span className="ml-3 px-2 py-0.5 rounded-full text-xs font-semibold capitalize bg-primary text-white">
-            {appUser.role}
-          </span>
-        </p>
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      {/* Welcome Section */}
+      <div className="mb-12 relative">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-8 h-1 bg-primary rounded-full" />
+              <span className="text-xs font-bold uppercase tracking-widest text-primary-light">Overview</span>
+            </div>
+            <h1 className="text-4xl font-display font-extrabold text-gray-900 leading-tight">
+              Welcome back, <span className="text-gradient">{appUser.displayName}</span>
+            </h1>
+            <p className="text-gray-500 mt-2 flex items-center gap-2">
+              <span className="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded border border-gray-200">{appUser.rollNumber}</span>
+              <span className="text-gray-300">|</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${appUser.role === 'admin' ? 'bg-red-500 text-white' : 'bg-primary/10 text-primary'}`}>
+                {appUser.role} Account
+              </span>
+            </p>
+          </div>
+          
+          {/* Quick Stats Summary */}
+          <div className="flex gap-4">
+            <div className="glass p-4 rounded-2xl shadow-sm min-w-[120px]">
+              <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Total Assets</p>
+              <p className="text-2xl font-display font-bold text-gray-900">{stats.roadmaps + stats.projects + stats.courses}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Notifications Banner */}
       {pendingResumes > 0 && (appUser.role === 'senior' || appUser.role === 'admin') && (
         <Link
           href="/resume"
-          className="flex items-center gap-3 p-4 mb-8 rounded-xl bg-accent/10 border border-accent/30 text-accent hover:bg-accent/20 transition-colors"
+          className="flex items-center gap-4 p-5 mb-10 rounded-2xl bg-primary text-white shadow-float hover:bg-primary-dark transition-all group"
         >
-          <FiBell size={20} />
-          <span className="font-medium">
-            {pendingResumes} resume{pendingResumes > 1 ? 's' : ''} pending review
-          </span>
-          <FiArrowRight size={16} className="ml-auto" />
+          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center animate-pulse">
+            <FiBell size={24} />
+          </div>
+          <div>
+            <p className="font-bold text-lg leading-tight">{pendingResumes} Resumes Awaiting Validation</p>
+            <p className="text-white/70 text-sm">Help juniors by providing feedback on their applications.</p>
+          </div>
+          <FiArrowRight size={20} className="ml-auto group-hover:translate-x-1 transition-transform" />
         </Link>
       )}
 
       {/* Quick Links Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Discovery Hub</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {quickLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl border border-muted/20 hover:border-primary-light/50 transition-all duration-300 hover:-translate-y-1"
+            className="group relative bg-white rounded-3xl p-8 shadow-premium hover:shadow-float border border-gray-100 hover:border-primary/20 transition-all duration-500 hover:-translate-y-2 flex flex-col"
           >
-            <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${link.color} text-white mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
-              <link.icon size={24} />
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${link.color} text-white mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+              <link.icon size={28} />
             </div>
-            <h3 className="text-lg font-bold text-primary-dark mb-1">{link.name}</h3>
-            {link.count !== null && (
-              <p className="text-sm text-gray-400">{link.count} items</p>
+            <h3 className="text-xl font-display font-bold text-gray-900 mb-2">{link.name}</h3>
+            {link.count !== null ? (
+              <p className="text-sm text-gray-400 mb-4">{link.count} items available</p>
+            ) : (
+              <p className="text-sm text-gray-400 mb-4">Book deep dives</p>
             )}
-            <FiArrowRight className="absolute top-6 right-6 text-muted group-hover:text-primary transition-colors" />
+            <div className="mt-auto flex items-center gap-2 text-primary text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+              Explore Now <FiArrowRight />
+            </div>
+            <FiArrowRight className="absolute top-8 right-8 text-gray-200 group-hover:text-primary transition-colors" />
           </Link>
         ))}
         {appUser.role === 'admin' && (
           <Link
             href="/admin"
-            className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl border border-muted/20 hover:border-red-300 transition-all duration-300 hover:-translate-y-1"
+            className="group relative bg-[#0f172a] rounded-3xl p-8 shadow-premium hover:shadow-float transition-all duration-500 hover:-translate-y-2 flex flex-col text-white"
           >
-            <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-red-500 to-rose-400 text-white mb-4 shadow-lg group-hover:scale-110 transition-transform">
-              <FiAward size={24} />
+            <div className="w-14 h-14 rounded-2xl bg-red-500 text-white mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+              <FiAward size={28} />
             </div>
-            <h3 className="text-lg font-bold text-primary-dark mb-1">Admin Panel</h3>
-            <p className="text-sm text-gray-400">Manage platform</p>
-            <FiArrowRight className="absolute top-6 right-6 text-muted group-hover:text-red-500 transition-colors" />
+            <h3 className="text-xl font-display font-bold mb-2">Admin Control</h3>
+            <p className="text-gray-400 text-sm mb-4">Manage users & platform logic.</p>
+            <div className="mt-auto flex items-center gap-2 text-red-400 text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+              Open Panel <FiArrowRight />
+            </div>
           </Link>
         )}
       </div>

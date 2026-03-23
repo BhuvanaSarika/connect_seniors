@@ -84,104 +84,125 @@ export default function RoadmapsPage() {
   const isSenior = appUser.role === 'senior' || appUser.role === 'admin';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-3xl font-bold text-primary-dark">Learning Roadmaps</h1>
-          <p className="text-gray-500 mt-1">Custom learning paths created by seniors</p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-8 h-1 bg-primary rounded-full" />
+            <span className="text-xs font-bold uppercase tracking-widest text-primary-light">Navigation</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-gray-900 leading-tight">
+            Learning <span className="text-gradient">Roadmaps</span>
+          </h1>
+          <p className="text-gray-500 mt-2 max-w-lg">
+            Structured, node-based learning paths meticulously crafted by seniors to guide your technical journey.
+          </p>
         </div>
-        {isSenior && (
+        {(appUser.role === 'senior' || appUser.role === 'admin') && (
           <button
-            onClick={() => setShowCreate(!showCreate)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-light text-white font-semibold shadow-lg hover:shadow-primary/40 hover:scale-105 transition-all"
+            onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold shadow-float hover:bg-primary-dark transition-all hover:scale-[1.02] active:scale-95"
           >
-            <FiPlus size={18} /> Create Roadmap
+            <FiPlus size={20} /> Create Roadmap
           </button>
         )}
       </div>
 
-      {/* Create Modal Overlay */}
+      {/* Creation Modal */}
       {showCreate && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all">
-            <h3 className="text-xl font-bold text-gray-900 mb-6 font-sans">Draft New Roadmap</h3>
-            <form onSubmit={handleCreate} className="space-y-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl transform transition-all p-8 md:p-12 relative">
+            <button onClick={() => setShowCreate(false)} className="absolute top-8 right-8 p-2 rounded-xl hover:bg-gray-100 text-gray-400">
+              <FiPlus size={24} className="rotate-45" />
+            </button>
+            <div className="text-center mb-10">
+               <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                  <FiMap size={32} />
+               </div>
+               <h3 className="text-3xl font-display font-bold text-gray-900">Blueprint a Roadmap</h3>
+               <p className="text-gray-500 mt-2">Set the foundation for a new learning path.</p>
+            </div>
+            
+            <form onSubmit={handleCreate} className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Title</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Roadmap Title</label>
                 <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-gray-800"
-                  placeholder="e.g. Advanced System Design"
+                  type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-lg font-medium"
+                  placeholder="e.g. Master React & Next.js"
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
-                  <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '120px', marginBottom: '40px' }} placeholder="Briefly describe what this roadmap teaches..." />
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Curriculum Overview</label>
+                <div className="bg-white rounded-2xl overflow-hidden border border-gray-200">
+                  <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '150px', marginBottom: '40px' }} />
                 </div>
               </div>
-              <div className="flex gap-3 pt-4">
-                <button type="submit" disabled={creating} className="flex-1 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors disabled:opacity-60 shadow-lg shadow-primary/30">
-                  {creating ? 'Orchestrating...' : 'Create & Edit Nodes'}
-                </button>
-                <button type="button" onClick={() => setShowCreate(false)} className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors">
-                  Cancel
-                </button>
-              </div>
+
+              <button
+                type="submit" disabled={creating}
+                className="w-full py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark transition-all disabled:opacity-60"
+              >
+                {creating ? 'Architecting...' : 'Initialize Roadmap'}
+              </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Roadmaps Grid */}
+      {/* Grid of Roadmaps */}
       {fetching ? (
         <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>
       ) : roadmaps.length === 0 ? (
-        <div className="text-center py-20">
-          <FiMap className="mx-auto text-muted mb-4" size={48} />
-          <p className="text-gray-400 text-lg">No roadmaps yet</p>
-          {isSenior && <p className="text-gray-400 text-sm mt-1">Create the first one!</p>}
+        <div className="text-center py-24 bg-white rounded-[3rem] border border-gray-100 shadow-premium">
+          <FiMap className="mx-auto text-gray-100 mb-6" size={64} />
+          <p className="text-gray-400 text-xl font-medium">No roadmaps architected yet</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roadmaps.map((rm) => (
-            <div key={rm.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl border border-muted/20 hover:border-primary-light/50 transition-all duration-300 overflow-hidden flex flex-col">
-              <div className="h-2 bg-gradient-to-r from-primary to-primary-light" />
-              <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-lg font-bold text-primary-dark mb-2">{rm.title}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {roadmaps.map((roadmap) => (
+            <div key={roadmap.id} className="group relative bg-white rounded-[2.5rem] p-5 shadow-premium hover:shadow-float border border-gray-100 transition-all duration-500 hover:-translate-y-2 flex flex-col">
+              <div className="relative aspect-video rounded-3xl bg-gray-50 flex items-center justify-center overflow-hidden mb-6 border border-gray-50">
+                 <div className="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-white/80 backdrop-blur-sm border border-gray-100 text-gray-500 shadow-sm">
+                   {roadmap.nodes?.length || 0} Milestones
+                 </div>
+                 <FiMap size={48} className="text-gray-200 group-hover:scale-110 transition-transform duration-500" />
+                 <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors" />
+              </div>
+              
+              <div className="px-3 pb-2 flex flex-col flex-1">
+                <h3 className="text-xl font-display font-bold text-gray-900 mb-2 truncate group-hover:text-primary transition-colors">{roadmap.title}</h3>
                 <div 
-                  className="text-sm text-gray-500 mb-4 line-clamp-3 prose prose-sm max-w-none break-words overflow-hidden"
-                  dangerouslySetInnerHTML={{ __html: rm.description }}
+                  className="text-sm text-gray-500 line-clamp-2 mb-8 h-10 overflow-hidden prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: roadmap.description }}
                 />
-                <p className="text-xs text-gray-400 mb-4">
-                  By {rm.createdByName} · {rm.nodes?.length || 0} nodes
-                </p>
-                <div className="flex gap-2">
-                  <Link
-                    href={`/roadmaps/${rm.id}`}
-                    className="flex-1 text-center py-2 rounded-lg bg-bg-light text-primary font-medium hover:bg-primary hover:text-white transition-colors text-sm"
-                  >
-                    View
-                  </Link>
-                  {(rm.createdBy === appUser.uid || appUser.role === 'admin') && (
-                    <>
+                
+                <div className="mt-auto flex items-center justify-between pt-5 border-t border-gray-50">
+                   <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary capitalize">
+                        {roadmap.createdByName?.[0] || 'U'}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">By {roadmap.createdByName}</span>
+                   </div>
+                   <div className="flex items-center gap-1">
+                      {(roadmap.createdBy === appUser.uid || appUser.role === 'admin') && (
+                        <div className="flex gap-1 mr-2">
+                           <Link href={`/roadmaps/${roadmap.id}/edit`} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-primary transition-all">
+                              <FiEdit3 size={16} />
+                           </Link>
+                           <button onClick={() => handleDelete(roadmap.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all">
+                              <FiTrash2 size={16} />
+                           </button>
+                        </div>
+                      )}
                       <Link
-                        href={`/roadmaps/${rm.id}/edit`}
-                        className="p-2 rounded-lg bg-bg-light text-primary hover:bg-primary hover:text-white transition-colors"
+                        href={`/roadmaps/${roadmap.id}`}
+                        className="px-6 py-2.5 rounded-xl bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-lg shadow-black/5"
                       >
-                        <FiEdit3 size={16} />
+                        Launch
                       </Link>
-                      <button
-                        onClick={() => handleDelete(rm.id)}
-                        className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
-                      >
-                        <FiTrash2 size={16} />
-                      </button>
-                    </>
-                  )}
+                   </div>
                 </div>
               </div>
             </div>

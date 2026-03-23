@@ -8,7 +8,7 @@ import { db } from '@/lib/firebase';
 import 'react-quill-new/dist/quill.snow.css';
 import { RecommendedCourse } from '@/types';
 import Link from 'next/link';
-import { FiArrowLeft, FiYoutube, FiUser, FiCalendar } from 'react-icons/fi';
+import { FiArrowLeft, FiYoutube, FiUser, FiCalendar, FiAward } from 'react-icons/fi';
 
 export default function CourseDetail() {
   const { appUser, loading } = useAuth();
@@ -61,59 +61,84 @@ export default function CourseDetail() {
   const videoId = extractYoutubeId(course.youtubeUrl);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <Link href="/courses" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary transition-colors mb-6 font-medium">
-        <FiArrowLeft /> Back to Courses
+    <div className="max-w-5xl mx-auto px-4 py-12 pb-24">
+      <Link href="/courses" className="group inline-flex items-center gap-2 text-gray-500 hover:text-primary transition-all mb-10 font-bold text-sm uppercase tracking-widest">
+        <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back to Library
       </Link>
 
-      <div className="bg-white rounded-3xl shadow-xl shadow-primary/5 border border-muted/20 overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-red-600 to-red-500 p-8 md:p-10 text-white">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="flex items-center gap-1.5 text-xs text-red-700 bg-white/90 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-              <FiYoutube /> Recommended Course
-            </span>
-            <span className="flex items-center gap-1.5 text-xs text-white/90 bg-black/20 px-3 py-1 rounded-full font-medium">
-              <FiUser /> Added by {course.addedByName}
-            </span>
-            <span className="flex items-center gap-1.5 text-xs text-white/90 bg-black/20 px-3 py-1 rounded-full font-medium">
-              <FiCalendar /> {new Date(course.createdAt?.toMillis()).toLocaleDateString()}
-            </span>
+      <div className="bg-white rounded-[3rem] shadow-premium border border-gray-100 overflow-hidden">
+        {/* Header Section */}
+        <div className="relative p-8 md:p-16 border-b border-gray-50 overflow-hidden bg-gray-900 group">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl -mr-48 -mt-48 transition-all group-hover:bg-red-600/20" />
+          
+          <div className="relative z-10">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <span className="flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-600 text-white shadow-lg shadow-red-600/20">
+                <FiYoutube size={12} /> Recommended Course
+              </span>
+              <span className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/10 text-white/60">
+                <FiUser size={12} className="text-red-500" /> Curated by {course.addedByName}
+              </span>
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-display font-extrabold text-white mb-6 leading-tight">
+              {course.title}
+            </h1>
+
+            <div className="flex items-center gap-4 text-white/40 text-xs font-bold uppercase tracking-widest">
+               <FiCalendar className="text-red-500" /> Added {new Date(course.createdAt?.toMillis()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </div>
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">{course.title}</h1>
         </div>
 
         {/* Video Player */}
-        {videoId ? (
-          <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-            <iframe
-              className="absolute top-0 left-0 w-full h-full border-b border-gray-100"
-              src={`https://www.youtube.com/embed/${videoId}`}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        ) : (
-           <div className="p-8 bg-gray-50 text-center border-b border-gray-100">
-             <FiYoutube size={48} className="mx-auto text-gray-300 mb-4" />
-             <p className="text-gray-500">Invalid YouTube URL or unsupported format.</p>
-             <a href={course.youtubeUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline mt-2 inline-block">Try Opening Directly</a>
-           </div>
-        )}
+        <div className="bg-black">
+          {videoId ? (
+            <div className="relative aspect-video group shadow-2xl">
+              <iframe
+                className="absolute top-0 left-0 w-full h-full border-none"
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
+                title={course.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          ) : (
+             <div className="p-24 text-center bg-gray-950 flex flex-col items-center">
+               <div className="w-20 h-20 rounded-full bg-red-600/20 flex items-center justify-center text-red-500 mb-6">
+                 <FiYoutube size={40} />
+               </div>
+               <p className="text-gray-400 font-medium mb-6">The technical guide is hosted externally.</p>
+               <a 
+                 href={course.youtubeUrl} target="_blank" rel="noopener noreferrer" 
+                 className="px-8 py-3 rounded-2xl bg-red-600 text-white font-bold hover:bg-red-700 transition-all shadow-xl shadow-red-600/20"
+               >
+                 Launch Video in New Tab
+               </a>
+             </div>
+          )}
+        </div>
 
-        {/* Content */}
-        <div className="p-8 md:p-10">
-          <section>
-            <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2">Why review this course?</h2>
+        {/* Content Section */}
+        <div className="p-8 md:p-16">
+          <section className="relative">
+            <div className="absolute inset-0 bg-primary/5 rounded-[2.5rem] -m-6 -z-10 border border-primary/10" />
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                 <FiAward size={20} />
+              </div>
+              <h2 className="text-2xl font-display font-bold text-gray-900">Senior Insight</h2>
+            </div>
+
             {course.description ? (
                <div 
-                 className="text-gray-700 text-lg sm:text-base prose prose-lg prose-primary max-w-none break-words overflow-hidden" 
+                 className="prose prose-lg max-w-none text-gray-600 leading-relaxed ql-editor !p-0" 
                  dangerouslySetInnerHTML={{ __html: course.description }} 
                />
             ) : (
-               <p className="text-gray-400 italic">No description provided by the senior.</p>
+               <div className="flex items-center gap-3 p-8 rounded-3xl bg-gray-50 border border-gray-100 text-gray-400 italic">
+                  No additional context provided for this resource.
+               </div>
             )}
           </section>
         </div>
