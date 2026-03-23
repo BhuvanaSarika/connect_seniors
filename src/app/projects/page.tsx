@@ -7,6 +7,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp, query, orderBy 
 import { db } from '@/lib/firebase';
 import { ProjectIdea, ProjectCategory } from '@/types';
 import { FiPlus, FiTrash2, FiExternalLink, FiGithub, FiYoutube, FiCode, FiX } from 'react-icons/fi';
+import Link from 'next/link';
 
 const categories: ProjectCategory[] = ['beginner', 'intermediate', 'advanced', 'pro'];
 const categoryColors: Record<ProjectCategory, string> = {
@@ -168,7 +169,10 @@ export default function ProjectsPage() {
                   {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-bg-light text-gray-700 hover:bg-gray-800 hover:text-white transition-colors"><FiGithub size={12} /> GitHub</a>}
                   {p.youtubeUrl && <a href={p.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors"><FiYoutube size={12} /> YouTube</a>}
                 </div>
-                <p className="text-xs text-gray-400 mt-3">By {p.createdByName}</p>
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-50">
+                   <p className="text-xs text-gray-400">By {p.createdByName}</p>
+                   <Link href={`/projects/${p.id}`} className="text-sm font-semibold text-primary hover:text-primary-dark hover:underline">View Details &rarr;</Link>
+                </div>
               </div>
             </div>
           ))}

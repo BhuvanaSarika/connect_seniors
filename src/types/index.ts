@@ -100,6 +100,8 @@ export interface MentorshipBooking {
   mentorName: string;
   juniorUid: string;
   juniorName: string;
+  juniorEmail: string;
+  juniorPhone: string;
   slotId: string;
   date: string;
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
@@ -120,7 +122,7 @@ export interface ResumeSubmission {
   juniorUid: string;
   juniorName: string;
   juniorRollNumber: string;
-  fileUrl: string;
+  fileUrls: string[];
   fileName: string;
   status: 'pending' | 'reviewed';
   reviews: ResumeReview[];

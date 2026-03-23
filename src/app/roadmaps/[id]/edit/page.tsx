@@ -24,6 +24,9 @@ import {
   Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import CustomNode from '@/components/roadmap/CustomNode';
+
+const nodeTypes = { custom: CustomNode };
 
 const nodeColors: Record<string, string> = {
   milestone: '#2148ba',
@@ -67,20 +70,9 @@ export default function RoadmapEditPage() {
         setNodes(
           (data.nodes || []).map((n) => ({
             id: n.id,
-            type: 'default',
+            type: 'custom',
             position: n.position,
             data: { label: n.data.label, description: n.data.description || '', nodeType: n.type },
-            style: {
-              background: nodeColors[n.type] || '#5a7be0',
-              color: 'white',
-              border: selectedNode === n.id ? '3px solid #f59e0b' : 'none',
-              borderRadius: '12px',
-              padding: '12px 20px',
-              fontSize: '14px',
-              fontWeight: 600,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              cursor: 'pointer',
-            },
           }))
         );
 

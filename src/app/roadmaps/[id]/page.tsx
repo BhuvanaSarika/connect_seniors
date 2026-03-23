@@ -17,12 +17,15 @@ import {
   Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import CustomNode from '@/components/roadmap/CustomNode';
 
 const nodeColors: Record<string, string> = {
   milestone: '#2148ba',
   topic: '#5a7be0',
   output: '#f59e0b',
 };
+
+const nodeTypes = { custom: CustomNode };
 
 export default function RoadmapViewPage() {
   const { appUser, loading } = useAuth();
@@ -64,19 +67,9 @@ export default function RoadmapViewPage() {
 
   const flowNodes: Node[] = (roadmap.nodes || []).map((n) => ({
     id: n.id,
-    type: 'default',
+    type: 'custom',
     position: n.position,
-    data: { label: n.data.label },
-    style: {
-      background: nodeColors[n.type] || '#5a7be0',
-      color: 'white',
-      border: 'none',
-      borderRadius: '12px',
-      padding: '12px 20px',
-      fontSize: '14px',
-      fontWeight: 600,
-      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    },
+    data: { label: n.data.label, description: n.data.description, nodeType: n.type },
   }));
 
   const flowEdges: Edge[] = (roadmap.edges || []).map((e) => ({
@@ -110,11 +103,11 @@ export default function RoadmapViewPage() {
           </Link>
         )}
       </div>
-
       <div className="bg-white rounded-2xl shadow-lg border border-muted/20 overflow-hidden" style={{ height: '70vh' }}>
         <ReactFlow
           nodes={flowNodes}
           edges={flowEdges}
+          nodeTypes={nodeTypes}
           fitView
           attributionPosition="bottom-left"
         >

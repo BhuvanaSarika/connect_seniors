@@ -1,5 +1,4 @@
-'use client';
-
+"use client"
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -22,6 +21,7 @@ export default function MentorshipPage() {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [bookingDate, setBookingDate] = useState<string>('');
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [phone, setPhone] = useState('');
 
   useEffect(() => {
     if (!loading && !appUser) router.push('/login');
@@ -41,7 +41,7 @@ export default function MentorshipPage() {
 
   const handleBookSlot = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!appUser || !selectedMentor || !selectedSlot || !bookingDate) return;
+    if (!appUser || !selectedMentor || !selectedSlot || !bookingDate || !phone) return;
     setBookingLoading(true);
 
     try {
@@ -51,6 +51,8 @@ export default function MentorshipPage() {
         mentorName: selectedMentor.displayName,
         juniorUid: appUser.uid,
         juniorName: appUser.displayName,
+        juniorEmail: appUser.email || 'No email provided',
+        juniorPhone: phone,
         slotId: selectedSlot.id,
         date: bookingDate,
         status: 'pending',
@@ -58,10 +60,9 @@ export default function MentorshipPage() {
       };
       await addDoc(collection(db, 'bookings'), booking);
 
-      // We DON'T mark the slot as booked immediately in the mentor's profile 
-      // until the mentor approves, but we simulate a success message here.
       alert('Booking request sent to mentor!');
       setSelectedMentor(null);
+      setPhone('');
     } catch (err) {
       console.error(err);
       alert('Failed to send booking request');
@@ -73,7 +74,7 @@ export default function MentorshipPage() {
     const d = new Date();
     d.setDate(d.getDate() + (dayOfWeek + 7 - d.getDay()) % 7);
     if (d.getDay() === new Date().getDay() && dayOfWeek === new Date().getDay()) {
-        d.setDate(d.getDate() + 7); // Move to next week if it's today (simplified)
+      d.setDate(d.getDate() + 7); // Move to next week if it's today (simplified)
     }
     return d.toISOString().split('T')[0];
   };
@@ -118,9 +119,9 @@ export default function MentorshipPage() {
                     <p className="text-xs text-gray-500 font-mono">{mentor.rollNumber}</p>
                   </div>
                 </div>
-                
+
                 <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">{mentor.bio}</p>
-                
+
                 <div className="flex flex-wrap gap-2 mb-4">
                   {mentor.expertise.map((exp, i) => (
                     <span key={i} className="px-2.5 py-1 rounded-md bg-bg-light text-primary-dark text-xs font-semibold border border-primary/10">
@@ -129,7 +130,7 @@ export default function MentorshipPage() {
                   ))}
                 </div>
               </div>
-              
+
               <div className="p-4 bg-bg-light border-t border-muted/20">
                 <div className="flex items-center justify-between mb-3 text-sm">
                   <span className="text-gray-500 flex items-center gap-1"><FiClock /> Available Slots</span>
@@ -154,19 +155,18 @@ export default function MentorshipPage() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
             <div className="p-6 border-b border-gray-100">
               <h2 className="text-xl font-bold text-primary-dark">Book Session with {selectedMentor.displayName}</h2>
-              <p className="text-sm text-gray-500 mt-1">Select an available time slot</p>
+              <p className="text-sm text-gray-500 mt-1">Select an available time slot and provide contact info</p>
             </div>
-            
-            <form onSubmit={handleBookSlot} className="p-6">
-              <div className="space-y-4 max-h-[40vh] overflow-y-auto mb-6 pr-2">
+
+            <form onSubmit={handleBookSlot} className="p-6 space-y-4">
+              <div className="space-y-4 max-h-[40vh] overflow-y-auto mb-2 pr-2">
                 {selectedMentor.availableSlots?.filter(s => !s.isBooked).map(slot => (
-                  <label key={slot.id} className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                    selectedSlot?.id === slot.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-primary-light/50 bg-white'
-                  }`}>
+                  <label key={slot.id} className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedSlot?.id === slot.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-primary-light/50 bg-white'
+                    }`}>
                     <div className="flex items-center gap-3">
-                      <input 
-                        type="radio" 
-                        name="slot" 
+                      <input
+                        type="radio"
+                        name="slot"
                         className="w-4 h-4 text-primary"
                         checked={selectedSlot?.id === slot.id}
                         onChange={() => {
@@ -180,19 +180,31 @@ export default function MentorshipPage() {
                       </div>
                     </div>
                     {selectedSlot?.id === slot.id && (
-                       <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
-                         Next: {new Date(getNextAvailableDateForDay(slot.dayOfWeek)).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                       </span>
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
+                        Next: {new Date(getNextAvailableDateForDay(slot.dayOfWeek)).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      </span>
                     )}
                   </label>
                 ))}
               </div>
 
-              <div className="flex gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Your Phone Number</label>
+                <input
+                  type="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
+                  placeholder="For WhatsApp/Call updates"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setSelectedMentor(null)} className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50">
                   Cancel
                 </button>
-                <button type="submit" disabled={!selectedSlot || bookingLoading} className="flex-1 py-3 rounded-xl bg-primary text-white font-semibold shadow-lg hover:shadow-primary/40 focus:ring-2 focus:ring-primary/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
+                <button type="submit" disabled={!selectedSlot || !phone || bookingLoading} className="flex-1 py-3 rounded-xl bg-primary text-white font-semibold shadow-lg hover:shadow-primary/40 focus:ring-2 focus:ring-primary/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
                   {bookingLoading ? 'Sending Request...' : <><FiCalendar /> Request Booking</>}
                 </button>
               </div>

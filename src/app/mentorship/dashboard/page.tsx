@@ -1,9 +1,7 @@
-'use client';
-
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { collection, doc, getDoc, getDocs, setDoc, query, where, Timestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { MentorProfile, TimeSlot, MentorshipBooking } from '@/types';
 import Link from 'next/link';
@@ -99,6 +97,34 @@ export default function MentorshipDashboardPage() {
 
   const handleRemoveSlot = (id: string) => {
     setSlots(slots.filter(s => s.id !== id));
+  };
+
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const handleBookingAction = async (bookingId: string, slotId: string, status: 'confirmed' | 'cancelled') => {
+    if (!appUser) return;
+    setActionLoading(bookingId);
+    try {
+      // 1. Update Booking
+      await updateDoc(doc(db, 'bookings', bookingId), { status });
+      
+      setBookings(curr => curr.map(b => b.id === bookingId ? { ...b, status } : b));
+
+      // 2. If confirmed, lock the slot
+      if (status === 'confirmed') {
+        const updatedSlots = slots.map(s => s.id === slotId ? { ...s, isBooked: true } : s);
+        await updateDoc(doc(db, 'mentorProfiles', appUser.uid), { availableSlots: updatedSlots });
+        setSlots(updatedSlots);
+        alert('Booking confirmed! You can now see their contact details.');
+      } else {
+        alert('Booking declined.');
+      }
+      
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update booking status');
+    }
+    setActionLoading(null);
   };
 
   if (loading || fetching) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>;
@@ -250,12 +276,24 @@ export default function MentorshipDashboardPage() {
                         {slot ? ` • ${slot.startTime} - ${slot.endTime}` : ''}
                       </div>
                       
-                      {/* Actions simulation (in real app, this would update booking status) */}
+                      {/* Actions */}
                       {booking.status === 'pending' && isUpcoming && (
                         <div className="flex gap-2 mt-3">
-                           <button className="flex-1 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-dark">Accept</button>
-                           <button className="flex-1 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50">Decline</button>
+                           <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'confirmed')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-dark disabled:opacity-50">
+                             {actionLoading === booking.id ? '...' : 'Accept'}
+                           </button>
+                           <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'cancelled')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 disabled:opacity-50">
+                             {actionLoading === booking.id ? '...' : 'Decline'}
+                           </button>
                         </div>
+                      )}
+                      
+                      {booking.status === 'confirmed' && (
+                         <div className="mt-3 p-3 bg-white rounded-lg border border-gray-100 text-sm">
+                           <p className="text-xs text-gray-500 mb-1 tracking-wider uppercase font-semibold">Contact Details</p>
+                           <p className="font-medium text-gray-800 break-all">{booking.juniorEmail}</p>
+                           <p className="font-medium text-gray-800">{booking.juniorPhone}</p>
+                         </div>
                       )}
                     </div>
                   );
