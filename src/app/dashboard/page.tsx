@@ -73,8 +73,8 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 mb-6">
-               <span className="w-10 h-1 bg-slate-900 rounded-full" />
-               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Command Center</p>
+              <span className="w-10 h-1 bg-slate-900 rounded-full" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Command Center</p>
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-black text-slate-900 leading-tight mb-4 tracking-tight">
               Welcome back, <br />
@@ -84,11 +84,10 @@ export default function DashboardPage() {
               <span className="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
                 Roll: {appUser.rollNumber || 'N/A'}
               </span>
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border ${
-                appUser.role === 'admin' 
-                  ? 'bg-red-50 text-red-600 border-red-100' 
-                  : 'bg-primary/5 text-primary border-primary/10'
-              }`}>
+              <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border ${appUser.role === 'admin'
+                ? 'bg-red-50 text-red-600 border-red-100'
+                : 'bg-primary/5 text-primary border-primary/10'
+                }`}>
                 {appUser.role} Authorization
               </span>
             </div>
@@ -131,8 +130,8 @@ export default function DashboardPage() {
       {/* Discovery Hub Grid */}
       <div className="mb-20">
         <div className="flex items-center justify-between mb-8">
-           <p className="section-label mb-0">Platform Discovery Hub</p>
-           <div className="h-px flex-1 bg-slate-100 mx-6 hidden md:block" />
+          <p className="section-label mb-0">Platform Discovery Hub</p>
+          <div className="h-px flex-1 bg-slate-100 mx-6 hidden md:block" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {discoveryHub.map((link, i) => (
@@ -142,14 +141,14 @@ export default function DashboardPage() {
               className="clean-card p-8 border-slate-200 hover:border-slate-900 transition-all duration-300 group flex flex-col min-h-[220px]"
             >
               <div className="flex items-start justify-between mb-8">
-                 <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
-                    <link.icon size={24} />
-                 </div>
-                 {link.items !== null && (
-                   <span className="text-[10px] font-bold text-slate-400 border border-slate-100 px-2 py-1 rounded-md">
-                      {link.items} Assets
-                   </span>
-                 )}
+                <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                  <link.icon size={24} />
+                </div>
+                {link.items !== null && (
+                  <span className="text-[10px] font-bold text-slate-400 border border-slate-100 px-2 py-1 rounded-md">
+                    {link.items} Assets
+                  </span>
+                )}
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">{link.name}</h3>
               <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">{link.desc}</p>
@@ -158,21 +157,21 @@ export default function DashboardPage() {
               </div>
             </Link>
           ))}
-          
+
           {appUser.role === 'admin' && (
             <Link
               href="/admin"
               className="clean-card p-8 bg-slate-900 border-slate-800 hover:border-red-500 transition-all group flex flex-col min-h-[220px]"
             >
-               <div className="flex items-start justify-between mb-8">
-                 <div className="w-12 h-12 rounded-xl bg-white/10 text-white flex items-center justify-center group-hover:bg-red-500 transition-all duration-500">
-                    <FiShield size={24} />
-                 </div>
-                 <span className="text-[10px] font-bold text-red-500/80 border border-white/10 px-2 py-1 rounded-md">
-                    Admin Access
-                 </span>
+              <div className="flex items-start justify-between mb-8">
+                <div className="w-12 h-12 rounded-xl bg-red-100 text-slate-900 group-hover:text-white flex items-center justify-center group-hover:bg-red-500 transition-all duration-500">
+                  <FiShield size={24} />
+                </div>
+                <span className="text-[10px] font-bold text-red-500/80 border border-white/10 px-2 py-1 rounded-md">
+                  Admin Access
+                </span>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Platform Administration</h3>
+              <h3 className="text-xl font-bold text-red-500/80 mb-2">Platform Administration</h3>
               <p className="text-slate-400 text-sm font-medium leading-relaxed mb-8">Manage authorized cohorts, roll numbers, and senior hierarchies.</p>
               <div className="mt-auto inline-flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-widest group-hover:gap-4 transition-all">
                 Open Controls <FiArrowRight />
@@ -184,11 +183,11 @@ export default function DashboardPage() {
 
       {/* Simplified Footer / Copyright */}
       <div className="pt-12 border-t border-slate-200 flex justify-between items-center bg-transparent mt-12">
-         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">ConnectSeniors Virtual Terminal v2.1.0</p>
-         <div className="flex gap-4">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] border border-white" />
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Platform Status: Online</span>
-         </div>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">ConnectSeniors Virtual Terminal v2.1.0</p>
+        <div className="flex gap-4">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] border border-white" />
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Platform Status: Online</span>
+        </div>
       </div>
     </div>
   );
