@@ -26,7 +26,7 @@ export default function CustomNode({ data, selected }: NodeProps) {
       {/* Tooltip on hover if description exists */}
       {description && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-48 p-3 bg-gray-900 text-white text-xs font-normal leading-relaxed rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl after:content-[''] after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:border-solid after:border-[6px] after:border-transparent after:border-b-gray-900">
-          {description}
+          <div className="prose prose-sm prose-invert max-w-none break-words overflow-hidden" dangerouslySetInnerHTML={{ __html: description }} />
         </div>
       )}
 

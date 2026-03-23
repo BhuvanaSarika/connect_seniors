@@ -25,6 +25,10 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import CustomNode from '@/components/roadmap/CustomNode';
+import dynamic from 'next/dynamic';
+import 'react-quill-new/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 const nodeTypes = { custom: CustomNode };
 
@@ -283,12 +287,9 @@ export default function RoadmapEditPage() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
-                <textarea
-                  value={editDesc}
-                  onChange={(e) => setEditDesc(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-primary outline-none text-sm bg-bg-light"
-                  rows={3}
-                />
+                <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+                  <ReactQuill theme="snow" value={editDesc} onChange={setEditDesc} style={{ height: '140px', marginBottom: '40px' }} placeholder="Node description or resources..." />
+                </div>
               </div>
               <div className="flex gap-2">
                 <button onClick={updateSelectedNode} className="flex-1 py-2 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary-dark">

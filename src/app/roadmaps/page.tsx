@@ -8,6 +8,10 @@ import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import { Roadmap } from '@/types';
 import { FiPlus, FiTrash2, FiEdit3, FiMap } from 'react-icons/fi';
+import dynamic from 'next/dynamic';
+import 'react-quill-new/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function RoadmapsPage() {
   const { appUser, loading } = useAuth();
@@ -96,35 +100,39 @@ export default function RoadmapsPage() {
         )}
       </div>
 
-      {/* Create Modal */}
+      {/* Create Modal Overlay */}
       {showCreate && (
-        <div className="mb-8 bg-white rounded-2xl shadow-lg border border-muted/30 p-6">
-          <h3 className="text-lg font-bold text-primary-dark mb-4">New Roadmap</h3>
-          <form onSubmit={handleCreate} className="space-y-4">
-            <input
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light"
-              placeholder="Roadmap title (e.g. Web Development)"
-            />
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light"
-              placeholder="Short description..."
-              rows={3}
-            />
-            <div className="flex gap-3">
-              <button type="submit" disabled={creating} className="px-6 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60">
-                {creating ? 'Creating...' : 'Create & Edit'}
-              </button>
-              <button type="button" onClick={() => setShowCreate(false)} className="px-6 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">
-                Cancel
-              </button>
-            </div>
-          </form>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all">
+            <h3 className="text-xl font-bold text-gray-900 mb-6 font-sans">Draft New Roadmap</h3>
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Title</label>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-gray-800"
+                  placeholder="e.g. Advanced System Design"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
+                  <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '120px', marginBottom: '40px' }} placeholder="Briefly describe what this roadmap teaches..." />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button type="submit" disabled={creating} className="flex-1 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors disabled:opacity-60 shadow-lg shadow-primary/30">
+                  {creating ? 'Orchestrating...' : 'Create & Edit Nodes'}
+                </button>
+                <button type="button" onClick={() => setShowCreate(false)} className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -140,11 +148,14 @@ export default function RoadmapsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {roadmaps.map((rm) => (
-            <div key={rm.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl border border-muted/20 hover:border-primary-light/50 transition-all duration-300 overflow-hidden">
+            <div key={rm.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl border border-muted/20 hover:border-primary-light/50 transition-all duration-300 overflow-hidden flex flex-col">
               <div className="h-2 bg-gradient-to-r from-primary to-primary-light" />
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-1">
                 <h3 className="text-lg font-bold text-primary-dark mb-2">{rm.title}</h3>
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2">{rm.description}</p>
+                <div 
+                  className="text-sm text-gray-500 mb-4 line-clamp-3 prose prose-sm max-w-none break-words overflow-hidden"
+                  dangerouslySetInnerHTML={{ __html: rm.description }}
+                />
                 <p className="text-xs text-gray-400 mb-4">
                   By {rm.createdByName} · {rm.nodes?.length || 0} nodes
                 </p>

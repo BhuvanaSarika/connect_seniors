@@ -90,8 +90,12 @@ export default function RoadmapViewPage() {
             <FiArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-primary-dark">{roadmap.title}</h1>
-            <p className="text-sm text-gray-500">{roadmap.description} · By {roadmap.createdByName}</p>
+            <h1 className="text-2xl font-bold text-primary-dark mb-1">{roadmap.title}</h1>
+            <p className="text-xs text-gray-400 mb-2">By {roadmap.createdByName}</p>
+            <div 
+              className="text-sm text-gray-500 prose prose-sm max-w-none break-words overflow-hidden"
+              dangerouslySetInnerHTML={{ __html: roadmap.description }}
+            />
           </div>
         </div>
         {canEdit && (
