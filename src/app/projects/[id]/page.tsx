@@ -7,7 +7,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ProjectIdea } from '@/types';
 import Link from 'next/link';
-import { FiArrowLeft, FiGithub, FiExternalLink, FiYoutube, FiMessageSquare, FiUser } from 'react-icons/fi';
+import { FiArrowLeft, FiGithub, FiExternalLink, FiYoutube, FiMessageSquare, FiUser, FiCopy, FiCheck } from 'react-icons/fi';
 
 export default function ProjectDetail() {
   const { appUser, loading } = useAuth();
@@ -17,6 +17,15 @@ export default function ProjectDetail() {
 
   const [project, setProject] = useState<ProjectIdea | null>(null);
   const [fetching, setFetching] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (project?.aiPrompt) {
+      navigator.clipboard.writeText(project.aiPrompt);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     if (!loading && !appUser) router.push('/login');
@@ -26,7 +35,7 @@ export default function ProjectDetail() {
     if (!appUser || !projectId) return;
     const fetchProject = async () => {
       try {
-        const snap = await getDoc(doc(db, 'projects', projectId));
+        const snap = await getDoc(doc(db, 'projectIdeas', projectId));
         if (snap.exists()) {
           setProject({ id: snap.id, ...snap.data() } as ProjectIdea);
         }
@@ -93,7 +102,13 @@ export default function ProjectDetail() {
                 <FiMessageSquare className="text-primary" /> AI Prompt
               </h2>
               <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 font-mono text-sm text-gray-800 relative group">
-                <span className="absolute top-0 right-0 py-1.5 px-3 bg-gray-200 text-gray-500 text-xs font-sans font-bold rounded-bl-lg rounded-tr-xl">Prompt</span>
+                <button 
+                  onClick={handleCopy}
+                  className="absolute top-0 right-0 flex items-center gap-1.5 py-1.5 px-3 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-xs font-sans font-bold rounded-bl-lg rounded-tr-xl cursor-pointer"
+                  title="Copy to clipboard"
+                >
+                  {copied ? <FiCheck size={14} /> : <FiCopy size={14} />} {copied ? 'Copied!' : 'Copy'}
+                </button>
                 {project.aiPrompt}
               </div>
               <p className="text-xs text-gray-500 mt-2 ml-1">Copy and paste this prompt into ChatGPT or Claude to get a starting template.</p>

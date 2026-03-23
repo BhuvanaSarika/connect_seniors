@@ -1,3 +1,4 @@
+"use client"
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -107,7 +108,7 @@ export default function MentorshipDashboardPage() {
     try {
       // 1. Update Booking
       await updateDoc(doc(db, 'bookings', bookingId), { status });
-      
+
       setBookings(curr => curr.map(b => b.id === bookingId ? { ...b, status } : b));
 
       // 2. If confirmed, lock the slot
@@ -119,7 +120,7 @@ export default function MentorshipDashboardPage() {
       } else {
         alert('Booking declined.');
       }
-      
+
     } catch (err) {
       console.error(err);
       alert('Failed to update booking status');
@@ -184,7 +185,7 @@ export default function MentorshipDashboardPage() {
                 <h3 className="text-lg font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <FiClock className="text-accent" /> Available Time Slots
                 </h3>
-                
+
                 {/* Add Slot */}
                 <div className="flex flex-wrap items-end gap-3 mb-6 p-4 bg-bg-light rounded-xl border border-muted/30">
                   <div>
@@ -209,7 +210,7 @@ export default function MentorshipDashboardPage() {
                 {/* List Slots */}
                 <div className="space-y-2">
                   {slots.length === 0 ? (
-                     <p className="text-sm text-gray-500 italic">No slots added yet.</p>
+                    <p className="text-sm text-gray-500 italic">No slots added yet.</p>
                   ) : (
                     slots.map(slot => (
                       <div key={slot.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white">
@@ -248,7 +249,7 @@ export default function MentorshipDashboardPage() {
             <h2 className="text-xl font-bold text-primary-dark mb-6 flex items-center gap-2">
               <FiCalendar className="text-primary-light" /> Mentorship Requests
             </h2>
-            
+
             {bookings.length === 0 ? (
               <div className="text-center py-10">
                 <p className="text-gray-400">No booking requests yet.</p>
@@ -257,17 +258,16 @@ export default function MentorshipDashboardPage() {
               <div className="space-y-4">
                 {bookings.map(booking => {
                   const slot = slots.find(s => s.id === booking.slotId);
-                  const isUpcoming = new Date(booking.date) >= new Date(new Date().setHours(0,0,0,0));
-                  
+                  const isUpcoming = new Date(booking.date) >= new Date(new Date().setHours(0, 0, 0, 0));
+
                   return (
                     <div key={booking.id} className="p-4 rounded-xl border border-gray-200 bg-bg-light">
                       <div className="flex items-start justify-between mb-2">
                         <div className="font-bold text-primary-dark">{booking.juniorName}</div>
-                        <span className={`text-xs px-2 py-1 rounded-full font-semibold capitalize ${
-                          booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                          booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-gray-200 text-gray-700'
-                        }`}>
+                        <span className={`text-xs px-2 py-1 rounded-full font-semibold capitalize ${booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                            booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-gray-200 text-gray-700'
+                          }`}>
                           {booking.status}
                         </span>
                       </div>
@@ -275,25 +275,25 @@ export default function MentorshipDashboardPage() {
                         {new Date(booking.date).toLocaleDateString()}
                         {slot ? ` • ${slot.startTime} - ${slot.endTime}` : ''}
                       </div>
-                      
+
                       {/* Actions */}
                       {booking.status === 'pending' && isUpcoming && (
                         <div className="flex gap-2 mt-3">
-                           <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'confirmed')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-dark disabled:opacity-50">
-                             {actionLoading === booking.id ? '...' : 'Accept'}
-                           </button>
-                           <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'cancelled')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 disabled:opacity-50">
-                             {actionLoading === booking.id ? '...' : 'Decline'}
-                           </button>
+                          <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'confirmed')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-dark disabled:opacity-50">
+                            {actionLoading === booking.id ? '...' : 'Accept'}
+                          </button>
+                          <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'cancelled')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 disabled:opacity-50">
+                            {actionLoading === booking.id ? '...' : 'Decline'}
+                          </button>
                         </div>
                       )}
-                      
+
                       {booking.status === 'confirmed' && (
-                         <div className="mt-3 p-3 bg-white rounded-lg border border-gray-100 text-sm">
-                           <p className="text-xs text-gray-500 mb-1 tracking-wider uppercase font-semibold">Contact Details</p>
-                           <p className="font-medium text-gray-800 break-all">{booking.juniorEmail}</p>
-                           <p className="font-medium text-gray-800">{booking.juniorPhone}</p>
-                         </div>
+                        <div className="mt-3 p-3 bg-white rounded-lg border border-gray-100 text-sm">
+                          <p className="text-xs text-gray-500 mb-1 tracking-wider uppercase font-semibold">Contact Details</p>
+                          <p className="font-medium text-gray-800 break-all">{booking.juniorEmail}</p>
+                          <p className="font-medium text-gray-800">{booking.juniorPhone}</p>
+                        </div>
                       )}
                     </div>
                   );
