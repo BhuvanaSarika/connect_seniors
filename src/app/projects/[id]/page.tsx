@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import 'react-quill-new/dist/quill.snow.css';
 import { ProjectIdea } from '@/types';
 import Link from 'next/link';
 import { FiArrowLeft, FiGithub, FiExternalLink, FiYoutube, FiMessageSquare, FiUser, FiCopy, FiCheck } from 'react-icons/fi';
@@ -91,9 +92,9 @@ export default function ProjectDetail() {
         <div className="p-8 md:p-10 space-y-10">
           <section>
             <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2">Description</h2>
-            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">
-              {project.description}
-            </p>
+            <div className="text-gray-700 text-lg sm:text-base ql-snow">
+              <div className="ql-editor" style={{ padding: 0 }} dangerouslySetInnerHTML={{ __html: project.description }} />
+            </div>
           </section>
 
           {project.aiPrompt && (

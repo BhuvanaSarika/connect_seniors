@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import 'react-quill-new/dist/quill.snow.css';
 import { RecommendedCourse } from '@/types';
 import Link from 'next/link';
 import { FiArrowLeft, FiYoutube, FiUser, FiCalendar } from 'react-icons/fi';
@@ -107,9 +108,9 @@ export default function CourseDetail() {
           <section>
             <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2">Why review this course?</h2>
             {course.description ? (
-               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">
-                 {course.description}
-               </p>
+               <div className="text-gray-700 text-lg sm:text-base ql-snow">
+                 <div className="ql-editor" style={{ padding: 0 }} dangerouslySetInnerHTML={{ __html: course.description }} />
+               </div>
             ) : (
                <p className="text-gray-400 italic">No description provided by the senior.</p>
             )}

@@ -3,6 +3,10 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import 'react-quill-new/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ProjectIdea, ProjectCategory } from '@/types';
@@ -135,7 +139,10 @@ export default function ProjectsPage() {
               <input type="text" required value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="Project Title" />
             </div>
             <div className="md:col-span-2">
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="Description..." rows={3} />
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+              <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
+                <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '160px', marginBottom: '40px' }} placeholder="Detailed rich text description..." />
+              </div>
             </div>
             <div>
               <select value={category} onChange={(e) => setCategory(e.target.value as ProjectCategory)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary outline-none bg-bg-light capitalize">
@@ -178,8 +185,8 @@ export default function ProjectsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((p) => (
-            <div key={p.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl border border-muted/20 transition-all duration-300 overflow-hidden">
-              <div className="p-6">
+            <div key={p.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl border border-muted/20 transition-all duration-300 flex flex-col overflow-hidden">
+              <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between mb-3">
                   <span className={`text-xs px-2 py-1 rounded-full font-semibold capitalize border ${categoryColors[p.category]}`}>{p.category}</span>
                   {(p.createdBy === appUser.uid || appUser.role === 'admin') && (
@@ -190,7 +197,10 @@ export default function ProjectsPage() {
                   )}
                 </div>
                 <h3 className="text-lg font-bold text-primary-dark mb-2">{p.title}</h3>
-                <p className="text-sm text-gray-500 mb-4 line-clamp-3">{p.description}</p>
+                <div 
+                  className="text-sm text-gray-500 mb-4 line-clamp-3 prose prose-sm max-w-none" 
+                  dangerouslySetInnerHTML={{ __html: p.description }} 
+                />
                 {p.aiPrompt && (
                   <div className="mb-3 p-3 rounded-lg bg-accent/10 border border-accent/20">
                     <p className="text-xs font-semibold text-accent mb-1">AI Prompt</p>

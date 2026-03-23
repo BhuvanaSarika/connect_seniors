@@ -8,6 +8,10 @@ import { db } from '@/lib/firebase';
 import { RecommendedCourse, Certification } from '@/types';
 import { FiYoutube, FiAward, FiPlus, FiTrash2, FiExternalLink, FiX } from 'react-icons/fi';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import 'react-quill-new/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function CoursesPage() {
   const { appUser, loading } = useAuth();
@@ -122,9 +126,14 @@ export default function CoursesPage() {
               <input type="text" required value={title} onChange={e => setTitle(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="Title" />
               <input type="url" required value={url} onChange={e => setUrl(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder={tab === 'courses' ? "YouTube Link" : "Certification URL"} />
               {tab === 'certs' && (
-                <input type="text" required value={provider} onChange={e => setProvider(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary border-t-transparent outline-none bg-bg-light md:col-span-2" placeholder="Provider (e.g. AWS, Coursera)" />
+                <input type="text" required value={provider} onChange={e => setProvider(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary outline-none bg-bg-light md:col-span-2" placeholder="Provider (e.g. AWS, Coursera)" />
               )}
-              <textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary outline-none bg-bg-light md:col-span-2" placeholder="Why do you recommend this?" rows={2} />
+              <div className="md:col-span-2">
+                 <label className="block text-sm font-semibold text-gray-700 mb-2">Description / Why recommend?</label>
+                 <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
+                   <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '120px', marginBottom: '40px' }} placeholder="Why do you recommend this?" />
+                 </div>
+              </div>
             </div>
             <div className="flex gap-3">
               <button type="submit" disabled={creating} className="px-6 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark disabled:opacity-50">Add</button>
@@ -164,7 +173,9 @@ export default function CoursesPage() {
                          <button onClick={() => handleDelete(course.id, 'courses')} className="text-gray-300 hover:text-red-500"><FiTrash2 size={16} /></button>
                        )}
                     </div>
-                    {course.description && <p className="text-sm text-gray-600 mb-4 line-clamp-2">{course.description}</p>}
+                    {course.description && (
+                      <div className="text-sm text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
+                    )}
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
                        <p className="text-xs text-gray-400">By {course.addedByName}</p>
                        <Link href={`/courses/${course.id}`} className="text-sm font-semibold text-primary hover:text-primary-dark hover:underline">View Course &rarr;</Link>
@@ -188,7 +199,9 @@ export default function CoursesPage() {
                   <div>
                     <h3 className="font-bold text-lg text-primary-dark mb-1">{cert.title}</h3>
                     <p className="text-sm font-semibold text-primary mb-1">{cert.provider}</p>
-                    {cert.description && <p className="text-sm text-gray-600 max-w-2xl">{cert.description}</p>}
+                    {cert.description && (
+                       <div className="text-sm text-gray-600 max-w-2xl prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: cert.description }} />
+                    )}
                     <p className="text-xs text-gray-400 mt-2">Added by {cert.addedByName}</p>
                   </div>
                 </div>
