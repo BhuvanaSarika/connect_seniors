@@ -22,15 +22,15 @@ export default function Footer() {
               Bridging the technical gap between academic excellence and professional industry standards. A dedicated ecosystem for roadmaps, mentorship, and career acceleration.
             </p>
             <div className="flex items-center gap-4">
-               <a href="#" className="w-9 h-9 rounded-lg border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all">
-                 <FiGlobe size={18} />
-               </a>
-               <a href="https://github.com/vijayvj86" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all">
-                 <FiGithub size={18} />
-               </a>
-               <a href="https://linkedin.com/in/vijay-manikanta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all">
-                 <FiLinkedin size={18} />
-               </a>
+              <a href="#" className="w-9 h-9 rounded-lg border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all">
+                <FiGlobe size={18} />
+              </a>
+              <a href="https://github.com/vijayvj86" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all">
+                <FiGithub size={18} />
+              </a>
+              <a href="https://linkedin.com/in/vijay-manikanta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all">
+                <FiLinkedin size={18} />
+              </a>
             </div>
           </div>
 
@@ -68,7 +68,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
             <span>© {currentYear} ConnectSeniors</span>
             <span className="hidden md:block w-1 h-1 bg-slate-200 rounded-full" />
-            <span className="text-slate-900">A Product from <span className="text-primary">Solvempire Private Limited</span></span>
+            <span className="text-slate-900">A Product from <Link href="https://solvempire.com" target="_blank" rel="noopener noreferrer"><span className="text-primary">Solvempire Private Limited</span></Link></span>
           </div>
           <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
             <span>Developed by</span>
