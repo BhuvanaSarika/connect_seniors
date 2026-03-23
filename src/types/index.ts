@@ -10,6 +10,7 @@ export interface AppUser {
   email: string;
   role: UserRole;
   profilePicUrl?: string;
+  mentorshipRequests?: string[]; // Added for mentorship handshake tracking
   createdAt: Timestamp;
   status?: 'active' | 'suspended';
 }

@@ -31,7 +31,7 @@
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --font-sans: var(--font-inter);
-  --font-display: var(--font-outfit);
+  --font-display: var(--font-bebas-neue);
   
   --shadow-premium: var(--shadow-md);
   --shadow-float: var(--shadow-lg);
@@ -64,8 +64,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display), system-ui, sans-serif;
-  letter-spacing: -0.01em;
-  @apply font-bold;
+  letter-spacing: 0.02em;
 }
 
 /* Scrollbar Refinement */

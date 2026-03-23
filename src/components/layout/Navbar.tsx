@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import { FiMenu, FiX, FiLogOut, FiUser } from 'react-icons/fi';
@@ -33,12 +34,16 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-sm transition-transform group-hover:bg-primary">
-              <span className="font-bold text-lg">C</span>
-            </div>
-            <div className="font-display font-extrabold text-xl tracking-tight text-slate-900">
-              Connect<span className="text-primary">Seniors</span>
+          <Link href="/dashboard" className="flex items-center gap-2 group shrink-0">
+            <div className="relative w-auto h-8 md:h-10">
+              <Image 
+                src="/logo.png" 
+                alt="ConnectSeniors Logo" 
+                width={160} 
+                height={40} 
+                className="h-full w-auto object-contain transition-transform group-hover:scale-105"
+                priority
+              />
             </div>
           </Link>
 
