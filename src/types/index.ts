@@ -11,6 +11,7 @@ export interface AppUser {
   role: UserRole;
   profilePicUrl?: string;
   createdAt: Timestamp;
+  status?: 'active' | 'suspended';
 }
 
 // ────────────────────── Roll Number Range ──────────────────────

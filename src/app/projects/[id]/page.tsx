@@ -20,11 +20,18 @@ export default function ProjectDetail() {
   const [fetching, setFetching] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     if (project?.aiPrompt) {
-      navigator.clipboard.writeText(project.aiPrompt);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = project.aiPrompt;
+        const plainText = tmp.textContent || tmp.innerText || "";
+        await navigator.clipboard.writeText(plainText.trim());
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy', err);
+      }
     }
   };
 
@@ -103,15 +110,18 @@ export default function ProjectDetail() {
               <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
                 <FiMessageSquare className="text-primary" /> AI Prompt
               </h2>
-              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 font-mono text-sm text-gray-800 relative group">
+              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-sm text-gray-800 relative group">
                 <button 
                   onClick={handleCopy}
-                  className="absolute top-0 right-0 flex items-center gap-1.5 py-1.5 px-3 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-xs font-sans font-bold rounded-bl-lg rounded-tr-xl cursor-pointer"
+                  className="absolute top-0 right-0 flex items-center gap-1.5 py-1.5 px-3 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-xs font-sans font-bold rounded-bl-lg rounded-tr-xl cursor-pointer z-10"
                   title="Copy to clipboard"
                 >
-                  {copied ? <FiCheck size={14} /> : <FiCopy size={14} />} {copied ? 'Copied!' : 'Copy'}
+                   {copied ? <FiCheck size={14} /> : <FiCopy size={14} />} {copied ? 'Copied!' : 'Copy'}
                 </button>
-                {project.aiPrompt}
+                <div 
+                  className="mt-8 prose prose-sm md:prose-base prose-primary max-w-none break-words overflow-hidden"
+                  dangerouslySetInnerHTML={{ __html: project.aiPrompt }}
+                />
               </div>
               <p className="text-xs text-gray-500 mt-2 ml-1">Copy and paste this prompt into ChatGPT or Claude to get a starting template.</p>
             </section>

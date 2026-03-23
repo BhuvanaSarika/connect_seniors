@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { FiGrid, FiUsers, FiShield, FiTrendingUp } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiShield, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { appUser, loading } = useAuth();
@@ -23,9 +23,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const links = [
     { name: 'Overview', href: '/admin', icon: FiGrid },
+    { name: 'User Directory', href: '/admin/users', icon: FiUsers },
     { name: 'Roll Number Ranges', href: '/admin/ranges', icon: FiShield },
     { name: 'Promote Juniors', href: '/admin/promotions', icon: FiTrendingUp },
-    { name: 'Mentor Approvals', href: '/admin/mentors', icon: FiUsers },
+    { name: 'Mentor Approvals', href: '/admin/mentors', icon: FiCheckCircle },
   ];
 
   return (

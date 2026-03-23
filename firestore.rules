@@ -9,21 +9,28 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+    function isNotSuspended() {
+      let status = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status;
+      return status == null || status != 'suspended';
+    }
     function getUserRole() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
+    function isAuthed() {
+      return isSignedIn() && isNotSuspended();
+    }
     function isAdmin() {
-      return isSignedIn() && getUserRole() == 'admin';
+      return isAuthed() && getUserRole() == 'admin';
     }
     function isSenior() {
-      return isSignedIn() && (getUserRole() == 'senior' || getUserRole() == 'admin');
+      return isAuthed() && (getUserRole() == 'senior' || getUserRole() == 'admin');
     }
 
     // ── Users ──
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
+      allow update: if (isOwner(userId) && isAuthed()) || isAdmin();
       allow delete: if isAdmin();
     }
 
@@ -37,28 +44,28 @@ service cloud.firestore {
     match /roadmaps/{roadmapId} {
       allow read: if isSignedIn();
       allow create: if isSenior();
-      allow update, delete: if isSignedIn() && (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow update, delete: if isAuthed() && (resource.data.createdBy == request.auth.uid || isAdmin());
     }
 
     // ── Project Ideas ──
     match /projectIdeas/{ideaId} {
       allow read: if isSignedIn();
       allow create: if isSenior();
-      allow update, delete: if isSignedIn() && (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow update, delete: if isAuthed() && (resource.data.createdBy == request.auth.uid || isAdmin());
     }
 
     // ── Mentor Profiles ──
     match /mentorProfiles/{uid} {
       allow read: if isSignedIn();
-      allow create, update: if isOwner(uid) || isAdmin();
+      allow create, update: if (isOwner(uid) && isAuthed()) || isAdmin();
       allow delete: if isAdmin();
     }
 
     // ── Mentorship Bookings ──
     match /bookings/{bookingId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (
+      allow create: if isAuthed();
+      allow update: if isAuthed() && (
         resource.data.mentorUid == request.auth.uid ||
         resource.data.juniorUid == request.auth.uid ||
         isAdmin()
@@ -69,7 +76,7 @@ service cloud.firestore {
     // ── Resume Submissions ──
     match /resumes/{resumeId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn();
+      allow create: if isAuthed();
       allow update: if isSenior();
       allow delete: if isAdmin();
     }
@@ -89,8 +96,8 @@ service cloud.firestore {
     // ── Notifications ──
     match /notifications/{notifId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (
+      allow create: if isAuthed();
+      allow update: if isAuthed() && (
         resource.data.targetUid == request.auth.uid || isAdmin()
       );
       allow delete: if isAdmin();

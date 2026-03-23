@@ -49,13 +49,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
       if (firebaseUser) {
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         if (userDoc.exists()) {
-          setAppUser(userDoc.data() as AppUser);
+          const data = userDoc.data() as AppUser;
+          if (data.status === 'suspended') {
+            await signOut(auth);
+            setUser(null);
+            setAppUser(null);
+            alert('Your account is currently suspended. Please contact the administrator.');
+          } else {
+            setUser(firebaseUser);
+            setAppUser(data);
+          }
+        } else {
+          setUser(firebaseUser);
         }
       } else {
+        setUser(null);
         setAppUser(null);
       }
       setLoading(false);

@@ -149,8 +149,11 @@ export default function ProjectsPage() {
                 {categories.map((c) => <option key={c} value={c} className="capitalize">{c}</option>)}
               </select>
             </div>
-            <div>
-              <input type="text" value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="AI Prompt (optional)" />
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">AI Prompt (optional)</label>
+              <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
+                <ReactQuill theme="snow" value={aiPrompt} onChange={setAiPrompt} style={{ height: '100px', marginBottom: '40px' }} placeholder="Provide a helpful AI prompt for juniors..." />
+              </div>
             </div>
             <div>
               <input type="url" value={referenceUrl} onChange={(e) => setReferenceUrl(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-bg-light" placeholder="Reference Website URL" />
@@ -204,7 +207,10 @@ export default function ProjectsPage() {
                 {p.aiPrompt && (
                   <div className="mb-3 p-3 rounded-lg bg-accent/10 border border-accent/20">
                     <p className="text-xs font-semibold text-accent mb-1">AI Prompt</p>
-                    <p className="text-xs text-gray-600 line-clamp-2">{p.aiPrompt}</p>
+                    <div 
+                      className="text-xs text-accent-dark font-mono line-clamp-2 prose prose-sm max-w-none break-words overflow-hidden" 
+                      dangerouslySetInnerHTML={{ __html: p.aiPrompt }} 
+                    />
                   </div>
                 )}
                 <div className="flex flex-wrap gap-2 mt-auto">
