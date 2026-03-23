@@ -72,7 +72,7 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
             <span>Developed by</span>
-            <span className="px-2 py-1 bg-slate-50 text-slate-900 rounded border border-slate-200">Tammana Vijaya Manikanta</span>
+            <span className="px-2 py-1 bg-slate-50 text-slate-900 rounded border border-slate-200">Vijay</span>
           </div>
         </div>
       </div>
