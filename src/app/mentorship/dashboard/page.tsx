@@ -6,7 +6,7 @@ import { collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, Time
 import { db } from '@/lib/firebase';
 import { MentorProfile, TimeSlot, MentorshipBooking } from '@/types';
 import Link from 'next/link';
-import { FiClock, FiCheckCircle, FiUser, FiCalendar, FiPlus } from 'react-icons/fi';
+import { FiClock, FiCheckCircle, FiUser, FiCalendar, FiPlus, FiInfo, FiLayers, FiX, FiCheck, FiArrowLeft } from 'react-icons/fi';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -37,7 +37,6 @@ export default function MentorshipDashboardPage() {
     if (!appUser) return;
     const fetchData = async () => {
       try {
-        // Fetch Profile
         const snap = await getDoc(doc(db, 'mentorProfiles', appUser.uid));
         if (snap.exists()) {
           const data = snap.data() as MentorProfile;
@@ -47,7 +46,6 @@ export default function MentorshipDashboardPage() {
           setSlots(data.availableSlots || []);
         }
 
-        // Fetch Bookings
         const bookingsQ = query(
           collection(db, 'bookings'),
           where('mentorUid', '==', appUser.uid)
@@ -77,10 +75,10 @@ export default function MentorshipDashboardPage() {
       };
       await setDoc(doc(db, 'mentorProfiles', appUser.uid), updatedProfile);
       setProfile(updatedProfile);
-      alert('Profile updated successfully!');
+      alert('Operational success: Profile and availability index updated.');
     } catch (err) {
       console.error(err);
-      alert('Failed to save profile');
+      alert('Operational failure: could not commit profile changes.');
     }
     setSaving(false);
   };
@@ -106,201 +104,216 @@ export default function MentorshipDashboardPage() {
     if (!appUser) return;
     setActionLoading(bookingId);
     try {
-      // 1. Update Booking
       await updateDoc(doc(db, 'bookings', bookingId), { status });
-
       setBookings(curr => curr.map(b => b.id === bookingId ? { ...b, status } : b));
 
-      // 2. If confirmed, lock the slot
       if (status === 'confirmed') {
         const updatedSlots = slots.map(s => s.id === slotId ? { ...s, isBooked: true } : s);
         await updateDoc(doc(db, 'mentorProfiles', appUser.uid), { availableSlots: updatedSlots });
         setSlots(updatedSlots);
-        alert('Booking confirmed! You can now see their contact details.');
+        alert('Protocol: Booking confirmed. Junior terminal coordinates established.');
       } else {
-        alert('Booking declined.');
+        alert('Protocol: Booking request declined.');
       }
-
     } catch (err) {
       console.error(err);
-      alert('Failed to update booking status');
+      alert('Operational error: could not finalize booking status.');
     }
     setActionLoading(null);
   };
 
-  if (loading || fetching) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>;
+  if (loading || fetching) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin w-8 h-8 border-4 border-slate-900 border-t-transparent rounded-full" />
+    </div>
+  );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-primary-dark">Mentor Dashboard</h1>
-          <p className="text-gray-500 mt-1">Manage your mentorship profile and availability</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-slate-900">
+      {/* Module Header */}
+      <div className="mb-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div>
+            <div className="inline-flex items-center gap-2 mb-6 cursor-pointer group" onClick={() => router.push('/mentorship')}>
+               <FiArrowLeft className="text-slate-400 group-hover:text-slate-900 transition-colors" />
+               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 group-hover:text-slate-900 transition-colors">Back to expert network</p>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-display font-black text-slate-900 leading-tight mb-4 tracking-tight">
+              Mentor <span className="text-slate-900/40 italic">Control Center.</span>
+            </h1>
+            <p className="text-slate-500 font-medium leading-relaxed max-w-2xl">
+               Technical operations and availability management. Monitor incoming mentorship requests and refine your systemic profile.
+            </p>
+          </div>
+          {profile && (
+            <div className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${profile.isApproved ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+              {profile.isApproved ? 'Global Network Authorized' : 'Governance Review Pending'}
+            </div>
+          )}
         </div>
-        <Link href="/mentorship" className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium transition-colors">
-          View All Mentors
-        </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Col: Profile Form */}
-        <div className="lg:col-span-2 space-y-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-muted/20 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-primary-dark flex items-center gap-2">
-                <FiUser className="text-primary" /> Profile Details
-              </h2>
-              {profile && (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${profile.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                  {profile.isApproved ? 'Approved Mentor' : 'Pending Approval'}
-                </span>
-              )}
-            </div>
-
-            <form onSubmit={handleSaveProfile} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Short Bio</label>
-                <textarea
-                  required
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
-                  placeholder="Introduce yourself and your experience..."
-                  rows={3}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Expertise Tags (comma-separated)</label>
-                <input
-                  type="text"
-                  required
-                  value={expertiseTags}
-                  onChange={(e) => setExpertiseTags(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-bg-light"
-                  placeholder="React, Next.js, AI, Machine Learning"
-                />
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-primary-dark mb-4 flex items-center gap-2">
-                  <FiClock className="text-accent" /> Available Time Slots
-                </h3>
-
-                {/* Add Slot */}
-                <div className="flex flex-wrap items-end gap-3 mb-6 p-4 bg-bg-light rounded-xl border border-muted/30">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Profile Configuration */}
+        <div className="lg:col-span-8 space-y-12">
+           <form onSubmit={handleSaveProfile} className="space-y-12">
+              <section className="clean-card p-10">
+                <div className="flex items-center gap-4 mb-10">
+                   <FiUser className="text-primary" />
+                   <h2 className="text-xl font-display font-black text-slate-900 tracking-tight uppercase tracking-widest text-[10px]">Registry Identity</h2>
+                </div>
+                
+                <div className="space-y-8">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Day</label>
-                    <select value={newDay} onChange={(e) => setNewDay(Number(e.target.value))} className="px-3 py-2 rounded-lg border border-gray-200 outline-none">
+                    <label className="section-label mb-3 block">Professional Abstract</label>
+                    <textarea
+                      required value={bio} onChange={(e) => setBio(e.target.value)}
+                      className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm min-h-[120px]"
+                      placeholder="Define your professional contribution and engineering focus..."
+                    />
+                  </div>
+                  <div>
+                    <label className="section-label mb-3 block">Technical Expertise (Delimited by Comma)</label>
+                    <input
+                      type="text" required value={expertiseTags} onChange={(e) => setExpertiseTags(e.target.value)}
+                      className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                      placeholder="e.g. Distributed Systems, Rust, Cloud Architecture"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <section className="clean-card p-10">
+                <div className="flex items-center gap-4 mb-10">
+                   <FiClock className="text-primary" />
+                   <h2 className="text-xl font-display font-black text-slate-900 tracking-tight uppercase tracking-widest text-[10px]">Temporal Availability</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                  <div className="md:col-span-1">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Day</label>
+                    <select value={newDay} onChange={(e) => setNewDay(Number(e.target.value))} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white outline-none text-xs font-bold uppercase tracking-widest">
                       {daysOfWeek.map((day, i) => <option key={i} value={i}>{day}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Start Time</label>
-                    <input type="time" value={newStartTime} onChange={(e) => setNewStartTime(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 outline-none" />
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Start</label>
+                    <input type="time" value={newStartTime} onChange={(e) => setNewStartTime(e.target.value)} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white outline-none text-xs" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">End Time</label>
-                    <input type="time" value={newEndTime} onChange={(e) => setNewEndTime(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 outline-none" />
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">End</label>
+                    <input type="time" value={newEndTime} onChange={(e) => setNewEndTime(e.target.value)} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white outline-none text-xs" />
                   </div>
-                  <button type="button" onClick={handleAddSlot} className="px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors flex items-center gap-2">
-                    <FiPlus /> Add
-                  </button>
+                  <div className="flex items-end">
+                    <button type="button" onClick={handleAddSlot} className="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2">
+                       <FiPlus /> Ingest Slot
+                    </button>
+                  </div>
                 </div>
 
-                {/* List Slots */}
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {slots.length === 0 ? (
-                    <p className="text-sm text-gray-500 italic">No slots added yet.</p>
+                    <div className="col-span-full py-10 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                       <p className="text-slate-300 text-[10px] font-bold uppercase tracking-widest">No availability protocols initialized.</p>
+                    </div>
                   ) : (
                     slots.map(slot => (
-                      <div key={slot.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white">
+                      <div key={slot.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white group hover:border-slate-900 transition-all">
                         <div className="flex items-center gap-4">
-                          <span className="font-semibold text-primary w-12">{daysOfWeek[slot.dayOfWeek]}</span>
-                          <span className="text-gray-600">{slot.startTime} - {slot.endTime}</span>
-                          {slot.isBooked && (
-                            <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
-                              Booked
-                            </span>
-                          )}
+                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-display font-black text-xs border transition-all ${slot.isBooked ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-slate-50 text-slate-900 border-slate-100 group-hover:bg-slate-900 group-hover:text-white'}`}>
+                              {daysOfWeek[slot.dayOfWeek].charAt(0)}
+                           </div>
+                           <div>
+                              <p className="text-xs font-bold text-slate-900">{daysOfWeek[slot.dayOfWeek]}</p>
+                              <p className="text-[10px] text-slate-400 font-medium">{slot.startTime} — {slot.endTime}</p>
+                           </div>
                         </div>
-                        {!slot.isBooked && (
-                          <button type="button" onClick={() => handleRemoveSlot(slot.id)} className="text-red-400 hover:text-red-600 text-sm font-medium">
-                            Remove
-                          </button>
-                        )}
+                        <div className="flex items-center gap-2">
+                           {slot.isBooked && <FiCheckCircle className="text-emerald-500" size={14} />}
+                           {!slot.isBooked && (
+                              <button type="button" onClick={() => handleRemoveSlot(slot.id)} className="p-2 rounded-lg text-slate-300 hover:bg-red-600 hover:text-white transition-all">
+                                 <FiX size={14} />
+                              </button>
+                           )}
+                        </div>
                       </div>
                     ))
                   )}
                 </div>
-              </div>
+              </section>
 
               <div className="pt-6">
-                <button type="submit" disabled={saving} className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary-light text-white font-semibold text-lg shadow-lg hover:shadow-primary/40 transition-all disabled:opacity-60">
-                  {saving ? 'Saving Profile...' : 'Save Profile & Availability'}
-                </button>
+                 <button type="submit" disabled={saving} className="btn-primary w-full py-4 text-sm shadow-xl shadow-primary/20 disabled:opacity-20">
+                    {saving ? 'Synchronizing Control Center...' : 'Commit Systemic Profile'}
+                 </button>
               </div>
-            </form>
-          </div>
+           </form>
         </div>
 
-        {/* Right Col: Manage Bookings */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-2xl shadow-lg border border-muted/20 p-6 sticky top-24">
-            <h2 className="text-xl font-bold text-primary-dark mb-6 flex items-center gap-2">
-              <FiCalendar className="text-primary-light" /> Mentorship Requests
-            </h2>
-
-            {bookings.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-gray-400">No booking requests yet.</p>
+        {/* Operational Requests */}
+        <div className="lg:col-span-4">
+           <div className="clean-card p-8 sticky top-24 border-slate-900/5 bg-slate-50/50 backdrop-blur-sm">
+              <div className="flex items-center gap-4 mb-10">
+                 <FiLayers className="text-primary" />
+                 <h2 className="text-xl font-display font-black text-slate-900 tracking-tight uppercase tracking-widest text-[10px]">Request Terminal</h2>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {bookings.map(booking => {
-                  const slot = slots.find(s => s.id === booking.slotId);
-                  const isUpcoming = new Date(booking.date) >= new Date(new Date().setHours(0, 0, 0, 0));
 
-                  return (
-                    <div key={booking.id} className="p-4 rounded-xl border border-gray-200 bg-bg-light">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="font-bold text-primary-dark">{booking.juniorName}</div>
-                        <span className={`text-xs px-2 py-1 rounded-full font-semibold capitalize ${booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                            booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                              'bg-gray-200 text-gray-700'
-                          }`}>
-                          {booking.status}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-600 mb-2">
-                        {new Date(booking.date).toLocaleDateString()}
-                        {slot ? ` • ${slot.startTime} - ${slot.endTime}` : ''}
-                      </div>
+              {bookings.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-2xl border border-slate-100">
+                   <FiInfo className="mx-auto text-slate-100 mb-4" size={32} />
+                   <p className="text-slate-300 text-[10px] font-bold uppercase tracking-widest">No active handshake requests.</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                   {bookings.map(booking => {
+                     const slot = slots.find(s => s.id === booking.slotId);
+                     const isUpcoming = new Date(booking.date) >= new Date(new Date().setHours(0, 0, 0, 0));
 
-                      {/* Actions */}
-                      {booking.status === 'pending' && isUpcoming && (
-                        <div className="flex gap-2 mt-3">
-                          <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'confirmed')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-dark disabled:opacity-50">
-                            {actionLoading === booking.id ? '...' : 'Accept'}
-                          </button>
-                          <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'cancelled')} disabled={actionLoading === booking.id} className="flex-1 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50 disabled:opacity-50">
-                            {actionLoading === booking.id ? '...' : 'Decline'}
-                          </button>
-                        </div>
-                      )}
+                     return (
+                       <div key={booking.id} className="p-6 rounded-2xl bg-white border border-slate-100 hover:border-primary transition-all shadow-sm">
+                         <div className="flex items-start justify-between mb-4">
+                            <div>
+                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">Inbound Request</p>
+                               <p className="font-bold text-slate-900 text-sm">{booking.juniorName}</p>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border ${
+                               booking.status === 'confirmed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                               booking.status === 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                               'bg-slate-100 text-slate-400 border-slate-200'
+                            }`}>
+                               {booking.status}
+                            </span>
+                         </div>
+                         <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-6">
+                           <FiCalendar size={12} className="text-primary" />
+                           {new Date(booking.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                           {slot ? ` • ${slot.startTime} - ${slot.endTime}` : ''}
+                         </div>
 
-                      {booking.status === 'confirmed' && (
-                        <div className="mt-3 p-3 bg-white rounded-lg border border-gray-100 text-sm">
-                          <p className="text-xs text-gray-500 mb-1 tracking-wider uppercase font-semibold">Contact Details</p>
-                          <p className="font-medium text-gray-800 break-all">{booking.juniorEmail}</p>
-                          <p className="font-medium text-gray-800">{booking.juniorPhone}</p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+                         {booking.status === 'pending' && isUpcoming && (
+                           <div className="flex gap-2">
+                             <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'confirmed')} disabled={actionLoading === booking.id} className="flex-1 py-2 rounded-lg bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all disabled:opacity-50">
+                               {actionLoading === booking.id ? '...' : 'Authorize'}
+                             </button>
+                             <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'cancelled')} disabled={actionLoading === booking.id} className="flex-1 py-2 rounded-lg border border-slate-100 text-slate-400 text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all disabled:opacity-50">
+                               {actionLoading === booking.id ? '...' : 'Declined'}
+                             </button>
+                           </div>
+                         )}
+
+                         {booking.status === 'confirmed' && (
+                           <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-[10px] space-y-2">
+                             <p className="font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">Coordinates</p>
+                             <p className="font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-100 break-all">{booking.juniorEmail}</p>
+                             <p className="font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-100">{booking.juniorPhone}</p>
+                           </div>
+                         )}
+                       </div>
+                     );
+                   })}
+                </div>
+              )}
+           </div>
         </div>
       </div>
     </div>

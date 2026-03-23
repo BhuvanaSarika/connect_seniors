@@ -8,7 +8,7 @@ import { db } from '@/lib/firebase';
 import 'react-quill-new/dist/quill.snow.css';
 import { ProjectIdea } from '@/types';
 import Link from 'next/link';
-import { FiArrowLeft, FiGithub, FiExternalLink, FiYoutube, FiMessageSquare, FiUser, FiCopy, FiCheck, FiCode } from 'react-icons/fi';
+import { FiArrowLeft, FiGithub, FiExternalLink, FiYoutube, FiMessageSquare, FiCopy, FiCheck, FiCode, FiUser, FiInfo } from 'react-icons/fi';
 
 export default function ProjectDetail() {
   const { appUser, loading } = useAuth();
@@ -56,150 +56,154 @@ export default function ProjectDetail() {
   }, [appUser, projectId]);
 
   if (loading || fetching) {
-    return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>;
-  }
-
-  if (!project) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <p className="text-gray-500 text-lg mb-4">Project not found</p>
-        <Link href="/projects" className="text-primary hover:underline font-semibold">Back to Projects</Link>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-slate-900 border-t-transparent rounded-full" />
       </div>
     );
   }
 
-  const categoryColors: Record<string, string> = {
-    beginner: 'bg-green-100 text-green-700',
-    intermediate: 'bg-blue-100 text-blue-700',
-    advanced: 'bg-purple-100 text-purple-700',
-    pro: 'bg-orange-100 text-orange-700',
-  };
+  if (!project) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-24 text-center">
+        <FiInfo className="mx-auto text-slate-100 mb-6" size={48} />
+        <p className="text-slate-400 font-bold uppercase tracking-widest mb-6">Asset not found in repository</p>
+        <Link href="/projects" className="btn-primary px-8">Return to Index</Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12 pb-24">
-      <Link href="/projects" className="group inline-flex items-center gap-2 text-gray-500 hover:text-primary transition-all mb-10 font-bold text-sm uppercase tracking-widest">
-        <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back to Library
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-slate-900">
+      <Link href="/projects" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-all mb-12">
+        <FiArrowLeft size={14} /> Back to Blueprint Index
       </Link>
 
-      <div className="bg-white rounded-[3rem] shadow-premium border border-gray-100 overflow-hidden">
-        {/* Header Section */}
-        <div className="relative p-8 md:p-16 border-b border-gray-50 overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
+      <div className="clean-card overflow-hidden shadow-2xl shadow-slate-200/50">
+        {/* Architectural Header */}
+        <div className="p-10 md:p-16 border-b border-slate-100 bg-slate-50/30">
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            <span className="px-3 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
+              {project.category} tier
+            </span>
+            <span className="px-3 py-1 bg-white text-slate-400 text-[9px] font-bold uppercase tracking-widest rounded-lg border border-slate-200">
+              Authored by {project.createdByName}
+            </span>
+          </div>
           
-          <div className="relative z-10">
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border shadow-sm ${categoryColors[project.category] || 'bg-gray-100 text-gray-700'}`}>
-                {project.category}
-              </span>
-              <span className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                <FiUser size={12} className="text-primary" /> Created by {project.createdByName}
-              </span>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-display font-extrabold text-gray-900 mb-6 leading-tight">
-              {project.title}
-            </h1>
+          <h1 className="text-4xl md:text-6xl font-display font-black text-slate-900 mb-10 leading-tight tracking-tight max-w-4xl">
+            {project.title}
+          </h1>
 
-            <div className="flex gap-4">
-               {project.githubUrl && (
-                 <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-900 text-white font-bold text-sm hover:bg-gray-800 transition-all shadow-lg shadow-black/10">
-                   <FiGithub /> Source Code
-                 </a>
-               )}
-               {project.referenceUrl && (
-                 <a href={project.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-gray-200 text-gray-900 font-bold text-sm hover:bg-gray-50 transition-all">
-                   <FiExternalLink /> Live Preview
-                 </a>
-               )}
-            </div>
+          <div className="flex flex-wrap gap-4">
+             {project.githubUrl && (
+               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-primary flex items-center gap-3 px-8 shadow-lg shadow-primary/20">
+                 <FiGithub size={18} /> <span>Source Terminal</span>
+               </a>
+             )}
+             {project.referenceUrl && (
+               <a href={project.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-8 bg-white border border-slate-200 text-slate-900 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all">
+                 <FiExternalLink size={18} /> <span>Live Instance</span>
+               </a>
+             )}
           </div>
         </div>
 
-        {/* Content Section */}
-        <div className="p-8 md:p-16 space-y-16">
-          {/* Technical Brief */}
+        {/* System Details */}
+        <div className="p-10 md:p-16 space-y-20">
+          {/* Technical Protocol */}
           <section>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <FiCode size={20} />
-              </div>
-              <h2 className="text-2xl font-display font-bold text-gray-900">Technical Brief</h2>
+            <div className="flex items-center gap-4 mb-10">
+               <div className="w-10 h-1 bg-slate-900 rounded-full" />
+               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Technical Protocol</p>
             </div>
             <div 
-              className="prose prose-lg max-w-none text-gray-600 leading-relaxed ql-editor !p-0"
+              className="prose prose-slate max-w-none text-slate-600 leading-relaxed font-medium ql-editor !p-0"
               dangerouslySetInnerHTML={{ __html: project.description }}
             />
           </section>
 
-          {/* AI Prompt Strategy */}
+          {/* AI Synthesis Prompt */}
           {project.aiPrompt && (
-            <section className="relative">
-              <div className="absolute inset-0 bg-primary/5 rounded-[2.5rem] -m-6 -z-10 border border-primary/10" />
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
-                    <FiMessageSquare size={20} />
+            <section className="bg-slate-900 rounded-2xl p-10 md:p-14 relative overflow-hidden border border-slate-800">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-10 border-b border-white/5 pb-6">
+                  <div className="flex items-center gap-4">
+                    <FiMessageSquare className="text-primary" size={24} />
+                    <h2 className="text-xl font-display font-bold text-white tracking-tight">AI Synthesis Prompt</h2>
                   </div>
-                  <h2 className="text-2xl font-display font-bold text-gray-900">AI Collaboration Strategy</h2>
+                  <button
+                    onClick={handleCopy}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10"
+                  >
+                     {copied ? <FiCheck className="text-emerald-400" size={14} /> : <FiCopy size={14} />} 
+                     <span>{copied ? 'Copied' : 'Copy Protocol'}</span>
+                  </button>
                 </div>
-                <button
-                  onClick={handleCopy}
-                  title="Copy to clipboard"
-                >
-                   {copied ? <FiCheck size={14} /> : <FiCopy size={14} />} {copied ? 'Copied!' : 'Copy'}
-                </button>
                 <div 
-                  className="mt-8 prose prose-sm md:prose-base prose-primary max-w-none break-words overflow-hidden"
+                  className="prose prose-invert prose-sm max-w-none text-slate-400 leading-relaxed font-mono"
                   dangerouslySetInnerHTML={{ __html: project.aiPrompt }}
                 />
+                <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest mt-10 text-center">
+                   Copy this architectural handshake into your local AI environment (GPT-4 / Claude-3) to initialize the boilerplate.
+                </p>
               </div>
-              <p className="text-xs text-gray-500 mt-2 ml-1">Copy and paste this prompt into ChatGPT or Claude to get a starting template.</p>
             </section>
           )}
 
-          {/* Links */}
+          {/* Global Resources */}
           <section>
-             <h2 className="text-xl font-bold text-primary-dark mb-4 border-b border-gray-100 pb-2">Resources & References</h2>
-             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-               {project.referenceUrl && (
-                  <a href={project.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-primary hover:shadow-md transition-all group">
-                    <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
-                      <FiExternalLink size={20} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-800 text-sm">Reference Link</p>
-                      <p className="text-xs text-gray-500 truncate w-32">External Website</p>
-                    </div>
-                  </a>
-               )}
-               {project.githubUrl && (
-                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-gray-900 hover:shadow-md transition-all group">
-                    <div className="w-10 h-10 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
-                      <FiGithub size={20} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-800 text-sm">GitHub Repo</p>
-                      <p className="text-xs text-gray-500 truncate w-32">Source Code</p>
-                    </div>
-                  </a>
-               )}
-               {project.youtubeUrl && (
-                  <a href={project.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-md transition-all group">
-                    <div className="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors">
-                      <FiYoutube size={20} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-800 text-sm">YouTube Video</p>
-                      <p className="text-xs text-gray-500 truncate w-32">Tutorial</p>
-                    </div>
-                  </a>
+             <p className="section-label mb-8">External Resource Registry</p>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+               {(project.referenceUrl || project.githubUrl || project.youtubeUrl) ? (
+                 <>
+                   {project.referenceUrl && (
+                      <a href={project.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-100 hover:border-primary hover:bg-primary/[0.02] transition-all group">
+                        <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                          <FiExternalLink size={20} />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm mb-1 leading-none">System Docs</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">External Module</p>
+                        </div>
+                      </a>
+                   )}
+                   {project.githubUrl && (
+                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-100 hover:border-slate-900 transition-all group">
+                        <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                          <FiGithub size={20} />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm mb-1 leading-none">Source Index</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">GitHub Repository</p>
+                        </div>
+                      </a>
+                   )}
+                   {project.youtubeUrl && (
+                      <a href={project.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-100 hover:border-red-600 transition-all group">
+                        <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-all">
+                          <FiYoutube size={20} />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm mb-1 leading-none">Video Seminar</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">YouTube Protocol</p>
+                        </div>
+                      </a>
+                   )}
+                 </>
+               ) : (
+                 <p className="text-slate-400 text-xs font-medium italic">No auxiliary resources indexed for this blueprint.</p>
                )}
              </div>
-             {!project.referenceUrl && !project.githubUrl && !project.youtubeUrl && (
-               <p className="text-gray-500 italic">No external resources provided for this project.</p>
-             )}
           </section>
         </div>
+      </div>
+
+      {/* Footer Navigation */}
+      <div className="mt-12 pt-12 border-t border-slate-100 flex justify-between items-center opacity-50">
+         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Blueprint ID: {project.id}</p>
+         <Link href="/projects" className="text-[10px] font-black uppercase text-slate-900 hover:underline">Return to index</Link>
       </div>
     </div>
   );

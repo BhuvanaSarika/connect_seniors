@@ -2,71 +2,89 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { FiMap, FiCode, FiUsers, FiFileText, FiBookOpen, FiAward } from 'react-icons/fi';
+import { FiMap, FiCode, FiUsers, FiFileText, FiBookOpen, FiAward, FiCheckCircle, FiArrowRight } from 'react-icons/fi';
 
 const features = [
-  { icon: FiMap, title: 'Custom Roadmaps', desc: 'Seniors create interactive learning paths with branching nodes — tailored guidance, not generic advice.', color: 'from-primary to-primary-light' },
-  { icon: FiCode, title: 'Project Ideas', desc: 'Curated projects by difficulty with AI prompts, GitHub repos, and YouTube tutorials.', color: 'from-accent to-yellow-400' },
-  { icon: FiUsers, title: '1:1 Mentorship', desc: 'Book time slots with approved seniors for personalized guidance sessions.', color: 'from-primary-dark to-primary' },
-  { icon: FiFileText, title: 'Resume Reviews', desc: 'Upload your resume and get validated by experienced seniors with detailed feedback.', color: 'from-green-500 to-emerald-400' },
-  { icon: FiBookOpen, title: 'Courses', desc: "Hand-picked YouTube courses recommended by seniors who've been through the journey.", color: 'from-purple-500 to-violet-400' },
-  { icon: FiAward, title: 'Certifications', desc: 'Curated certification links to boost your resume and validate your skills.', color: 'from-rose-500 to-pink-400' },
+  { 
+    icon: FiMap, 
+    title: 'Precision Roadmaps', 
+    desc: 'Bespoke learning paths designed by industry-active seniors. No generic curriculum—only direct technical vectors.',
+    link: '/roadmaps' 
+  },
+  { 
+    icon: FiUsers, 
+    title: 'Senior Mentorship', 
+    desc: 'Direct 1:1 access to vetted senior developers for technical deep-dives and career architecture.',
+    link: '/mentorship' 
+  },
+  { 
+    icon: FiFileText, 
+    title: 'Resume Engineering', 
+    desc: 'Get your resume validated by the people who hire. Actionable feedback to clear high-tier technical screenings.',
+    link: '/resume' 
+  },
+  { 
+    icon: FiCode, 
+    title: 'Project Blueprints', 
+    desc: 'Curated technical challenges with AI prompts and reference implementations to build a standout portfolio.',
+    link: '/projects' 
+  },
+];
+
+const stats = [
+  { label: 'Verified Seniors', value: '150+' },
+  { label: 'Juniors Placed', value: '1,200+' },
+  { label: 'Technical Roadmaps', value: '450+' },
+  { label: 'Resume Reviews', value: '3,500+' },
 ];
 
 export default function HomePage() {
   const { appUser } = useAuth();
 
   return (
-    <div className="min-h-screen pt-20">
-      {/* Hero */}
-      <section className="relative px-4 pt-16 pb-24 sm:pt-24 sm:pb-32 overflow-hidden">
-        {/* Subtle Background Elements */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-accent/5 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 mb-8 animate-fade-in">
-             <span className="relative flex h-2 w-2">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-             </span>
-             <span className="text-xs font-bold tracking-wider text-primary uppercase">The Hub for Growth</span>
+    <div className="min-h-screen bg-white">
+      {/* Refined Hero Section */}
+      <section className="relative pt-32 pb-24 md:pt-48 md:pb-40 border-b border-slate-100 overflow-hidden">
+        {/* Subtle Architectural Grid */}
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-200 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+             <FiCheckCircle className="text-primary" size={14} />
+             <span className="text-[10px] font-bold tracking-[0.2em] text-slate-600 uppercase">Authorized Educational Portal</span>
           </div>
           
-          <h1 className="text-5xl sm:text-7xl font-display font-extrabold tracking-tight text-gray-900 mb-8 leading-[1.1]">
-            Empowering the <br />
-            <span className="text-gradient">Next Generation</span>
+          <h1 className="text-5xl md:text-7xl font-display font-black text-slate-900 mb-8 leading-[1.05] tracking-tight max-w-4xl mx-auto">
+            The Bridge Between <br />
+            <span className="text-primary italic">Ambition</span> and <span className="text-slate-900/40">Expertise.</span>
           </h1>
           
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
-            ConnectSeniors is the elite bridge for students. Access custom roadmaps, 
-            personalized mentorship, and industry-standard resume validations.
+          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
+            ConnectSeniors is a professional ecosystem designed to accelerate the transition from junior developer to industry engineer through direct senior-led guidance.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             {appUser ? (
               <Link
                 href="/dashboard"
-                className="group relative inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark transition-all duration-300"
+                className="btn-primary flex items-center gap-2 group text-lg px-8 py-4"
               >
-                Go to Dashboard
-                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Enter Control Center
+                <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Link>
             ) : (
               <>
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center px-10 py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark hover:scale-[1.02] transition-all"
+                  className="btn-primary text-lg px-10 py-4 shadow-lg shadow-primary/20"
                 >
-                  Start Your Journey
+                  Apply to Platform
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center px-10 py-4 rounded-2xl border border-gray-200 bg-white text-gray-900 font-bold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
+                  className="btn-secondary text-lg px-10 py-4"
                 >
-                  Sign In
+                  Member Sign In
                 </Link>
               </>
             )}
@@ -74,81 +92,125 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Bento Grid Features */}
-      <section className="max-w-7xl mx-auto px-4 py-24 border-t border-gray-100">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-display font-bold text-gray-900 mb-4 tracking-tight">Focus on what matters</h2>
-          <p className="text-gray-500 max-w-lg mx-auto">High-performance tools meticulously designed for student success and senior contribution.</p>
+      {/* Stats Bar - For Credibility */}
+      <section className="bg-slate-50 border-b border-slate-100 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
+              {stats.map((stat, i) => (
+                <div key={i} className="text-center md:border-r last:border-0 border-slate-200 px-4">
+                   <p className="text-3xl font-display font-black text-slate-900 mb-1">{stat.value}</p>
+                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                </div>
+              ))}
+           </div>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 grid-rows-2 gap-4 h-full md:h-[600px]">
-          {/* Main Feature - Roadmaps */}
-          <div className="md:col-span-3 md:row-span-2 group relative overflow-hidden bg-white rounded-3xl p-8 border border-gray-100 shadow-premium hover:shadow-float transition-all duration-500">
-            <div className="relative z-10 h-full flex flex-col">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <FiMap size={24} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4 font-display">Custom Roadmaps</h3>
-              <p className="text-gray-600 leading-relaxed mb-auto">
-                Move beyond generic guides. Our seniors build branching, node-based learning paths tailored specifically for your academic and career goals.
-              </p>
-              <div className="mt-8 pt-8 border-t border-gray-50">
-                <div className="flex -space-x-2">
-                   {[1,2,3,4].map(i => (
-                     <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200" />
-                   ))}
-                   <div className="pl-4 text-xs font-bold text-gray-400 self-center">+ 500+ Juniors growing</div>
-                </div>
-              </div>
-            </div>
+      {/* Structured Feature Grid */}
+      <section className="py-24 md:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mb-20">
+            <p className="section-label">Core Capabilities</p>
+            <h2 className="text-3xl md:text-4xl font-display font-black text-slate-900 mb-6 leading-tight">
+              Tools Meticulously Architected for Professional Growth.
+            </h2>
+            <p className="text-slate-500 font-medium leading-relaxed">
+              We focus on the metrics that matter: quality of guidance, depth of curriculum, and accuracy of technical validation.
+            </p>
           </div>
 
-          {/* Mentorship */}
-          <div className="md:col-span-3 group relative overflow-hidden bg-[#1e293b] rounded-3xl p-8 shadow-premium hover:shadow-float transition-all duration-500 text-white">
-            <div className="relative z-10 flex flex-col h-full">
-              <div className="w-12 h-12 rounded-2xl bg-white/10 text-white flex items-center justify-center mb-6">
-                <FiUsers size={24} />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2 font-display">1:1 Elite Mentorship</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">Book deep-dive sessions with approved seniors. Real-time guidance on your specific blockers.</p>
-              </div>
-            </div>
-            {/* Abstract Graphic */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-20 blur-3xl rounded-full" />
-          </div>
-
-          {/* Projects */}
-          <div className="md:col-span-3 flex gap-4">
-            <div className="flex-1 group bg-white rounded-3xl p-6 border border-gray-100 shadow-premium hover:shadow-float transition-all duration-500">
-                <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-4">
-                  <FiCode size={20} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, i) => (
+              <div key={i} className="clean-card p-8 group hover:border-primary/30 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                  <feature.icon size={24} />
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2">Projects</h3>
-                <p className="text-gray-500 text-xs">AI-powered prompts & resources.</p>
-            </div>
-            <div className="flex-1 group bg-white rounded-3xl p-6 border border-gray-100 shadow-premium hover:shadow-float transition-all duration-500">
-                <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-4">
-                  <FiFileText size={20} />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">Resumes</h3>
-                <p className="text-gray-500 text-xs">Industry-standard validations.</p>
-            </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-3">{feature.title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed font-medium mb-8">
+                  {feature.desc}
+                </p>
+                <Link href={feature.link} className="inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
+                  Learn more <FiArrowRight />
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
+      {/* Senior Outreach Section */}
+      <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full -mr-48 -mt-48 blur-3xl" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+           <div className="grid md:grid-cols-2 items-center gap-16">
+              <div>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary mb-4">Are you a Senior?</p>
+                 <h2 className="text-4xl md:text-5xl font-display font-black mb-8 leading-tight">
+                    Shape the Next Cohort <br />
+                    of Engineers.
+                 </h2>
+                 <p className="text-slate-400 text-lg mb-10 leading-relaxed">
+                    Join a vetted community of senior developers giving back to the community. Validate resumes, mentor high-potential juniors, and curate industry-grade roadmaps.
+                 </p>
+                 <Link href="/register" className="btn-primary bg-white text-slate-900 hover:bg-slate-100 px-8 py-3.5 inline-block text-center min-w-[200px]">
+                    Join as a Senior
+                 </Link>
+              </div>
+              <div className="relative">
+                 <div className="clean-card bg-white/5 border-white/10 p-8 md:p-12 rotate-3 transform translate-x-4 md:translate-x-12 scale-105">
+                    <div className="flex items-center gap-4 mb-8">
+                       <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">JD</div>
+                       <div>
+                          <p className="font-bold text-lg">Senior Feedback</p>
+                          <p className="text-xs text-slate-400">Validated 2h ago</p>
+                       </div>
+                    </div>
+                    <p className="text-slate-300 italic mb-8 leading-relaxed font-medium">
+                       "The depth of the technical roadmap we built here is exactly what high-tier companies look for. Seeing juniors clear screenings based on our feedback is truly rewarding."
+                    </p>
+                    <div className="flex gap-1">
+                       {[1,2,3,4,5].map(s => <FiCheckCircle key={s} size={14} className="text-primary" />)}
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-16">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="font-display font-bold text-2xl tracking-tight text-gray-900">
-            <span className="text-primary">Connect</span>Seniors
+      <footer className="bg-white border-t border-slate-100 py-20 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-12 mb-20">
+             <div className="col-span-2">
+                <div className="font-display font-black text-2xl tracking-tighter text-slate-900 mb-6">
+                  Connect<span className="text-primary">Seniors</span>
+                </div>
+                <p className="text-slate-500 max-w-sm leading-relaxed font-medium">
+                  The professional gateway for engineering mentorship and career acceleration. Powered by the community, for the community.
+                </p>
+             </div>
+             <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-6">Explore</p>
+                <ul className="space-y-4">
+                   {['Roadmaps', 'Mentorship', 'Resume Validation', 'Community'].map(item => (
+                     <li key={item}><Link href="#" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors">{item}</Link></li>
+                   ))}
+                </ul>
+             </div>
+             <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-6">Resources</p>
+                <ul className="space-y-4">
+                   {['Documentation', 'Support Center', 'Privacy Policy', 'Terms of Use'].map(item => (
+                     <li key={item}><Link href="#" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors">{item}</Link></li>
+                   ))}
+                </ul>
+             </div>
           </div>
-          <p className="text-gray-400 text-sm">© 2026 ConnectSeniors Platform. Meticulously crafted for developers.</p>
-          <div className="flex gap-6 text-gray-400 text-sm font-semibold">
-            <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-            <a href="#" className="hover:text-primary transition-colors">Terms</a>
-            <a href="#" className="hover:text-primary transition-colors">Support</a>
+          <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+             <p className="text-xs text-slate-400 font-medium">© 2026 ConnectSeniors. All educational assets protected.</p>
+             <div className="flex gap-6">
+                {/* Social icons could go here */}
+             </div>
           </div>
         </div>
       </footer>

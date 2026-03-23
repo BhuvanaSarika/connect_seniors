@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { MentorProfile } from '@/types';
-import { FiCheckCircle, FiXCircle, FiTrash2 } from 'react-icons/fi';
+import { FiCheckCircle, FiMinusCircle, FiTrash2, FiInfo, FiShield, FiUserCheck } from 'react-icons/fi';
 
 export default function AdminMentorsPage() {
   const [mentors, setMentors] = useState<MentorProfile[]>([]);
@@ -27,54 +27,73 @@ export default function AdminMentorsPage() {
       setMentors(mentors.map(m => m.uid === uid ? { ...m, isApproved: !currentStatus } : m));
     } catch (err) {
       console.error(err);
-      alert('Failed to update status');
+      alert('Operational failure: could not update governance status.');
     }
   };
 
   const handleDeleteProfile = async (uid: string) => {
-    if (!confirm('Are you sure you want to delete this mentor profile? (The user account remains)')) return;
+    if (!confirm('Operational security: confirm permanent deletion of this mentor profile?')) return;
     try {
       await deleteDoc(doc(db, 'mentorProfiles', uid));
       setMentors(mentors.filter(m => m.uid !== uid));
     } catch (err) {
       console.error(err);
-      alert('Failed to delete profile');
+      alert('Operational failure: could not purge technical asset.');
     }
   };
 
-  if (fetching) return <div className="animate-spin w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full mx-auto mt-20" />;
+  if (fetching) return (
+    <div className="flex justify-center py-24">
+      <div className="animate-spin w-8 h-8 border-4 border-slate-900 border-t-transparent rounded-full" />
+    </div>
+  );
 
   const pending = mentors.filter(m => !m.isApproved);
   const approved = mentors.filter(m => m.isApproved);
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Mentor Approvals</h1>
-        <p className="text-gray-500 text-sm mt-1">Review and approve senior mentor profiles before they appear on the public mentorship directory.</p>
+    <div className="text-slate-900">
+      <div className="mb-12">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Platform Governance</p>
+        <h1 className="text-3xl font-display font-black text-slate-900 tracking-tight mb-2">Mentor Authorizations</h1>
+        <p className="text-slate-500 font-medium text-sm max-w-2xl">
+           Verify technical expertise and academic credentials for senior mentorship applicants. Approved profiles are indexed into the public expert network.
+        </p>
       </div>
 
       {pending.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Pending Approvals ({pending.length})</h2>
-          <div className="space-y-4">
+        <div className="mb-16">
+          <div className="flex items-center gap-4 mb-8">
+             <div className="w-10 h-1 bg-primary rounded-full" />
+             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Review Queue ({pending.length})</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-6">
             {pending.map(mentor => (
-              <div key={mentor.uid} className="bg-yellow-50/50 rounded-xl shadow-sm border border-yellow-200 p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-                <div>
-                  <h3 className="font-bold text-gray-900">{mentor.displayName} <span className="text-sm font-normal text-gray-500">({mentor.rollNumber})</span></h3>
-                  <p className="text-sm text-gray-700 mt-2">{mentor.bio}</p>
-                  <div className="flex gap-2 mt-3">
+              <div key={mentor.uid} className="clean-card p-8 flex flex-col md:flex-row gap-8 justify-between items-start md:items-center border-primary/20 bg-primary/[0.02]">
+                <div className="flex-1">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-display font-black text-xl">
+                      {mentor.displayName.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-lg leading-none mb-1">{mentor.displayName}</h3>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Roll Number: {mentor.rollNumber}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-3xl mb-6">{mentor.bio}</p>
+                  <div className="flex flex-wrap gap-2">
                     {mentor.expertise.map((exp, i) => (
-                      <span key={i} className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded font-medium">{exp}</span>
+                      <span key={i} className="px-2.5 py-1 bg-white text-slate-900 text-[9px] font-bold uppercase tracking-widest rounded border border-slate-200">{exp}</span>
                     ))}
                   </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
-                  <button onClick={() => handleToggleApproval(mentor.uid, mentor.isApproved)} className="flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700">
-                    <FiCheckCircle /> Approve
+                <div className="flex gap-3 shrink-0">
+                  <button onClick={() => handleToggleApproval(mentor.uid, mentor.isApproved)} className="btn-primary px-8 py-3 text-[10px] shadow-xl shadow-primary/20">
+                    <FiCheckCircle className="mr-2" /> Authorize Access
                   </button>
-                  <button onClick={() => handleDeleteProfile(mentor.uid)} className="flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50">
-                    <FiTrash2 /> Reject
+                  <button onClick={() => handleDeleteProfile(mentor.uid)} className="p-3 rounded-xl bg-white text-slate-400 hover:bg-red-600 hover:text-white transition-all border border-slate-100 shadow-sm">
+                    <FiTrash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -84,26 +103,35 @@ export default function AdminMentorsPage() {
       )}
 
       <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Approved Mentors ({approved.length})</h2>
+        <div className="flex items-center gap-4 mb-8">
+           <div className="w-10 h-1 bg-slate-200 rounded-full" />
+           <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Active Directory ({approved.length})</h2>
+        </div>
+
         {approved.length === 0 ? (
-          <p className="text-gray-500 text-sm">No approved mentors yet.</p>
+          <div className="clean-card py-20 text-center border-slate-100 bg-slate-50/10">
+             <FiShield className="mx-auto text-slate-100 mb-6" size={48} />
+             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">No mentors have been authorized for the global network yet.</p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {approved.map(mentor => (
-              <div key={mentor.uid} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-                 <div>
-                  <h3 className="font-bold text-gray-900">{mentor.displayName} <span className="text-sm font-normal text-gray-500">({mentor.rollNumber})</span></h3>
-                  <div className="flex gap-2 mt-2">
-                    {mentor.expertise.map((exp, i) => (
-                      <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-medium">{exp}</span>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <button onClick={() => handleToggleApproval(mentor.uid, mentor.isApproved)} className="flex items-center gap-1.5 px-4 py-2 justify-center border border-yellow-500 text-yellow-600 rounded-lg text-sm font-semibold hover:bg-yellow-50">
-                    <FiXCircle /> Revoke Access
-                  </button>
-                </div>
+              <div key={mentor.uid} className="clean-card p-6 flex items-center justify-between group hover:border-slate-900 transition-all">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-900 flex items-center justify-center font-display font-black text-lg border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                      {mentor.displayName.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm">{mentor.displayName}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                         <FiUserCheck className="text-emerald-500" size={10} />
+                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">System Authorized</span>
+                      </div>
+                    </div>
+                 </div>
+                 <button onClick={() => handleToggleApproval(mentor.uid, mentor.isApproved)} className="p-2.5 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100">
+                    <FiMinusCircle size={14} />
+                 </button>
               </div>
             ))}
           </div>

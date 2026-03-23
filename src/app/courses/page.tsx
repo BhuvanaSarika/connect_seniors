@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { RecommendedCourse, Certification } from '@/types';
-import { FiYoutube, FiAward, FiPlus, FiTrash2, FiExternalLink, FiX, FiUser } from 'react-icons/fi';
+import { FiYoutube, FiAward, FiPlus, FiTrash2, FiExternalLink, FiX, FiUser, FiBookOpen, FiShield } from 'react-icons/fi';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
@@ -72,12 +72,12 @@ export default function CoursesPage() {
       }
       setShowForm(false);
       setTitle(''); setDescription(''); setUrl(''); setProvider('');
-    } catch (err) { alert('Failed to add resource'); }
+    } catch (err) { alert('Operational failure: could not provision technical resource.'); }
     setCreating(false);
   };
 
   const handleDelete = async (id: string, collectionName: 'courses' | 'certifications') => {
-    if (!confirm('Delete this item?')) return;
+    if (!confirm('Operational security: confirm deletion of this technical resource?')) return;
     await deleteDoc(doc(db, collectionName, id));
     if (collectionName === 'courses') setCourses(curr => curr.filter(c => c.id !== id));
     else setCerts(curr => curr.filter(c => c.id !== id));
@@ -89,121 +89,125 @@ export default function CoursesPage() {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  if (loading || !appUser) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>;
+  if (loading || !appUser) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin w-8 h-8 border-4 border-slate-900 border-t-transparent rounded-full" />
+    </div>
+  );
 
   const isSenior = appUser.role === 'senior' || appUser.role === 'admin';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-8 h-1 bg-primary rounded-full" />
-            <span className="text-xs font-bold uppercase tracking-widest text-primary-light">Knowledge Base</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-gray-900 leading-tight">
-            Learning <span className="text-gradient">Resources</span>
-          </h1>
-          <p className="text-gray-500 mt-2 max-w-lg">
-            Curated courses and industry-standard certifications to accelerate your professional growth.
-          </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-slate-900">
+      {/* Module Header */}
+      <div className="mb-16">
+        <div className="inline-flex items-center gap-2 mb-6">
+           <span className="w-10 h-1 bg-primary rounded-full" />
+           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Knowledge Base</p>
         </div>
-        {isSenior && (
-           <button
-             onClick={() => setShowForm(true)}
-             className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold shadow-float hover:bg-primary-dark transition-all hover:scale-[1.02] active:scale-95"
-           >
-             <FiPlus size={20} /> Add Resource
-           </button>
-        )}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-display font-black text-slate-900 leading-tight mb-4 tracking-tight">
+              Curated <span className="text-slate-900/40 italic">Curriculum.</span>
+            </h1>
+            <p className="text-slate-500 font-medium leading-relaxed">
+               Industry-standard technical resources and recognized certification paths. Meticulously vetted by seniors to ensure alignment with professional engineering standards.
+            </p>
+          </div>
+          {isSenior && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="btn-primary flex items-center gap-3 px-8 shadow-xl shadow-primary/20"
+            >
+              <FiPlus size={18} /> <span>Provision Resource</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Modern Tab Switcher */}
-      <div className="flex items-center gap-1 bg-gray-100/50 p-1.5 rounded-[1.25rem] w-fit mb-12 border border-gray-100">
+      <div className="flex items-center gap-8 mb-16 border-b border-slate-100 pb-px">
         <button
           onClick={() => setTab('courses')}
-          className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${
-            tab === 'courses'
-              ? 'bg-white text-primary shadow-premium scale-100'
-              : 'text-gray-500 hover:text-gray-900'
+          className={`pb-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative ${
+            tab === 'courses' ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
-          <div className="flex items-center gap-2">
-            <FiYoutube className={tab === 'courses' ? 'text-red-500' : ''} /> Recommended Courses
-          </div>
+          Technical Courses
+          {tab === 'courses' && <div className="absolute bottom-0 inset-x-0 h-1 bg-primary rounded-full" />}
         </button>
         <button
           onClick={() => setTab('certs')}
-          className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${
-            tab === 'certs'
-              ? 'bg-white text-primary shadow-premium scale-100'
-              : 'text-gray-500 hover:text-gray-900'
+          className={`pb-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative ${
+            tab === 'certs' ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
-          <div className="flex items-center gap-2">
-            <FiAward className={tab === 'certs' ? 'text-orange-500' : ''} /> Key Certifications
-          </div>
+          Industry Certifications
+          {tab === 'certs' && <div className="absolute bottom-0 inset-x-0 h-1 bg-primary rounded-full" />}
         </button>
       </div>
 
       {/* Creation Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all p-8 md:p-12 relative">
-            <button onClick={() => setShowForm(false)} className="absolute top-8 right-8 p-2 rounded-xl hover:bg-gray-100 text-gray-400">
-              <FiX size={24} />
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-white/10">
+            <button onClick={() => setShowForm(false)} className="absolute top-8 right-8 p-3 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+              <FiX size={20} />
             </button>
-            <div className="mb-8">
-               <h3 className="text-3xl font-display font-bold text-gray-900">
-                 {tab === 'courses' ? 'Recommend a Course' : 'Add Certification'}
+            <div className="mb-12">
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Protocol: provisioning</p>
+               <h3 className="text-3xl font-display font-black text-slate-900 mb-2">
+                 {tab === 'courses' ? 'Authorize Course' : 'Add Certification'}
                </h3>
-               <p className="text-gray-500 mt-2">Share valuable learning materials with the community.</p>
+               <p className="text-slate-500 font-medium">Injecting high-fidelity technical resources into the global knowledge base.</p>
             </div>
             
-            <form onSubmit={handleCreate} className="space-y-6">
+            <form onSubmit={handleCreate} className="space-y-8">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Title</label>
+                <label className="section-label mb-3 block">System Title</label>
                 <input
                   type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-medium"
-                  placeholder={tab === 'courses' ? "e.g. Clean Code JavaScript" : "e.g. AWS Solutions Architect"}
+                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                  placeholder={tab === 'courses' ? "e.g. Advanced System Design" : "e.g. Google Cloud Professional Architect"}
                 />
               </div>
 
               {tab === 'certs' && (
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Provider</label>
+                  <label className="section-label mb-3 block">Issuing Authority</label>
                   <input
                     type="text" required value={provider} onChange={(e) => setProvider(e.target.value)}
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary outline-none"
+                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
                     placeholder="e.g. Amazon Web Services"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Why this resource?</label>
-                <div className="bg-white rounded-2xl overflow-hidden border border-gray-200">
-                  <ReactQuill theme="snow" value={description} onChange={setDescription} style={{ height: '150px', marginBottom: '40px' }} />
+                <label className="section-label mb-3 block">Technical Rationale</label>
+                <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                  <ReactQuill theme="snow" value={description} onChange={setDescription} />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
-                  {tab === 'courses' ? 'YouTube URL' : 'Certification URL'}
+                <label className="section-label mb-3 block">
+                  {tab === 'courses' ? 'Source Video URL' : 'Certification Terminal URL'}
                 </label>
                 <input
                   type="url" required value={url} onChange={(e) => setUrl(e.target.value)}
-                  className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary outline-none"
+                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
                 />
               </div>
 
-              <button
-                type="submit" disabled={creating}
-                className="w-full py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-float hover:bg-primary-dark transition-all disabled:opacity-60"
-              >
-                {creating ? 'Processing...' : 'Add Resource'}
-              </button>
+              <div className="pt-6">
+                <button
+                  type="submit" disabled={creating}
+                  className="btn-primary w-full py-4 text-sm disabled:opacity-20 shadow-xl shadow-primary/20"
+                >
+                  {creating ? 'Syncing Resource...' : 'Provision Resource'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -211,51 +215,56 @@ export default function CoursesPage() {
 
       {/* Content Grid */}
       {fetching ? (
-        <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" /></div>
+        <div className="flex justify-center py-24"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>
       ) : tab === 'courses' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {courses.length === 0 ? (
-             <div className="col-span-full text-center py-24 bg-white rounded-[3rem] border border-gray-100 shadow-premium">
-                <FiYoutube className="mx-auto text-gray-100 mb-6" size={64} />
-                <p className="text-gray-400 text-xl font-medium">No courses recommended yet</p>
+             <div className="col-span-full clean-card py-32 text-center border-slate-100 bg-slate-50/10">
+                <FiYoutube className="mx-auto text-slate-100 mb-6" size={48} />
+                <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">No technical courses have been provisioned.</p>
              </div>
            ) : (
              courses.map((course) => {
                const vId = extractYoutubeId(course.youtubeUrl);
                return (
-                 <div key={course.id} className="group relative bg-white rounded-[2.5rem] p-5 shadow-premium hover:shadow-float border border-gray-100 transition-all duration-500 hover:-translate-y-2 flex flex-col">
-                   <div className="relative aspect-video rounded-3xl bg-gray-900 flex items-center justify-center overflow-hidden mb-6">
+                 <div key={course.id} className="clean-card p-6 group flex flex-col hover:border-primary/30 transition-all duration-300">
+                   <div className="relative aspect-video rounded-xl bg-slate-900 flex items-center justify-center overflow-hidden mb-6 border border-slate-800">
                       {vId ? (
-                        <img src={`https://img.youtube.com/vi/${vId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" />
+                        <img src={`https://img.youtube.com/vi/${vId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover opacity-40 group-hover:opacity-20 transition-opacity" />
                       ) : (
-                        <FiYoutube size={48} className="text-white/20" />
+                        <FiYoutube size={40} className="text-slate-800" />
                       )}
                       <div className="absolute inset-0 flex items-center justify-center">
-                         <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform">
+                         <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white shadow-xl group-hover:bg-primary group-hover:scale-110 transition-all">
                             <div className="ml-1 w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-white border-b-[6px] border-b-transparent" />
                          </div>
                       </div>
                    </div>
                    
-                   <div className="px-3 pb-2 flex flex-col flex-1">
-                      <h3 className="text-xl font-display font-bold text-gray-900 mb-2 truncate group-hover:text-primary transition-colors">{course.title}</h3>
-                      <div className="text-sm text-gray-500 line-clamp-2 mb-8 h-10 overflow-hidden" dangerouslySetInnerHTML={{ __html: course.description || '' }} />
+                   <div className="flex flex-col flex-1">
+                      <h3 className="text-lg font-bold text-slate-900 mb-2 font-display group-hover:text-primary transition-colors truncate">{course.title}</h3>
+                      <div className="text-sm text-slate-500 font-medium line-clamp-2 mb-8 h-[40px] prose prose-slate" dangerouslySetInnerHTML={{ __html: course.description || '' }} />
                       
-                      <div className="mt-auto flex items-center justify-between pt-5 border-t border-gray-50">
-                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Added by {course.addedByName}</span>
-                         </div>
+                      <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-100">
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-[10px] font-black uppercase border border-slate-100">
+                               {course.addedByName?.[0] || 'A'}
+                             </div>
+                             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                By {course.addedByName}
+                             </p>
+                          </div>
                          <div className="flex items-center gap-2">
                             {(course.addedBy === appUser.uid || appUser.role === 'admin') && (
-                              <button onClick={() => handleDelete(course.id, 'courses')} className="p-2 rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all">
-                                 <FiTrash2 size={16} />
+                              <button onClick={() => handleDelete(course.id, 'courses')} className="p-2 rounded-lg hover:bg-red-600 hover:text-white text-slate-300 transition-all">
+                                 <FiTrash2 size={14} />
                               </button>
                             )}
                             <Link
                               href={`/courses/${course.id}`}
-                              className="px-6 py-2.5 rounded-xl bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all shadow-lg shadow-black/5"
+                              className="btn-primary text-[9px] px-5 py-2"
                             >
-                              Watch
+                              Initialize
                             </Link>
                          </div>
                       </div>
@@ -268,34 +277,42 @@ export default function CoursesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {certs.length === 0 ? (
-             <div className="col-span-full text-center py-24 bg-white rounded-[3rem] border border-gray-100 shadow-premium">
-                <FiAward className="mx-auto text-gray-100 mb-6" size={64} />
-                <p className="text-gray-400 text-xl font-medium">No certifications listed yet</p>
+             <div className="col-span-full clean-card py-32 text-center border-slate-100 bg-slate-50/10">
+                <FiAward className="mx-auto text-slate-100 mb-6" size={48} />
+                <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">No industry certifications are currently indexed.</p>
              </div>
            ) : (
              certs.map((cert) => (
-               <div key={cert.id} className="group relative bg-white rounded-[2.5rem] p-8 shadow-premium hover:shadow-float border border-gray-100 transition-all duration-500 hover:-translate-y-2 flex flex-col">
-                   <div className="w-16 h-16 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform">
-                      <FiAward size={32} />
+                <div key={cert.id} className="clean-card p-8 group flex flex-col hover:border-primary/30 transition-all duration-300">
+                   <div className="flex items-start justify-between mb-8">
+                      <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                         <FiAward size={24} />
+                      </div>
+                      <span className="px-3 py-1 bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-400 border border-slate-100 rounded">
+                         Certification
+                      </span>
                    </div>
-                   <div className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-1">{cert.provider}</div>
-                   <h3 className="text-xl font-display font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">{cert.title}</h3>
-                   <div className="text-sm text-gray-500 line-clamp-3 mb-8 flex-1" dangerouslySetInnerHTML={{ __html: cert.description || '' }} />
                    
-                   <div className="flex items-center gap-3">
+                   <div className="flex-1">
+                      <p className="text-[9px] font-bold text-primary uppercase tracking-[0.2em] mb-1">{cert.provider}</p>
+                      <h3 className="text-xl font-bold text-slate-900 mb-4 font-display group-hover:text-primary transition-colors">{cert.title}</h3>
+                      <div className="text-sm text-slate-500 font-medium leading-relaxed mb-10 prose prose-slate" dangerouslySetInnerHTML={{ __html: cert.description || '' }} />
+                   </div>
+
+                   <div className="mt-auto flex items-center gap-3">
                       <a
                         href={cert.url} target="_blank" rel="noopener noreferrer"
-                        className="flex-1 text-center py-3 rounded-2xl bg-gray-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-orange-500 transition-all shadow-lg shadow-black/5"
+                        className="btn-primary text-[9px] flex-1 py-3"
                       >
-                        View Certificate
+                        Inspect Authority
                       </a>
                       {(cert.addedBy === appUser.uid || appUser.role === 'admin') && (
-                        <button onClick={() => handleDelete(cert.id, 'certifications')} className="p-3 rounded-2xl border border-gray-100 text-gray-400 hover:text-red-500 hover:border-red-100 transition-all">
-                          <FiTrash2 size={20} />
+                        <button onClick={() => handleDelete(cert.id, 'certifications')} className="p-3 rounded-xl border border-slate-100 text-slate-300 hover:bg-red-600 hover:text-white transition-all">
+                          <FiTrash2 size={16} />
                         </button>
                       )}
                    </div>
-               </div>
+                </div>
              ))
            )}
         </div>

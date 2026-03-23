@@ -3,10 +3,10 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
-import { FiMap, FiCode, FiUsers, FiFileText, FiBookOpen, FiAward, FiArrowRight, FiBell } from 'react-icons/fi';
+import { FiMap, FiCode, FiUsers, FiFileText, FiBookOpen, FiArrowRight, FiBell, FiShield, FiTrendingUp } from 'react-icons/fi';
 
 export default function DashboardPage() {
   const { appUser, loading } = useAuth();
@@ -44,7 +44,7 @@ export default function DashboardPage() {
           setPendingResumes(pendingSnap.size);
         }
       } catch {
-        // Firestore may not be configured yet
+        // noop
       }
     };
     fetchStats();
@@ -53,107 +53,142 @@ export default function DashboardPage() {
   if (loading || !appUser) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
   }
 
-  const quickLinks = [
-    { name: 'Roadmaps', href: '/roadmaps', icon: FiMap, count: stats.roadmaps, color: 'from-primary to-primary-light' },
-    { name: 'Projects', href: '/projects', icon: FiCode, count: stats.projects, color: 'from-accent to-yellow-400' },
-    { name: 'Mentorship', href: '/mentorship', icon: FiUsers, count: null, color: 'from-primary-dark to-primary' },
-    { name: 'Resume', href: '/resume', icon: FiFileText, count: stats.resumes, color: 'from-green-500 to-emerald-400' },
-    { name: 'Courses', href: '/courses', icon: FiBookOpen, count: stats.courses, color: 'from-purple-500 to-violet-400' },
+  const discoveryHub = [
+    { name: 'Technical Roadmaps', href: '/roadmaps', icon: FiMap, desc: 'Guided mentorship paths.', items: stats.roadmaps },
+    { name: 'Project Blueprints', href: '/projects', icon: FiCode, desc: 'AI-enhanced starter ideas.', items: stats.projects },
+    { name: 'Senior Mentorship', href: '/mentorship', icon: FiUsers, desc: 'Schedule technical deep-dives.', items: null },
+    { name: 'Resume Validation', href: '/resume', icon: FiFileText, desc: 'Expert screening feedback.', items: stats.resumes },
+    { name: 'Specialized Courses', href: '/courses', icon: FiBookOpen, desc: 'Curated technical curriculum.', items: stats.courses },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      {/* Welcome Section */}
-      <div className="mb-12 relative">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-1 bg-primary rounded-full" />
-              <span className="text-xs font-bold uppercase tracking-widest text-primary-light">Overview</span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+      {/* Professional Header */}
+      <div className="mb-16">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 mb-6">
+               <span className="w-10 h-1 bg-slate-900 rounded-full" />
+               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Command Center</p>
             </div>
-            <h1 className="text-4xl font-display font-extrabold text-gray-900 leading-tight">
-              Welcome back, <span className="text-gradient">{appUser.displayName}</span>
+            <h1 className="text-4xl md:text-5xl font-display font-black text-slate-900 leading-tight mb-4 tracking-tight">
+              Welcome back, <br />
+              <span className="text-primary italic lowercase">@{appUser.displayName.replace(/\s+/g, '').toLowerCase()}</span>
             </h1>
-            <p className="text-gray-500 mt-2 flex items-center gap-2">
-              <span className="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded border border-gray-200">{appUser.rollNumber}</span>
-              <span className="text-gray-300">|</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${appUser.role === 'admin' ? 'bg-red-500 text-white' : 'bg-primary/10 text-primary'}`}>
-                {appUser.role} Account
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                Roll: {appUser.rollNumber || 'N/A'}
               </span>
-            </p>
+              <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border ${
+                appUser.role === 'admin' 
+                  ? 'bg-red-50 text-red-600 border-red-100' 
+                  : 'bg-primary/5 text-primary border-primary/10'
+              }`}>
+                {appUser.role} Authorization
+              </span>
+            </div>
           </div>
-          
-          {/* Quick Stats Summary */}
+
           <div className="flex gap-4">
-            <div className="glass p-4 rounded-2xl shadow-sm min-w-[120px]">
-              <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Total Assets</p>
-              <p className="text-2xl font-display font-bold text-gray-900">{stats.roadmaps + stats.projects + stats.courses}</p>
+            <div className="clean-card p-6 min-w-[160px] flex flex-col justify-between">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Discovery Index</p>
+              <div className="flex items-end justify-between">
+                <p className="text-4xl font-display font-black text-slate-900 leading-none">
+                  {stats.roadmaps + stats.projects + stats.courses}
+                </p>
+                <FiTrendingUp className="text-primary" size={20} />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Notifications Banner */}
+      {/* Actionable Notifications */}
       {pendingResumes > 0 && (appUser.role === 'senior' || appUser.role === 'admin') && (
         <Link
           href="/resume"
-          className="flex items-center gap-4 p-5 mb-10 rounded-2xl bg-primary text-white shadow-float hover:bg-primary-dark transition-all group"
+          className="clean-card mb-12 p-6 md:p-8 hover:border-primary/50 transition-all group relative overflow-hidden flex flex-col md:flex-row md:items-center gap-6"
         >
-          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center animate-pulse">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-primary/10 transition-all" />
+          <div className="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
             <FiBell size={24} />
           </div>
-          <div>
-            <p className="font-bold text-lg leading-tight">{pendingResumes} Resumes Awaiting Validation</p>
-            <p className="text-white/70 text-sm">Help juniors by providing feedback on their applications.</p>
+          <div className="relative z-10 flex-1">
+            <h3 className="text-xl font-display font-bold text-slate-900 mb-1">Resumes Awaiting Validation</h3>
+            <p className="text-slate-500 font-medium">There are <span className="text-primary font-bold">{pendingResumes} submissions</span> requiring your professional assessment.</p>
           </div>
-          <FiArrowRight size={20} className="ml-auto group-hover:translate-x-1 transition-transform" />
+          <div className="inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest group-hover:gap-4 transition-all whitespace-nowrap">
+            Assist Now <FiArrowRight />
+          </div>
         </Link>
       )}
 
-      {/* Quick Links Grid */}
-      <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Discovery Hub</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        {quickLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="group relative bg-white rounded-3xl p-8 shadow-premium hover:shadow-float border border-gray-100 hover:border-primary/20 transition-all duration-500 hover:-translate-y-2 flex flex-col"
-          >
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${link.color} text-white mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-              <link.icon size={28} />
-            </div>
-            <h3 className="text-xl font-display font-bold text-gray-900 mb-2">{link.name}</h3>
-            {link.count !== null ? (
-              <p className="text-sm text-gray-400 mb-4">{link.count} items available</p>
-            ) : (
-              <p className="text-sm text-gray-400 mb-4">Book deep dives</p>
-            )}
-            <div className="mt-auto flex items-center gap-2 text-primary text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-              Explore Now <FiArrowRight />
-            </div>
-            <FiArrowRight className="absolute top-8 right-8 text-gray-200 group-hover:text-primary transition-colors" />
-          </Link>
-        ))}
-        {appUser.role === 'admin' && (
-          <Link
-            href="/admin"
-            className="group relative bg-[#0f172a] rounded-3xl p-8 shadow-premium hover:shadow-float transition-all duration-500 hover:-translate-y-2 flex flex-col text-white"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-red-500 text-white mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-              <FiAward size={28} />
-            </div>
-            <h3 className="text-xl font-display font-bold mb-2">Admin Control</h3>
-            <p className="text-gray-400 text-sm mb-4">Manage users & platform logic.</p>
-            <div className="mt-auto flex items-center gap-2 text-red-400 text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-              Open Panel <FiArrowRight />
-            </div>
-          </Link>
-        )}
+      {/* Discovery Hub Grid */}
+      <div className="mb-20">
+        <div className="flex items-center justify-between mb-8">
+           <p className="section-label mb-0">Platform Discovery Hub</p>
+           <div className="h-px flex-1 bg-slate-100 mx-6 hidden md:block" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {discoveryHub.map((link, i) => (
+            <Link
+              key={i}
+              href={link.href}
+              className="clean-card p-8 hover:border-primary/40 transition-all duration-300 group flex flex-col min-h-[220px]"
+            >
+              <div className="flex items-start justify-between mb-8">
+                 <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                    <link.icon size={24} />
+                 </div>
+                 {link.items !== null && (
+                   <span className="text-[10px] font-bold text-slate-400 border border-slate-100 px-2 py-1 rounded-md">
+                      {link.items} Assets
+                   </span>
+                 )}
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">{link.name}</h3>
+              <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">{link.desc}</p>
+              <div className="mt-auto inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+                Access Module <FiArrowRight />
+              </div>
+            </Link>
+          ))}
+          
+          {appUser.role === 'admin' && (
+            <Link
+              href="/admin"
+              className="clean-card p-8 bg-slate-900 border-slate-800 hover:border-red-500 transition-all group flex flex-col min-h-[220px]"
+            >
+               <div className="flex items-start justify-between mb-8">
+                 <div className="w-12 h-12 rounded-xl bg-white/10 text-white flex items-center justify-center group-hover:bg-red-500 transition-all duration-500">
+                    <FiShield size={24} />
+                 </div>
+                 <span className="text-[10px] font-bold text-red-500/80 border border-white/10 px-2 py-1 rounded-md">
+                    Admin Access
+                 </span>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Platform Administration</h3>
+              <p className="text-slate-400 text-sm font-medium leading-relaxed mb-8">Manage authorized cohorts, roll numbers, and senior hierarchies.</p>
+              <div className="mt-auto inline-flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-widest group-hover:gap-4 transition-all">
+                Open Controls <FiArrowRight />
+              </div>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Simplified Footer / Copyright */}
+      <div className="pt-12 border-t border-slate-100 flex justify-between items-center bg-transparent">
+         <p className="text-xs text-slate-400 font-medium">ConnectSeniors Virtual Terminal v2.1.0</p>
+         <div className="flex gap-4">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Platform Online</span>
+         </div>
       </div>
     </div>
   );

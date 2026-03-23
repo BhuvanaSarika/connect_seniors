@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppUser } from '@/types';
-import { FiTrendingUp, FiAlertCircle } from 'react-icons/fi';
+import { FiTrendingUp, FiAlertCircle, FiShield, FiInfo } from 'react-icons/fi';
 
 export default function AdminPromotionsPage() {
   const [users, setUsers] = useState<AppUser[]>([]);
@@ -27,7 +27,7 @@ export default function AdminPromotionsPage() {
 
   const handlePromote = async (cohortPrefix: string) => {
     const toPromote = juniors.filter(u => u.rollNumber.startsWith(cohortPrefix));
-    if (!confirm(`Are you sure you want to promote ${toPromote.length} juniors in cohort '${cohortPrefix}' to seniors?`)) return;
+    if (!confirm(`Operational security: confirm bulk promotion of ${toPromote.length} assets in cohort '${cohortPrefix}' to Senior Grade?`)) return;
 
     setPromoting(true);
     try {
@@ -37,7 +37,7 @@ export default function AdminPromotionsPage() {
         batch.update(userRef, { role: 'senior' });
       });
       await batch.commit();
-      alert(`Successfully promoted ${toPromote.length} users to Senior role!`);
+      alert(`Operational success: Promoted ${toPromote.length} assets to Senior Grade.`);
       
       setUsers(users.map(u => 
         u.role === 'junior' && u.rollNumber.startsWith(cohortPrefix) 
@@ -46,52 +46,70 @@ export default function AdminPromotionsPage() {
       ));
     } catch (err) {
       console.error(err);
-      alert('Promotion failed');
+      alert('Operational failure: could not commit promotion protocol.');
     }
     setPromoting(false);
   };
 
-  if (fetching) return <div className="animate-spin w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full mx-auto mt-20" />;
+  if (fetching) return (
+    <div className="flex justify-center py-24">
+      <div className="animate-spin w-8 h-8 border-4 border-slate-900 border-t-transparent rounded-full" />
+    </div>
+  );
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Promote Juniors</h1>
-        <p className="text-gray-500 text-sm mt-1">Bulk promote entire junior cohorts to the senior role for the new academic year.</p>
-      </div>
-
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-8 flex items-start gap-3 text-red-700 text-sm">
-        <FiAlertCircle size={20} className="shrink-0 mt-0.5" />
-        <p>
-          <strong>Caution:</strong> This action permanently grants senior privileges (roadmap creation, resume reviews, 1:1 mentorship capabilities) to all users in the selected cohort. Make sure you also update the "Roll Number Ranges" to assign the correct roles for future registrations.
+    <div className="text-slate-900">
+      <div className="mb-12">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">System Lifecycle Management</p>
+        <h1 className="text-3xl font-display font-black text-slate-900 tracking-tight mb-2">Grade Promotions</h1>
+        <p className="text-slate-500 font-medium text-sm max-w-2xl">
+           Execute bulk role migrations for academic cohorts. This protocol transitions Junior Grade assets to Senior Grade, unlocking advanced platform privileges.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="bg-slate-900 rounded-2xl p-6 mb-12 flex items-start gap-4 border border-slate-800 shadow-xl shadow-slate-200/50">
+        <FiShield size={24} className="text-primary shrink-0 mt-1" />
+        <div>
+           <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-2">Security Warning</p>
+           <p className="text-slate-400 text-xs font-medium leading-relaxed max-w-3xl">
+              Promotion is a privilege-escalating event. Assets will gain authorization for: <code className="text-primary bg-white/5 px-2 py-0.5 rounded mx-1">Architecture Creation</code>, <code className="text-primary bg-white/5 px-2 py-0.5 rounded mx-1">Handshake Authorization</code>, and <code className="text-primary bg-white/5 px-2 py-0.5 rounded mx-1">Document Reviews</code>.
+           </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {cohorts.length === 0 ? (
-          <p className="text-gray-400">No junior cohorts found.</p>
+          <div className="col-span-full py-24 text-center clean-card bg-slate-50/50 border-slate-100">
+             <FiInfo className="mx-auto text-slate-100 mb-6" size={48} />
+             <p className="text-slate-300 text-[10px] font-bold uppercase tracking-widest">No eligible Junior cohorts indexed.</p>
+          </div>
         ) : (
           cohorts.map(cohort => {
             const count = juniors.filter(u => u.rollNumber.startsWith(cohort)).length;
             return (
-              <div key={cohort} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-blue-50 text-primary flex items-center justify-center font-bold text-2xl mb-4">
+              <div key={cohort} className="clean-card p-10 flex flex-col items-center text-center group hover:border-slate-900 transition-all">
+                <div className="w-16 h-16 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-display font-black text-2xl mb-6 shadow-xl shadow-slate-900/10 group-hover:bg-primary transition-all">
                   {cohort}
                 </div>
-                <h3 className="font-bold text-lg text-gray-900 mb-1">Cohort '{cohort}'</h3>
-                <p className="text-sm text-gray-500 mb-6">{count} eligible junior(s)</p>
+                <h3 className="font-display font-black text-slate-900 text-lg mb-1 tracking-tight">Cohort {cohort}X</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-10">{count} Eligible Assets</p>
                 
                 <button
                   onClick={() => handlePromote(cohort)}
                   disabled={promoting}
-                  className="w-full py-2.5 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="btn-primary w-full py-3 text-[10px] shadow-xl shadow-primary/20 disabled:opacity-20 flex items-center justify-center gap-2"
                 >
-                  <FiTrendingUp /> Promote to Senior
+                  <FiTrendingUp /> Execute Promotion
                 </button>
               </div>
             );
           })
         )}
+      </div>
+
+      <div className="mt-12 flex items-center justify-between text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 opacity-50">
+         <p>Lifecycle Protocol: Promotion</p>
+         <p>Authorized Admin Terminal Only</p>
       </div>
     </div>
   );
