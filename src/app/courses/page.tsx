@@ -7,6 +7,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp, query, orderBy 
 import { db } from '@/lib/firebase';
 import { RecommendedCourse, Certification } from '@/types';
 import { FiYoutube, FiAward, FiPlus, FiTrash2, FiExternalLink, FiX } from 'react-icons/fi';
+import Link from 'next/link';
 
 export default function CoursesPage() {
   const { appUser, loading } = useAuth();
@@ -164,8 +165,9 @@ export default function CoursesPage() {
                        )}
                     </div>
                     {course.description && <p className="text-sm text-gray-600 mb-4 line-clamp-2">{course.description}</p>}
-                    <div className="text-xs text-gray-400 font-medium mt-auto pt-3 border-t border-gray-100">
-                      Added by {course.addedByName}
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                       <p className="text-xs text-gray-400">By {course.addedByName}</p>
+                       <Link href={`/courses/${course.id}`} className="text-sm font-semibold text-primary hover:text-primary-dark hover:underline">View Course &rarr;</Link>
                     </div>
                   </div>
                 </div>
