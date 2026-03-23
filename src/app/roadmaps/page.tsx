@@ -91,7 +91,7 @@ export default function RoadmapsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-slate-900">
       {/* Module Header */}
-      <div className="mb-16">
+      <div className="mb-16 border-b border-slate-100 pb-12">
         <div className="inline-flex items-center gap-2 mb-6">
            <span className="w-10 h-1 bg-primary rounded-full" />
            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Technical navigation</p>
@@ -119,7 +119,7 @@ export default function RoadmapsPage() {
       {/* Creation Modal */}
       {showCreate && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[92vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-white/10">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[92vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-slate-200">
             <button onClick={() => setShowCreate(false)} className="absolute top-8 right-8 p-3 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
               <FiX size={20} />
             </button>
@@ -136,14 +136,13 @@ export default function RoadmapsPage() {
                 <label className="section-label mb-4 block">Systemic Title</label>
                 <input
                   type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-6 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                  className="input-clean"
                   placeholder="e.g. Full-Stack Architecture Masterclass"
                 />
               </div>
 
               <div>
-                <label className="section-label mb-4 block">Curriculum Abstract</label>
-                <div className="rounded-xl overflow-hidden border border-slate-100 bg-slate-50">
+                <div className="rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
                   <ReactQuill theme="snow" value={description} onChange={setDescription} />
                 </div>
               </div>
@@ -172,15 +171,15 @@ export default function RoadmapsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {roadmaps.map((roadmap) => (
-            <div key={roadmap.id} className="clean-card p-8 group flex flex-col hover:border-primary/30 transition-all duration-300">
-              <div className="flex items-start justify-between mb-8">
-                 <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 border border-slate-100 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
-                    <FiMap size={24} />
-                 </div>
-                 <span className="px-3 py-1 bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-400 border border-slate-100 rounded">
-                    {roadmap.nodes?.length || 0} Nodes
-                 </span>
-              </div>
+            <div key={roadmap.id} className="clean-card p-8 group flex flex-col border-slate-200 hover:border-slate-900 transition-all duration-300">
+               <div className="flex items-start justify-between mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 border border-slate-200 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                     <FiMap size={24} />
+                  </div>
+                  <span className="px-3 py-1 bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 rounded">
+                     {roadmap.nodes?.length || 0} Nodes
+                  </span>
+               </div>
               
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-slate-900 mb-3 font-display group-hover:text-primary transition-colors">{roadmap.title}</h3>
@@ -190,9 +189,9 @@ export default function RoadmapsPage() {
                 />
               </div>
 
-              <div className="mt-auto pt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="mt-auto pt-6 border-t border-slate-200 flex items-center justify-between">
                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-900 flex items-center justify-center text-[10px] font-black uppercase border border-slate-100">
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-900 flex items-center justify-center text-[10px] font-black uppercase border border-slate-200">
                       {roadmap.createdByName?.[0] || 'A'}
                     </div>
                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">

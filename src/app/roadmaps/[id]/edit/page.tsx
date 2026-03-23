@@ -206,7 +206,7 @@ export default function RoadmapEditPage() {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden text-slate-900">
       {/* Architect Terminal Header */}
-      <div className="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-100 z-[10] shadow-sm">
+      <div className="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200 z-[10] shadow-sm">
         <div className="flex items-center gap-6">
           <LinkNext href="/roadmaps" className="p-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
             <FiArrowLeft size={18} />
@@ -247,11 +247,11 @@ export default function RoadmapEditPage() {
             fitView
           >
             <Background variant={BackgroundVariant.Dots} color="#e2e8f0" gap={24} size={1} />
-            <Controls className="!bg-white !border-slate-100 !shadow-lg !rounded-xl overflow-hidden" />
-            <MiniMap className="!bg-white !border-slate-100 !shadow-lg !rounded-xl overflow-hidden" nodeColor={(n) => nodeColors[n.data.nodeType as string] || '#94a3b8'} maskColor="rgba(255,255,255,0.8)" />
+            <Controls className="!bg-white !border-slate-200 !shadow-lg !rounded-xl overflow-hidden" />
+            <MiniMap className="!bg-white !border-slate-200 !shadow-lg !rounded-xl overflow-hidden" nodeColor={(n) => nodeColors[n.data.nodeType as string] || '#94a3b8'} maskColor="rgba(255,255,255,0.8)" />
 
             <Panel position="top-left">
-              <div className="flex flex-col gap-2 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-100">
+              <div className="flex flex-col gap-2 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200">
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 ml-1 px-1">Inject Module</p>
                 <button onClick={() => addNode('milestone')} className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-all">
                   <FiPlus size={14} /> Milestone
@@ -268,7 +268,7 @@ export default function RoadmapEditPage() {
         </div>
 
         {/* Asset Editor Side Panel */}
-        <div className={`w-96 bg-white border-l border-slate-100 transition-all duration-500 overflow-y-auto ${selectedNode ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`w-96 bg-white border-l border-slate-200 transition-all duration-500 overflow-y-auto ${selectedNode ? 'translate-x-0' : 'translate-x-full'}`}>
           {selectedNode ? (
             <div className="p-10">
               <div className="flex items-center gap-3 mb-10">
@@ -282,7 +282,7 @@ export default function RoadmapEditPage() {
                   <select
                     value={editType}
                     onChange={(e) => setEditType(e.target.value as NodeType)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none text-[10px] font-bold uppercase tracking-widest transition-all appearance-none"
+                    className="input-clean !py-3 !text-[10px] font-black uppercase tracking-widest appearance-none"
                   >
                     <option value="milestone">Milestone Structure</option>
                     <option value="topic">Technical Topic</option>
@@ -295,12 +295,12 @@ export default function RoadmapEditPage() {
                     type="text"
                     value={editLabel}
                     onChange={(e) => setEditLabel(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none font-medium text-sm transition-all"
+                    className="input-clean !py-3 !text-sm"
                   />
                 </div>
                 <div>
                   <label className="section-label mb-3 block">Technical Rationale</label>
-                  <div className="bg-slate-50 rounded-xl overflow-hidden border border-slate-200">
+                  <div className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
                     <ReactQuill theme="snow" value={editDesc} onChange={setEditDesc} placeholder="Define systemic rationale or resources..." />
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export default function RoadmapEditPage() {
                   <button onClick={updateSelectedNode} className="btn-primary flex-1 py-3 text-[10px] uppercase">
                     Sync Changes
                   </button>
-                  <button onClick={deleteSelectedNode} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-600 hover:text-white transition-all border border-slate-100">
+                  <button onClick={deleteSelectedNode} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-600 hover:text-white transition-all border border-slate-200">
                     <FiTrash2 size={16} />
                   </button>
                 </div>

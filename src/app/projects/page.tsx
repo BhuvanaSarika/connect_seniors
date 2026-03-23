@@ -113,7 +113,7 @@ export default function ProjectsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-slate-900">
       {/* Module Header */}
-      <div className="mb-16">
+      <div className="mb-16 border-b border-slate-100 pb-12">
         <div className="inline-flex items-center gap-2 mb-6">
            <span className="w-10 h-1 bg-primary rounded-full" />
            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Technical Assets</p>
@@ -139,7 +139,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* Filter Segment */}
-      <div className="flex flex-wrap items-center gap-3 mb-12 border-b border-slate-100 pb-8">
+      <div className="flex flex-wrap items-center gap-3 mb-12 border-b border-slate-100 pb-10">
         <button
           onClick={() => setFilter('all')}
           className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
@@ -168,7 +168,7 @@ export default function ProjectsPage() {
       {/* Creation Modal */}
       {showForm && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-white/10">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-slate-200">
             <button onClick={handleCloseForm} className="absolute top-8 right-8 p-3 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
               <FiX size={20} />
             </button>
@@ -183,7 +183,7 @@ export default function ProjectsPage() {
                    <label className="section-label mb-3 block">System Title</label>
                    <input
                     type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                    className="input-clean"
                     placeholder="e.g. Distributed Ledger Interface"
                   />
                 </div>
@@ -191,7 +191,7 @@ export default function ProjectsPage() {
                   <label className="section-label mb-3 block">Complexity Tier</label>
                   <select
                     value={category} onChange={(e) => setCategory(e.target.value as ProjectCategory)}
-                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all text-xs font-bold uppercase tracking-widest appearance-none"
+                    className="input-clean appearance-none !py-[13px] !text-[10px] font-black uppercase tracking-widest"
                   >
                     {categories.map((c) => (
                       <option key={c} value={c}>{c} Authorization</option>
@@ -201,15 +201,13 @@ export default function ProjectsPage() {
               </div>
 
               <div>
-                <label className="section-label mb-3 block">Technical Brief</label>
-                <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                <div className="rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
                   <ReactQuill theme="snow" value={description} onChange={setDescription} />
                 </div>
               </div>
 
               <div>
-                <label className="section-label mb-3 block">AI Architecture Prompt</label>
-                <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                <div className="rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
                    <ReactQuill theme="snow" value={aiPrompt} onChange={setAiPrompt} />
                 </div>
               </div>
@@ -237,7 +235,7 @@ export default function ProjectsPage() {
       {fetching ? (
         <div className="flex justify-center py-24"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>
       ) : projects.length === 0 ? (
-        <div className="clean-card py-32 text-center border-slate-100 bg-slate-50/10">
+        <div className="clean-card py-32 text-center border-slate-200 bg-slate-50/10">
           <FiLayers className="mx-auto text-slate-100 mb-6" size={48} />
           <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Global blueprint repository is currently empty.</p>
         </div>

@@ -56,7 +56,7 @@ export default function AdminOverview() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
       {/* Admin Header */}
-      <div className="mb-16">
+      <div className="mb-16 border-b border-slate-100 pb-12">
         <div className="inline-flex items-center gap-2 mb-6">
            <span className="w-10 h-1 bg-red-600 rounded-full" />
            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Platform Governance</p>
@@ -142,8 +142,8 @@ export default function AdminOverview() {
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Knowledge Index</p>
            </div>
-           <p className="text-5xl font-display font-black text-slate-900 mb-2 leading-none">{stats.resumes + stats.roadmaps + stats.projects}</p>
-           <p className="text-sm text-slate-500 font-medium mb-10">Total shared technical assets</p>
+           <p className="text-5xl font-display font-black text-slate-900 mb-2 leading-none border-b border-slate-100 pb-4">{stats.resumes + stats.roadmaps + stats.projects}</p>
+           <p className="text-sm text-slate-500 font-medium my-10">Total shared technical assets library</p>
            
            <div className="pt-6 border-t border-slate-100">
               <div className="flex justify-between items-center mb-2">
@@ -183,7 +183,7 @@ export default function AdminOverview() {
       </div>
 
       {/* Admin Quick Links / Actions */}
-      <div className="pt-12 border-t border-slate-100 flex justify-between items-center opacity-50">
+      <div className="pt-12 border-t border-slate-200 flex justify-between items-center bg-transparent mt-12">
          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Platform Build: 2.1.0-PRO-FINAL</p>
          <div className="flex items-center gap-3">
             <FiShield className="text-red-600" size={14} />

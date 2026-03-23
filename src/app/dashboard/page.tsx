@@ -69,7 +69,7 @@ export default function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
       {/* Professional Header */}
-      <div className="mb-16">
+      <div className="mb-16 border-b border-slate-100 pb-12">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 mb-6">
@@ -139,7 +139,7 @@ export default function DashboardPage() {
             <Link
               key={i}
               href={link.href}
-              className="clean-card p-8 hover:border-primary/40 transition-all duration-300 group flex flex-col min-h-[220px]"
+              className="clean-card p-8 border-slate-200 hover:border-slate-900 transition-all duration-300 group flex flex-col min-h-[220px]"
             >
               <div className="flex items-start justify-between mb-8">
                  <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
@@ -183,11 +183,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Simplified Footer / Copyright */}
-      <div className="pt-12 border-t border-slate-100 flex justify-between items-center bg-transparent">
-         <p className="text-xs text-slate-400 font-medium">ConnectSeniors Virtual Terminal v2.1.0</p>
+      <div className="pt-12 border-t border-slate-200 flex justify-between items-center bg-transparent mt-12">
+         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">ConnectSeniors Virtual Terminal v2.1.0</p>
          <div className="flex gap-4">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Platform Online</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] border border-white" />
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Platform Status: Online</span>
          </div>
       </div>
     </div>

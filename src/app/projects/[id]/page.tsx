@@ -79,7 +79,7 @@ export default function ProjectDetail() {
         <FiArrowLeft size={14} /> Back to Blueprint Index
       </Link>
 
-      <div className="clean-card overflow-hidden shadow-2xl shadow-slate-200/50">
+      <div className="clean-card overflow-hidden shadow-2xl shadow-slate-200/50 border-slate-200">
         {/* Architectural Header */}
         <div className="p-10 md:p-16 border-b border-slate-100 bg-slate-50/30">
           <div className="flex flex-wrap items-center gap-3 mb-8">
@@ -159,7 +159,7 @@ export default function ProjectDetail() {
                {(project.referenceUrl || project.githubUrl || project.youtubeUrl) ? (
                  <>
                    {project.referenceUrl && (
-                      <a href={project.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-100 hover:border-primary hover:bg-primary/[0.02] transition-all group">
+                      <a href={project.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-200 hover:border-primary hover:bg-primary/[0.02] transition-all group">
                         <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
                           <FiExternalLink size={20} />
                         </div>
@@ -170,7 +170,7 @@ export default function ProjectDetail() {
                       </a>
                    )}
                    {project.githubUrl && (
-                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-100 hover:border-slate-900 transition-all group">
+                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-200 hover:border-slate-900 transition-all group">
                         <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
                           <FiGithub size={20} />
                         </div>
@@ -181,7 +181,7 @@ export default function ProjectDetail() {
                       </a>
                    )}
                    {project.youtubeUrl && (
-                      <a href={project.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-100 hover:border-red-600 transition-all group">
+                      <a href={project.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-6 rounded-xl border border-slate-200 hover:border-red-600 transition-all group">
                         <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-all">
                           <FiYoutube size={20} />
                         </div>

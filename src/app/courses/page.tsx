@@ -100,7 +100,7 @@ export default function CoursesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-slate-900">
       {/* Module Header */}
-      <div className="mb-16">
+      <div className="mb-16 border-b border-slate-100 pb-12">
         <div className="inline-flex items-center gap-2 mb-6">
            <span className="w-10 h-1 bg-primary rounded-full" />
            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Knowledge Base</p>
@@ -150,7 +150,7 @@ export default function CoursesPage() {
       {/* Creation Modal */}
       {showForm && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-white/10">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-slate-200">
             <button onClick={() => setShowForm(false)} className="absolute top-8 right-8 p-3 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
               <FiX size={20} />
             </button>
@@ -167,7 +167,7 @@ export default function CoursesPage() {
                 <label className="section-label mb-3 block">System Title</label>
                 <input
                   type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                  className="input-clean"
                   placeholder={tab === 'courses' ? "e.g. Advanced System Design" : "e.g. Google Cloud Professional Architect"}
                 />
               </div>
@@ -177,15 +177,14 @@ export default function CoursesPage() {
                   <label className="section-label mb-3 block">Issuing Authority</label>
                   <input
                     type="text" required value={provider} onChange={(e) => setProvider(e.target.value)}
-                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                    className="input-clean"
                     placeholder="e.g. Amazon Web Services"
                   />
                 </div>
               )}
 
               <div>
-                <label className="section-label mb-3 block">Technical Rationale</label>
-                <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                <div className="rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
                   <ReactQuill theme="snow" value={description} onChange={setDescription} />
                 </div>
               </div>
@@ -196,7 +195,7 @@ export default function CoursesPage() {
                 </label>
                 <input
                   type="url" required value={url} onChange={(e) => setUrl(e.target.value)}
-                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                  className="input-clean"
                 />
               </div>
 
@@ -227,7 +226,7 @@ export default function CoursesPage() {
              courses.map((course) => {
                const vId = extractYoutubeId(course.youtubeUrl);
                return (
-                 <div key={course.id} className="clean-card p-6 group flex flex-col hover:border-primary/30 transition-all duration-300">
+                 <div key={course.id} className="clean-card p-6 group flex flex-col border-slate-200 hover:border-slate-900 transition-all duration-300">
                    <div className="relative aspect-video rounded-xl bg-slate-900 flex items-center justify-center overflow-hidden mb-6 border border-slate-800">
                       {vId ? (
                         <img src={`https://img.youtube.com/vi/${vId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover opacity-40 group-hover:opacity-20 transition-opacity" />
@@ -245,9 +244,9 @@ export default function CoursesPage() {
                       <h3 className="text-lg font-bold text-slate-900 mb-2 font-display group-hover:text-primary transition-colors truncate">{course.title}</h3>
                       <div className="text-sm text-slate-500 font-medium line-clamp-2 mb-8 h-[40px] prose prose-slate" dangerouslySetInnerHTML={{ __html: course.description || '' }} />
                       
-                      <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-100">
+                      <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-200">
                           <div className="flex items-center gap-3">
-                             <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-[10px] font-black uppercase border border-slate-100">
+                             <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-[10px] font-black uppercase border border-slate-200">
                                {course.addedByName?.[0] || 'A'}
                              </div>
                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
@@ -277,7 +276,7 @@ export default function CoursesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {certs.length === 0 ? (
-             <div className="col-span-full clean-card py-32 text-center border-slate-100 bg-slate-50/10">
+             <div className="col-span-full clean-card py-32 text-center border-slate-200 bg-slate-50/10">
                 <FiAward className="mx-auto text-slate-100 mb-6" size={48} />
                 <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">No industry certifications are currently indexed.</p>
              </div>
@@ -307,7 +306,7 @@ export default function CoursesPage() {
                         Inspect Authority
                       </a>
                       {(cert.addedBy === appUser.uid || appUser.role === 'admin') && (
-                        <button onClick={() => handleDelete(cert.id, 'certifications')} className="p-3 rounded-xl border border-slate-100 text-slate-300 hover:bg-red-600 hover:text-white transition-all">
+                        <button onClick={() => handleDelete(cert.id, 'certifications')} className="p-3 rounded-xl border border-slate-200 text-slate-300 hover:bg-red-600 hover:text-white transition-all">
                           <FiTrash2 size={16} />
                         </button>
                       )}

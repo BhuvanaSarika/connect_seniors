@@ -154,7 +154,7 @@ export default function ResumePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-slate-900">
       {/* Module Header */}
-      <div className="mb-16">
+      <div className="mb-16 border-b border-slate-100 pb-12">
         <div className="inline-flex items-center gap-2 mb-6">
           <span className="w-10 h-1 bg-primary rounded-full" />
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Career Validation</p>
@@ -181,11 +181,11 @@ export default function ResumePage() {
 
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300 ${file ? 'border-primary bg-primary/5' : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50'
+                className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300 ${file ? 'border-primary bg-primary/5' : 'border-slate-200 hover:border-slate-900 hover:bg-slate-50'
                   }`}
               >
                 <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept=".pdf" className="hidden" />
-                <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 mx-auto mb-4 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 mx-auto mb-4 flex items-center justify-center border border-slate-200 group-hover:bg-slate-900 group-hover:text-white transition-all">
                   <FiUploadCloud size={24} />
                 </div>
                 {file ? (
@@ -244,7 +244,7 @@ export default function ResumePage() {
           {fetching ? (
             <div className="flex justify-center py-24"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>
           ) : resumes.length === 0 ? (
-            <div className="clean-card py-24 text-center border-slate-100 bg-slate-50/10">
+            <div className="clean-card py-24 text-center border-slate-200 bg-slate-50/10">
               <FiFileText className="mx-auto text-slate-100 mb-6" size={48} />
               <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">No active assessment cycles.</p>
             </div>
@@ -253,19 +253,19 @@ export default function ResumePage() {
               {resumes.map(resume => (
                 <div
                   key={resume.id}
-                  className="clean-card p-6 hover:border-primary/30 transition-all cursor-pointer group flex flex-col"
+                  className="clean-card p-6 border-slate-200 hover:border-slate-900 transition-all cursor-pointer group flex flex-col"
                   onClick={() => setViewingResume(resume)}
                 >
                   <div className="flex items-start justify-between mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-200 group-hover:bg-slate-900 group-hover:text-white transition-all">
                       <FiFileText size={20} />
                     </div>
                     {resume.reviews && resume.reviews.length > 0 ? (
-                      <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest rounded border border-emerald-100">
+                      <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest rounded border border-slate-200">
                         Audit Complete
                       </span>
                     ) : (
-                      <span className="px-3 py-1 bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest rounded border border-slate-100">
+                      <span className="px-3 py-1 bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest rounded border border-slate-200">
                         Pending review
                       </span>
                     )}
@@ -288,7 +288,7 @@ export default function ResumePage() {
                     )}
                   </div>
 
-                  <div className="mt-6 pt-5 border-t border-slate-50 flex items-center justify-between text-[10px] font-bold">
+                  <div className="mt-6 pt-5 border-t border-slate-200 flex items-center justify-between text-[10px] font-bold">
                     <span className="text-slate-300 tracking-tighter uppercase font-medium">
                       {new Date(resume.createdAt?.toMillis() || 0).toLocaleDateString()}
                     </span>
@@ -315,7 +315,7 @@ export default function ResumePage() {
             </button>
 
             {/* Left: Document View Area */}
-            <div className="flex-1 bg-slate-50 flex flex-col p-8 min-h-0 relative border-r border-slate-100">
+            <div className="flex-1 bg-slate-50 flex flex-col p-8 min-h-0 relative border-r border-slate-200">
               <div className="flex-1 relative rounded-xl overflow-hidden bg-white border border-slate-200 flex items-center justify-center shadow-inner">
                 <img
                   src={viewingResume.fileUrls[currentImageIndex]}
@@ -341,8 +341,8 @@ export default function ResumePage() {
             </div>
 
             {/* Right: Assessment Sidepanel */}
-            <div className="w-full md:w-[400px] bg-white flex flex-col p-10 md:p-12 overflow-y-auto">
-              <div className="mb-10 pb-8 border-b border-slate-50">
+            <div className="w-full md:w-[400px] bg-white flex flex-col p-10 md:p-12 overflow-y-auto border-l border-slate-200">
+              <div className="mb-10 pb-8 border-b border-slate-200">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Internal Audit</p>
                 <h3 className="text-2xl font-display font-black text-slate-900 mb-1 leading-tight">Professional Insights</h3>
                 <p className="text-xs font-bold text-primary italic lowercase">@{viewingResume.juniorName.replace(/\s+/g, '').toLowerCase()}</p>
@@ -355,10 +355,10 @@ export default function ResumePage() {
                       <div className="flex items-center gap-1 mb-6">
                         {[1, 2, 3, 4, 5].map(s => <FiStar key={s} size={14} className={s <= rev.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'} />)}
                       </div>
-                      <p className="text-slate-600 text-sm leading-relaxed mb-8 font-medium italic border-l-2 border-slate-200 pl-4">
+                      <p className="text-slate-600 text-sm leading-relaxed mb-8 font-medium italic border-l-2 border-slate-400 pl-4">
                         "{rev.feedback}"
                       </p>
-                      <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
+                      <div className="pt-6 border-t border-slate-200 flex items-center justify-between">
                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Audited by {rev.seniorName}</span>
                       </div>
                     </div>
@@ -384,7 +384,7 @@ export default function ResumePage() {
                     <label className="section-label mb-4 block">Architectural Feedback</label>
                     <textarea
                       value={feedback} onChange={e => setFeedback(e.target.value)}
-                      className="flex-1 w-full px-6 py-5 rounded-xl bg-slate-50 border border-slate-100 focus:border-slate-900 focus:ring-0 transition-all outline-none text-sm font-medium resize-none placeholder-slate-300"
+                      className="flex-1 w-full px-6 py-5 rounded-xl bg-white border border-slate-200 focus:border-slate-900 focus:ring-0 transition-all outline-none text-sm font-medium resize-none placeholder-slate-300 shadow-sm"
                       placeholder="Detail specific technical enhancements and structural refinements..."
                     />
                   </div>

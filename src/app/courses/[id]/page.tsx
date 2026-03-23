@@ -71,7 +71,7 @@ export default function CourseDetail() {
         <FiArrowLeft size={14} /> Back to Course Library
       </Link>
 
-      <div className="clean-card overflow-hidden shadow-2xl shadow-slate-200/50">
+      <div className="clean-card overflow-hidden shadow-2xl shadow-slate-200/50 border-slate-200">
         {/* Course Terminal Header */}
         <div className="p-10 md:p-16 border-b border-slate-100 bg-slate-900 text-white relative overflow-hidden">
            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -mr-48 -mt-48" />
@@ -143,7 +143,7 @@ export default function CourseDetail() {
                   dangerouslySetInnerHTML={{ __html: course.description }} 
                 />
              ) : (
-                <div className="p-10 rounded-2xl bg-slate-50 border border-slate-100 text-slate-400 font-bold uppercase tracking-widest text-[10px] italic text-center">
+                <div className="p-10 rounded-2xl bg-slate-50 border border-slate-200 text-slate-400 font-bold uppercase tracking-widest text-[10px] italic text-center">
                    No auxiliary rationale indexed for this resource.
                 </div>
              )}

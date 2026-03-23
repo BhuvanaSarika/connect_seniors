@@ -35,7 +35,7 @@ export default function LoginPage() {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-red-500/5 rounded-full -ml-48 -mb-48 blur-3xl" />
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 p-10 md:p-12">
+        <div className="bg-white rounded-[2.5rem] shadow-premium border border-slate-200 p-10 md:p-12">
           {/* Header */}
           <div className="text-center mb-10">
             <h1 className="text-4xl font-display font-black text-gray-900 leading-tight">
@@ -55,7 +55,7 @@ export default function LoginPage() {
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Academic Email</label>
               <input
                 type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-6 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                className="input-clean !rounded-2xl !py-4"
                 placeholder="university@email.edu"
               />
             </div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Access Key</label>
               <input
                 type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-6 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                className="input-clean !rounded-2xl !py-4"
                 placeholder="••••••••"
               />
             </div>

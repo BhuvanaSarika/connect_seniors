@@ -102,7 +102,7 @@ export default function RoadmapViewPage() {
             </h1>
             <div className="flex flex-wrap items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-100 font-black">
+                <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-200 font-black text-xs">
                     {roadmap.createdByName?.[0] || 'A'}
                   </div>
                   <span>Authored by {roadmap.createdByName}</span>
@@ -126,7 +126,7 @@ export default function RoadmapViewPage() {
       </div>
 
       {/* Curriculum Brief */}
-      <div className="clean-card p-10 mb-12 border-slate-100 bg-slate-50/30">
+      <div className="clean-card p-10 mb-12 border-slate-200 bg-slate-50/30">
         <p className="section-label mb-6">Curriculum Abstract</p>
         <div 
           className="text-sm text-slate-500 font-medium leading-relaxed prose prose-slate max-w-none"
@@ -135,7 +135,7 @@ export default function RoadmapViewPage() {
       </div>
 
       {/* Structural Navigator Canvas */}
-      <div className="clean-card overflow-hidden shadow-2xl shadow-slate-200/50" style={{ height: '75vh' }}>
+      <div className="clean-card overflow-hidden shadow-2xl shadow-slate-200/50 border-slate-200" style={{ height: '75vh' }}>
         <ReactFlow
           nodes={flowNodes}
           edges={flowEdges}
@@ -147,8 +147,8 @@ export default function RoadmapViewPage() {
           elementsSelectable={true}
         >
           <Background variant={BackgroundVariant.Dots} color="#e2e8f0" gap={24} size={1} />
-          <Controls className="!bg-white !border-slate-100 !shadow-lg !rounded-xl overflow-hidden" />
-          <MiniMap className="!bg-white !border-slate-100 !shadow-lg !rounded-xl overflow-hidden" maskColor="rgba(255,255,255,0.8)" />
+          <Controls className="!bg-white !border-slate-200 !shadow-lg !rounded-xl overflow-hidden" />
+          <MiniMap className="!bg-white !border-slate-200 !shadow-lg !rounded-xl overflow-hidden" maskColor="rgba(255,255,255,0.8)" />
         </ReactFlow>
       </div>
 

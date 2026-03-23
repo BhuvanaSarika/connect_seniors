@@ -157,7 +157,7 @@ export default function MentorshipDashboardPage() {
         {/* Profile Configuration */}
         <div className="lg:col-span-8 space-y-12">
            <form onSubmit={handleSaveProfile} className="space-y-12">
-              <section className="clean-card p-10">
+              <section className="clean-card p-10 border-slate-200">
                 <div className="flex items-center gap-4 mb-10">
                    <FiUser className="text-primary" />
                    <h2 className="text-xl font-display font-black text-slate-900 tracking-tight uppercase tracking-widest text-[10px]">Registry Identity</h2>
@@ -168,7 +168,7 @@ export default function MentorshipDashboardPage() {
                     <label className="section-label mb-3 block">Professional Abstract</label>
                     <textarea
                       required value={bio} onChange={(e) => setBio(e.target.value)}
-                      className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm min-h-[120px]"
+                      className="input-clean min-h-[120px]"
                       placeholder="Define your professional contribution and engineering focus..."
                     />
                   </div>
@@ -176,20 +176,20 @@ export default function MentorshipDashboardPage() {
                     <label className="section-label mb-3 block">Technical Expertise (Delimited by Comma)</label>
                     <input
                       type="text" required value={expertiseTags} onChange={(e) => setExpertiseTags(e.target.value)}
-                      className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-sm"
+                      className="input-clean"
                       placeholder="e.g. Distributed Systems, Rust, Cloud Architecture"
                     />
                   </div>
                 </div>
               </section>
 
-              <section className="clean-card p-10">
+              <section className="clean-card p-10 border-slate-200">
                 <div className="flex items-center gap-4 mb-10">
                    <FiClock className="text-primary" />
                    <h2 className="text-xl font-display font-black text-slate-900 tracking-tight uppercase tracking-widest text-[10px]">Temporal Availability</h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-200">
                   <div className="md:col-span-1">
                     <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Day</label>
                     <select value={newDay} onChange={(e) => setNewDay(Number(e.target.value))} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white outline-none text-xs font-bold uppercase tracking-widest">
@@ -213,14 +213,14 @@ export default function MentorshipDashboardPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {slots.length === 0 ? (
-                    <div className="col-span-full py-10 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                    <div className="col-span-full py-10 text-center border-2 border-dashed border-slate-200 rounded-2xl">
                        <p className="text-slate-300 text-[10px] font-bold uppercase tracking-widest">No availability protocols initialized.</p>
                     </div>
                   ) : (
                     slots.map(slot => (
-                      <div key={slot.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white group hover:border-slate-900 transition-all">
+                      <div key={slot.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white group hover:border-slate-900 transition-all">
                         <div className="flex items-center gap-4">
-                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-display font-black text-xs border transition-all ${slot.isBooked ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-slate-50 text-slate-900 border-slate-100 group-hover:bg-slate-900 group-hover:text-white'}`}>
+                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-display font-black text-xs border transition-all ${slot.isBooked ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-slate-50 text-slate-900 border-slate-200 group-hover:bg-slate-900 group-hover:text-white'}`}>
                               {daysOfWeek[slot.dayOfWeek].charAt(0)}
                            </div>
                            <div>
@@ -252,14 +252,14 @@ export default function MentorshipDashboardPage() {
 
         {/* Operational Requests */}
         <div className="lg:col-span-4">
-           <div className="clean-card p-8 sticky top-24 border-slate-900/5 bg-slate-50/50 backdrop-blur-sm">
+           <div className="clean-card p-8 sticky top-24 border-slate-200 bg-slate-50/50 backdrop-blur-sm">
               <div className="flex items-center gap-4 mb-10">
                  <FiLayers className="text-primary" />
                  <h2 className="text-xl font-display font-black text-slate-900 tracking-tight uppercase tracking-widest text-[10px]">Request Terminal</h2>
               </div>
 
               {bookings.length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-2xl border border-slate-100">
+                <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
                    <FiInfo className="mx-auto text-slate-100 mb-4" size={32} />
                    <p className="text-slate-300 text-[10px] font-bold uppercase tracking-widest">No active handshake requests.</p>
                 </div>
@@ -270,7 +270,7 @@ export default function MentorshipDashboardPage() {
                      const isUpcoming = new Date(booking.date) >= new Date(new Date().setHours(0, 0, 0, 0));
 
                      return (
-                       <div key={booking.id} className="p-6 rounded-2xl bg-white border border-slate-100 hover:border-primary transition-all shadow-sm">
+                       <div key={booking.id} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-primary transition-all shadow-sm">
                          <div className="flex items-start justify-between mb-4">
                             <div>
                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">Inbound Request</p>
@@ -295,17 +295,17 @@ export default function MentorshipDashboardPage() {
                              <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'confirmed')} disabled={actionLoading === booking.id} className="flex-1 py-2 rounded-lg bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all disabled:opacity-50">
                                {actionLoading === booking.id ? '...' : 'Authorize'}
                              </button>
-                             <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'cancelled')} disabled={actionLoading === booking.id} className="flex-1 py-2 rounded-lg border border-slate-100 text-slate-400 text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all disabled:opacity-50">
+                             <button onClick={() => handleBookingAction(booking.id, booking.slotId, 'cancelled')} disabled={actionLoading === booking.id} className="flex-1 py-2 rounded-lg border border-slate-200 text-slate-400 text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all disabled:opacity-50">
                                {actionLoading === booking.id ? '...' : 'Declined'}
                              </button>
                            </div>
                          )}
 
                          {booking.status === 'confirmed' && (
-                           <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-[10px] space-y-2">
+                           <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-[10px] space-y-2">
                              <p className="font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">Coordinates</p>
-                             <p className="font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-100 break-all">{booking.juniorEmail}</p>
-                             <p className="font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-100">{booking.juniorPhone}</p>
+                             <p className="font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-200 break-all">{booking.juniorEmail}</p>
+                             <p className="font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-200">{booking.juniorPhone}</p>
                            </div>
                          )}
                        </div>

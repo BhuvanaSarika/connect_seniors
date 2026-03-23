@@ -117,17 +117,17 @@ export default function MentorshipPage() {
       {fetching ? (
         <div className="flex justify-center py-24"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>
       ) : mentors.length === 0 ? (
-        <div className="clean-card py-32 text-center border-slate-100 bg-slate-50/10">
+        <div className="clean-card py-32 text-center border-slate-200 bg-slate-50/10">
           <FiUser className="mx-auto text-slate-100 mb-6" size={48} />
           <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">No mentors are currently taking bookings.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {mentors.map(mentor => (
-            <div key={mentor.uid} className="clean-card p-8 group flex flex-col hover:border-primary/30 transition-all duration-300">
+            <div key={mentor.uid} className="clean-card p-8 group flex flex-col border-slate-200 hover:border-slate-900 transition-all duration-300">
               <div className="flex items-start justify-between mb-8">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center font-display font-black text-2xl border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                  <div className="w-14 h-14 rounded-xl bg-slate-50 text-slate-900 flex items-center justify-center font-display font-black text-2xl border border-slate-200 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
                     {mentor.displayName.charAt(0)}
                   </div>
                   <div>
@@ -147,14 +147,14 @@ export default function MentorshipPage() {
 
                 <div className="flex flex-wrap gap-2 mb-8">
                   {mentor.expertise.slice(0, 3).map((exp, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded bg-slate-50 text-slate-500 text-[9px] font-bold uppercase tracking-widest border border-slate-100">
+                    <span key={i} className="px-2.5 py-1 rounded bg-slate-50 text-slate-500 text-[9px] font-bold uppercase tracking-widest border border-slate-200">
                       {exp}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-6 border-t border-slate-200 flex items-center justify-between">
                 <div>
                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mb-0.5">Availability Index</p>
                   <p className="text-sm font-bold text-slate-900">{mentor.availableSlots?.filter(s => !s.isBooked).length || 0} Slots Open</p>
@@ -175,7 +175,7 @@ export default function MentorshipPage() {
       {/* Booking Modal - Refined Systemic UI */}
       {selectedMentor && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-white/10">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto transform transition-all p-10 md:p-14 relative border border-slate-200">
             <button onClick={() => setSelectedMentor(null)} className="absolute top-8 right-8 p-3 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm">
               <FiX size={20} />
             </button>
@@ -229,7 +229,7 @@ export default function MentorshipPage() {
                   <FiInfo className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" />
                   <input
                     type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-14 pr-6 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary focus:ring-0 transition-all font-medium text-sm outline-none"
+                    className="input-clean pl-14"
                     placeholder="WhatsApp / Contact Number"
                   />
                 </div>

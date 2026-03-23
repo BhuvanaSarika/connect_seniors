@@ -69,7 +69,7 @@ export default function RegisterPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Roll Number</label>
                   <input
                      type="text" required value={rollNumber} onChange={(e) => setRollNumber(e.target.value)}
-                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50 uppercase"
+                     className="input-clean uppercase !rounded-2xl !py-4"
                      placeholder="22A91A..."
                   />
                </div>
@@ -77,7 +77,7 @@ export default function RegisterPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Full Name</label>
                   <input
                      type="text" required value={displayName} onChange={(e) => setDisplayName(e.target.value)}
-                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                     className="input-clean !rounded-2xl !py-4"
                      placeholder="John Doe"
                   />
                </div>
@@ -87,7 +87,7 @@ export default function RegisterPage() {
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Academic Email</label>
               <input
                 type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                className="input-clean !rounded-2xl !py-4"
                 placeholder="university@email.edu"
               />
             </div>
@@ -97,7 +97,7 @@ export default function RegisterPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Password</label>
                   <input
                      type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                     className="input-clean !rounded-2xl !py-4"
                      placeholder="••••••••"
                   />
                </div>
@@ -105,7 +105,7 @@ export default function RegisterPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Verify</label>
                   <input
                      type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                     className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium bg-gray-50/50"
+                     className="input-clean !rounded-2xl !py-4"
                      placeholder="••••••••"
                   />
                </div>

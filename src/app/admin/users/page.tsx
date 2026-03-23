@@ -114,7 +114,7 @@ export default function AdminUsersDirectory() {
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Query by name, email, or roll id..."
-              className="w-full pl-14 pr-6 py-3.5 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm font-medium bg-white"
+              className="input-clean pl-14 shadow-sm"
             />
           </div>
           <div className="flex gap-3 w-full lg:w-auto">
@@ -139,7 +139,7 @@ export default function AdminUsersDirectory() {
         </div>
 
         {/* High-Performance Data Table */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border-t border-slate-200">
           <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/30">
@@ -167,7 +167,7 @@ export default function AdminUsersDirectory() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-200">
               {filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-8 py-16 text-center">
@@ -245,7 +245,7 @@ export default function AdminUsersDirectory() {
         </div>
 
         {/* Table Pagination Placeholder / Footer */}
-        <div className="p-6 bg-slate-50/30 border-t border-slate-100 flex justify-between items-center bg-transparent">
+        <div className="p-6 bg-slate-50/50 border-t border-slate-200 flex justify-between items-center bg-transparent">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Platform Governance Index • Total Records: {filteredUsers.length}</p>
           <button className="text-slate-400 hover:text-slate-900 transition-colors">
             <FiMoreHorizontal size={20} />
