@@ -14,6 +14,7 @@ const navLinks = [
   { name: 'Mentorship', href: '/mentorship' },
   { name: 'Resume', href: '/resume' },
   { name: 'Courses', href: '/courses' },
+  { name: 'Seniors', href: '/seniors' },
 ];
 
 export default function Navbar() {

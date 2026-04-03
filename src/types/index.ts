@@ -163,3 +163,16 @@ export interface AppNotification {
   read: boolean;
   createdAt: Timestamp;
 }
+
+// ──────────────────────── Seniors Contact Directory ─────────────────────────
+export interface SeniorContact {
+  id: string;
+  name: string;
+  rollNumber: string;
+  email: string;
+  phone: string;
+  imageUrl?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  createdAt: Timestamp;
+}

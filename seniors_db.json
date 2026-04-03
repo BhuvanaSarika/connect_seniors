@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1775202986805",
+    "name": "xyz",
+    "rollNumber": "22A91A4431",
+    "email": "xyz@gmail.com",
+    "phone": "2345678901",
+    "imageUrl": "",
+    "linkedinUrl": "https://www.linkedin.com/in/bhuvana-sarika-ch-225177258/",
+    "githubUrl": "",
+    "createdAt": "2026-04-03T07:56:26.805Z"
+  },
+  {
+    "id": "1775197397205",
+    "name": "naruto",
+    "email": "naruto@gmail.com",
+    "phone": "1235467890",
+    "imageUrl": "https://res.cloudinary.com/dimv5zodc/image/upload/v1775197396/connectseniors/profiles/1775197392626_dattebayoo.png.png",
+    "createdAt": "2026-04-03T06:23:17.205Z"
+  },
+  {
+    "id": "1775197360271",
+    "name": "abc",
+    "email": "abc@gmail.com",
+    "phone": "1234567890",
+    "imageUrl": "",
+    "createdAt": "2026-04-03T06:22:40.271Z"
+  }
+]

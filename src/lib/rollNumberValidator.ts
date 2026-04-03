@@ -6,7 +6,7 @@ import { RollNumberRange } from '@/types';
  */
 export function validateRollNumber(
   rollNumber: string,
-  ranges: RollNumberRange[]
+  ranges: Omit<RollNumberRange, 'id'>[] | RollNumberRange[]
 ): { valid: boolean; role: 'senior' | 'junior' } | null {
   const upperRoll = rollNumber.toUpperCase().trim();
 
