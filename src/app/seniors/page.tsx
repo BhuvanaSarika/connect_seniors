@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, getDocs, Timestamp, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, getDocs, Timestamp, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { SeniorContact } from '@/types';
-import { FiUploadCloud, FiUser, FiMail, FiPhone, FiCheckCircle, FiLinkedin, FiGithub } from 'react-icons/fi';
+import { FiUploadCloud, FiUser, FiMail, FiPhone, FiCheckCircle, FiLinkedin, FiGithub, FiEdit, FiTrash, FiX } from 'react-icons/fi';
 import { useAuth } from '@/contexts/AuthContext';
 import { validateRollNumber, DEFAULT_ROLL_NUMBER_RANGES } from '@/lib/rollNumberValidator';
 
@@ -16,7 +16,7 @@ export default function SeniorsPage() {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Form State
+  // Form State for Adding
   const [name, setName] = useState('');
   const [rollNumber, setRollNumber] = useState('');
   const [email, setEmail] = useState('');
@@ -25,6 +25,16 @@ export default function SeniorsPage() {
   const [githubUrl, setGithubUrl] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Delete State
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
+
+  // Edit Modal State
+  const [editingSenior, setEditingSenior] = useState<SeniorContact | null>(null);
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
+
+  const isAdmin = appUser?.role === 'admin';
 
   useEffect(() => {
     fetchSeniors();
@@ -35,8 +45,8 @@ export default function SeniorsPage() {
       const q = query(collection(db, 'seniors_list'), orderBy('createdAt', 'desc'));
       const querySnapshot = await getDocs(q);
       const fetchedSeniors: SeniorContact[] = [];
-      querySnapshot.forEach((doc) => {
-        fetchedSeniors.push({ id: doc.id, ...doc.data() } as SeniorContact);
+      querySnapshot.forEach((document) => {
+        fetchedSeniors.push({ id: document.id, ...document.data() } as SeniorContact);
       });
       setSeniors(fetchedSeniors);
     } catch (error) {
@@ -57,11 +67,16 @@ export default function SeniorsPage() {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, isEditNode = false) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      if (isEditNode) {
+        setEditImageFile(file);
+        setEditImagePreview(URL.createObjectURL(file));
+      } else {
+         setImageFile(file);
+         setImagePreview(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -69,12 +84,7 @@ export default function SeniorsPage() {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', 'connectseniors/profiles');
-
-    const res = await fetch('/api/upload-image', {
-      method: 'POST',
-      body: formData,
-    });
-
+    const res = await fetch('/api/upload-image', { method: 'POST', body: formData });
     if (!res.ok) throw new Error('Image upload failed');
     const data = await res.json();
     return data.url;
@@ -82,8 +92,7 @@ export default function SeniorsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
+    setErrorMsg(''); setSuccessMsg('');
     if (!name || !rollNumber || !email || !phone) return;
 
     // Validate Roll Number
@@ -100,19 +109,10 @@ export default function SeniorsPage() {
     setIsSubmitting(true);
     try {
       let imageUrl = '';
-      if (imageFile) {
-        imageUrl = await uploadImageToCloudinary(imageFile);
-      }
+      if (imageFile) imageUrl = await uploadImageToCloudinary(imageFile);
 
-      const newSenior: Omit<SeniorContact, 'id'> = {
-        name,
-        rollNumber,
-        email,
-        phone,
-        imageUrl,
-        linkedinUrl,
-        githubUrl,
-        createdAt: Timestamp.now(),
+      const newSenior = {
+        name, rollNumber, email, phone, imageUrl, linkedinUrl, githubUrl, createdAt: Timestamp.now(),
       };
 
       try {
@@ -120,23 +120,13 @@ export default function SeniorsPage() {
         setSeniors(prev => [{ id: docRef.id, ...newSenior }, ...prev]);
       } catch (err) {
         console.warn('Firebase addDoc failed, using local API fallback for testing:', err);
-        const fallbackSenior = { id: Date.now().toString(), ...newSenior, createdAt: new Date() };
+        const fallbackSenior = { id: Date.now().toString(), ...newSenior, createdAt: new Date() as any };
         await fetch('/api/seniors', { method: 'POST', body: JSON.stringify(fallbackSenior) });
-        setSeniors(prev => [fallbackSenior as any, ...prev]);
+        setSeniors(prev => [fallbackSenior, ...prev]);
       }
 
       setSuccessMsg('Senior added successfully!');
-      
-      // Reset logic
-      setName('');
-      setRollNumber('');
-      setEmail('');
-      setPhone('');
-      setLinkedinUrl('');
-      setGithubUrl('');
-      setImageFile(null);
-      setImagePreview(null);
-
+      setName(''); setRollNumber(''); setEmail(''); setPhone(''); setLinkedinUrl(''); setGithubUrl(''); setImageFile(null); setImagePreview(null);
       setTimeout(() => setSuccessMsg(''), 3000);
     } catch (error) {
       console.error('Error saving senior:', error);
@@ -146,11 +136,121 @@ export default function SeniorsPage() {
     }
   };
 
-  // Safe checks if user object isn't completely resolved
-  const isAdmin = appUser?.role === 'admin';
+  // ────────────────────────────
+  // Edit Handlers
+  // ────────────────────────────
+  const openEditModal = (senior: SeniorContact) => {
+    setEditingSenior({ ...senior });
+    setEditImagePreview(senior.imageUrl || null);
+    setEditImageFile(null);
+  };
+
+  const closeEditModal = () => {
+    setEditingSenior(null);
+    setEditImagePreview(null);
+    setEditImageFile(null);
+  };
+
+  const handleEditModalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSenior) return;
+    
+    const validation = validateRollNumber(editingSenior.rollNumber, DEFAULT_ROLL_NUMBER_RANGES);
+    if (!validation || !validation.valid) { alert('Invalid Roll Number format.'); return; }
+    if (validation.role === 'junior') { alert('Cannot assign junior roll number to a senior.'); return; }
+
+    setIsSubmitting(true);
+    try {
+      let updatedImageUrl = editingSenior.imageUrl;
+      if (editImageFile) {
+        updatedImageUrl = await uploadImageToCloudinary(editImageFile);
+      }
+
+      const updatedPayload = { ...editingSenior, imageUrl: updatedImageUrl } as SeniorContact;
+
+      try {
+        await updateDoc(doc(db, 'seniors_list', editingSenior.id), updatedPayload as any);
+        setSeniors(prev => prev.map(s => s.id === editingSenior.id ? updatedPayload : s));
+      } catch(err) {
+        console.warn('Firebase update failed, using local API fallback for testing:', err);
+        await fetch('/api/seniors', { method: 'PUT', body: JSON.stringify(updatedPayload) });
+        setSeniors(prev => prev.map(s => s.id === editingSenior.id ? updatedPayload : s));
+      }
+
+      closeEditModal();
+    } catch (error) {
+       console.error('Failed to update senior', error);
+       alert('Update failed.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ────────────────────────────
+  // Delete Handlers
+  // ────────────────────────────
+  const handleDelete = async (id: string, contactName: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete ${contactName} from the database?`)) return;
+    setIsDeletingId(id);
+    try {
+      try {
+         await deleteDoc(doc(db, 'seniors_list', id));
+         setSeniors(prev => prev.filter(s => s.id !== id));
+      } catch(err) {
+         console.warn('Firebase deleteDoc failed, using local API fallback for testing:', err);
+         await fetch(`/api/seniors?id=${id}`, { method: 'DELETE' });
+         setSeniors(prev => prev.filter(s => s.id !== id));
+      }
+    } catch (err) {
+      console.error('Failed to delete', err);
+      alert('Error occurred while deleting profile.');
+    } finally {
+      setIsDeletingId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+      
+      {/* ──────────────────────────── Modal Overlay ──────────────────────────── */}
+      {editingSenior && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-8 shadow-2xl relative w-full max-w-lg mb-10 overflow-y-auto max-h-[90vh]">
+            <button 
+              onClick={closeEditModal} 
+              className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors"
+            >
+              <FiX className="w-6 h-6" />
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
+              <FiEdit className="text-indigo-400" /> Edit Profile
+            </h2>
+            <form onSubmit={handleEditModalSubmit} className="space-y-4">
+               {/* Image Upload Area */}
+               <div className="flex justify-center mb-6">
+                  <label htmlFor="edit-image-upload" className="cursor-pointer group relative">
+                    <div className={`w-24 h-24 rounded-full overflow-hidden border-2 flex items-center justify-center transition-all ${editImagePreview ? 'border-indigo-400 bg-slate-800' : 'border-dashed border-slate-600 bg-slate-800/50 group-hover:border-indigo-400'}`}>
+                      {editImagePreview ? ( <img src={editImagePreview} alt="Preview" className="w-full h-full object-cover" /> ) : ( <FiUploadCloud className="w-6 h-6 text-slate-400 group-hover:text-indigo-400" /> )}
+                    </div>
+                    <input id="edit-image-upload" type="file" accept="image/*" onChange={(e) => handleImageChange(e, true)} className="hidden" />
+                  </label>
+                </div>
+                <div className="space-y-3">
+                  <input type="text" required value={editingSenior.name} onChange={(e) => setEditingSenior({...editingSenior, name: e.target.value})} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-800 text-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="Full Name" />
+                  <input type="text" required value={editingSenior.rollNumber} onChange={(e) => setEditingSenior({...editingSenior, rollNumber: e.target.value})} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-800 text-slate-200 focus:ring-2 focus:ring-indigo-500 font-mono" placeholder="Roll Number" />
+                  <input type="email" required value={editingSenior.email} onChange={(e) => setEditingSenior({...editingSenior, email: e.target.value})} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-800 text-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="Email" />
+                  <input type="tel" required value={editingSenior.phone} onChange={(e) => setEditingSenior({...editingSenior, phone: e.target.value})} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-800 text-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="Phone" />
+                  <input type="url" value={editingSenior.linkedinUrl || ''} onChange={(e) => setEditingSenior({...editingSenior, linkedinUrl: e.target.value})} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-800 text-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="LinkedIn URL" />
+                  <input type="url" value={editingSenior.githubUrl || ''} onChange={(e) => setEditingSenior({...editingSenior, githubUrl: e.target.value})} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-800 text-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="GitHub URL" />
+                </div>
+                <button type="submit" disabled={isSubmitting} className="w-full flex justify-center py-3 mt-4 border border-transparent rounded-xl shadow-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 disabled:opacity-70 transition-all">
+                  {isSubmitting ? 'Saving...' : 'Save Profile'}
+                </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto space-y-16">
         
         {/* Header Section */}
@@ -176,7 +276,6 @@ export default function SeniorsPage() {
               </h2>
               
               <form onSubmit={handleSubmit} className="space-y-4">
-                
                 {/* Image Upload Area */}
                 <div className="flex justify-center mb-6">
                   <label htmlFor="image-upload" className="cursor-pointer group relative">
@@ -187,13 +286,7 @@ export default function SeniorsPage() {
                         <FiUploadCloud className="w-8 h-8 text-slate-400 group-hover:text-indigo-400 transition-colors" />
                       )}
                     </div>
-                    <input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
+                    <input id="image-upload" type="file" accept="image/*" onChange={(e) => handleImageChange(e, false)} className="hidden" />
                     <div className="absolute bottom-0 right-0 bg-indigo-500 rounded-full p-2 border-2 border-slate-900 shadow-md transform translate-x-2 translate-y-2">
                       <FiUploadCloud className="w-4 h-4 text-white" />
                     </div>
@@ -202,76 +295,31 @@ export default function SeniorsPage() {
 
                 {/* Input Fields */}
                 <div className="space-y-3">
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Full Name"
-                  />
-                  <input
-                    type="text"
-                    required
-                    value={rollNumber}
-                    onChange={(e) => setRollNumber(e.target.value)}
-                    className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
-                    placeholder="Roll Number (e.g. 22A91A4401)"
-                  />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Email Address"
-                  />
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Phone Number"
-                  />
+                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" placeholder="Full Name" />
+                  <input type="text" required value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 font-mono" placeholder="Roll Number (e.g. 22A91A4401)" />
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" placeholder="Email Address" />
+                  <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" placeholder="Phone Number" />
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <FiLinkedin className="text-slate-500" />
                     </div>
-                    <input
-                      type="url"
-                      value={linkedinUrl}
-                      onChange={(e) => setLinkedinUrl(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="LinkedIn URL (Optional)"
-                    />
+                    <input type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" placeholder="LinkedIn URL (Optional)" />
                   </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <FiGithub className="text-slate-500" />
                     </div>
-                    <input
-                      type="url"
-                      value={githubUrl}
-                      onChange={(e) => setGithubUrl(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="GitHub URL (Optional)"
-                    />
+                    <input type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900/80 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" placeholder="GitHub URL (Optional)" />
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
-                >
+                <button type="submit" disabled={isSubmitting} className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 focus:ring-2 focus:ring-indigo-500 disabled:opacity-70 transition-all">
                   {isSubmitting ? 'Uploading...' : 'Add Senior'}
                 </button>
 
                 {successMsg && (
                   <div className="mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex gap-2 items-center">
-                    <FiCheckCircle />
-                    {successMsg}
+                    <FiCheckCircle /> {successMsg}
                   </div>
                 )}
                 {errorMsg && (
@@ -306,9 +354,22 @@ export default function SeniorsPage() {
                 </div>
               ) : (
                 seniors.map((senior) => (
-                  <div key={senior.id} className="group relative bg-slate-900/50 backdrop-blur-sm rounded-3xl border border-slate-800 hover:border-slate-700 p-6 transition-all hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1">
-                    <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start text-center sm:text-left">
-                      <div className="relative w-20 h-20 sm:w-16 sm:h-16 shrink-0">
+                  <div key={senior.id} className={`group relative bg-slate-900/50 backdrop-blur-sm rounded-3xl border border-slate-800 hover:border-slate-700 p-6 transition-all hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 ${isDeletingId === senior.id ? 'opacity-50 blur-sm pointer-events-none' : ''}`}>
+                    
+                    {/* Admin Action Bar */}
+                    {isAdmin && (
+                      <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openEditModal(senior)} className="p-2 rounded-lg bg-slate-800 hover:bg-indigo-500/20 text-slate-400 hover:text-indigo-400 transition-colors" title="Edit Profile">
+                          <FiEdit className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDelete(senior.id, senior.name)} className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors" title="Delete Profile">
+                          <FiTrash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="flex flex-col items-center gap-4 xl:flex-row xl:items-start text-center xl:text-left mt-2">
+                      <div className="relative w-20 h-20 shrink-0">
                         {senior.imageUrl ? (
                           <img
                             src={senior.imageUrl}
@@ -332,13 +393,13 @@ export default function SeniorsPage() {
                           </p>
                         )}
                         
-                        <div className="space-y-1.5 mb-4">
-                          <a href={`mailto:${senior.email}`} className="flex items-center justify-center sm:justify-start gap-2 text-sm text-slate-400 hover:text-slate-300 truncate w-full group/link">
+                        <div className="space-y-1.5 mb-4 max-w-full">
+                          <a href={`mailto:${senior.email}`} className="flex items-center justify-center xl:justify-start gap-2 text-sm text-slate-400 hover:text-slate-300 truncate w-full group/link">
                             <FiMail className="shrink-0 group-hover/link:text-blue-400" />
                             <span className="truncate">{senior.email}</span>
                           </a>
                           
-                          <a href={`tel:${senior.phone}`} className="flex items-center justify-center sm:justify-start gap-2 text-sm text-slate-400 hover:text-slate-300 truncate w-full group/link">
+                          <a href={`tel:${senior.phone}`} className="flex items-center justify-center xl:justify-start gap-2 text-sm text-slate-400 hover:text-slate-300 truncate w-full group/link">
                             <FiPhone className="shrink-0 group-hover/link:text-blue-400" />
                             <span className="truncate">{senior.phone}</span>
                           </a>
@@ -346,7 +407,7 @@ export default function SeniorsPage() {
 
                         {/* Social Links */}
                         {(senior.linkedinUrl || senior.githubUrl) && (
-                          <div className="flex items-center justify-center sm:justify-start gap-3 pt-4 border-t border-slate-800/80">
+                          <div className="flex items-center justify-center xl:justify-start gap-3 pt-4 border-t border-slate-800/80">
                             {senior.linkedinUrl && (
                               <a href={senior.linkedinUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-800 text-slate-300 hover:bg-[#0A66C2] hover:text-white transition-all transform hover:scale-110" title="LinkedIn">
                                 <FiLinkedin className="w-4 h-4" />

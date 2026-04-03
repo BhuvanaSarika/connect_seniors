@@ -102,9 +102,10 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ── Seniors List (Testing) ──
+    // ── Seniors List ──
     match /seniors_list/{seniorId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
     }
   }
 }

@@ -11,7 +11,7 @@ const navLinks = [
   { name: 'Dashboard', href: '/dashboard' },
   { name: 'Roadmaps', href: '/roadmaps' },
   { name: 'Projects', href: '/projects' },
-  { name: 'Mentorship', href: '/mentorship' },
+  //{ name: 'Mentorship', href: '/mentorship' },
   { name: 'Resume', href: '/resume' },
   { name: 'Courses', href: '/courses' },
   { name: 'Seniors', href: '/seniors' },
@@ -37,11 +37,11 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2 group shrink-0">
             <div className="relative w-auto h-8 md:h-10">
-              <Image 
-                src="/logo.png" 
-                alt="ConnectSeniors Logo" 
-                width={160} 
-                height={40} 
+              <Image
+                src="/logo.png"
+                alt="ConnectSeniors Logo"
+                width={160}
+                height={40}
                 className="h-full w-auto object-contain transition-transform group-hover:scale-105"
                 priority
               />
@@ -56,11 +56,10 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                    active
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${active
                       ? 'text-primary bg-primary/5'
                       : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -69,11 +68,10 @@ export default function Navbar() {
             {appUser.role === 'admin' && (
               <Link
                 href="/admin"
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                  pathname.startsWith('/admin')
+                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${pathname.startsWith('/admin')
                     ? 'text-red-600 bg-red-50'
                     : 'text-slate-500 hover:text-red-600 hover:bg-red-50'
-                }`}
+                  }`}
               >
                 Admin
               </Link>
@@ -120,23 +118,22 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-base font-bold ${
-                pathname.startsWith(link.href)
+              className={`block px-4 py-3 rounded-xl text-base font-bold ${pathname.startsWith(link.href)
                   ? 'bg-primary/5 text-primary'
                   : 'text-slate-600 hover:bg-slate-50'
-              }`}
+                }`}
             >
               {link.name}
             </Link>
           ))}
           {appUser.role === 'admin' && (
-             <Link
-               href="/admin"
-               onClick={() => setMobileOpen(false)}
-               className="block px-4 py-3 rounded-xl text-base font-bold text-red-600 hover:bg-red-50"
-             >
-               Admin Control Center
-             </Link>
+            <Link
+              href="/admin"
+              onClick={() => setMobileOpen(false)}
+              className="block px-4 py-3 rounded-xl text-base font-bold text-red-600 hover:bg-red-50"
+            >
+              Admin Control Center
+            </Link>
           )}
           <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -144,8 +141,8 @@ export default function Navbar() {
                 <FiUser size={18} />
               </div>
               <div>
-                 <p className="text-sm font-bold text-slate-900">{appUser.displayName}</p>
-                 <p className="text-xs text-slate-500 font-medium uppercase tracking-tighter">{appUser.role}</p>
+                <p className="text-sm font-bold text-slate-900">{appUser.displayName}</p>
+                <p className="text-xs text-slate-500 font-medium uppercase tracking-tighter">{appUser.role}</p>
               </div>
             </div>
             <button onClick={logout} className="p-3 rounded-xl bg-red-50 text-red-500 font-bold flex items-center gap-2 text-sm">
