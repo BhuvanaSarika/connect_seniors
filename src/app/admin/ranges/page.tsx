@@ -29,14 +29,14 @@ export default function AdminRangesPage() {
   }, []);
 
   const handleAdd = () => {
-    setRanges([
-      ...ranges,
-      { id: `new_${Date.now()}`, prefix: '', startNum: 1, endNum: 100, suffix: '', padLength: 2, role: 'junior', academicYear: '2024-25' }
-    ]);
+    console.log('Ingest Protocol initiated');
+    const newId = `new_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    const newRow: RollNumberRange = { id: newId, prefix: '', startNum: 1, endNum: 100, suffix: '', padLength: 2, role: 'junior', academicYear: '2024-25' };
+    setRanges(prev => [newRow, ...prev]);
   };
 
   const handleChange = (id: string, field: keyof RollNumberRange, value: string | number) => {
-    setRanges(ranges.map(r => r.id === id ? { ...r, [field]: value } : r));
+    setRanges(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r));
   };
 
   const handleRemove = async (id: string) => {
@@ -44,26 +44,30 @@ export default function AdminRangesPage() {
       if (!confirm('Operational security: confirm deletion of this systemic rule? This may affect existing authentication protocols.')) return;
       await deleteDoc(doc(db, 'rollNumberRanges', id));
     }
-    setRanges(ranges.filter(r => r.id !== id));
+    setRanges(prev => prev.filter(r => r.id !== id));
   };
 
   const handleSave = async () => {
     setSaving(true);
+    let skipped = 0;
     try {
       for (const range of ranges) {
-        if (!range.prefix) continue;
+        if (!range.prefix || range.prefix.trim() === '') {
+          skipped++;
+          continue;
+        }
         const validRange = { ...range };
         if (validRange.id.startsWith('default_') || validRange.id.startsWith('new_')) {
           validRange.id = `${validRange.prefix}_${validRange.role}`;
         }
         await setDoc(doc(db, 'rollNumberRanges', validRange.id), validRange);
       }
-      alert('Operational success: Registry rules updated.');
+      alert(`Operational success: Registry rules updated.${skipped > 0 ? ` Note: ${skipped} empty ranges were skipped.` : ''}`);
       const snap = await getDocs(collection(db, 'rollNumberRanges'));
       setRanges(snap.docs.map(d => ({ id: d.id, ...d.data() } as RollNumberRange)));
     } catch (err) {
       console.error(err);
-      alert('Operational failure: could not commit registry rules.');
+      alert('Operational failure: could not commit registry rules. Ensure you have admin permissions.');
     }
     setSaving(false);
   };
@@ -75,7 +79,7 @@ export default function AdminRangesPage() {
   );
 
   return (
-    <div className="text-slate-900">
+    <div className="text-slate-900 w-full overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
         <div>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Registry Configuration</p>
@@ -85,16 +89,16 @@ export default function AdminRangesPage() {
           </p>
         </div>
         <div className="flex gap-3">
-          <button onClick={handleAdd} className="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-900 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2">
+          <button type="button" onClick={handleAdd} className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2 active:scale-95 shadow-xl shadow-slate-900/20">
             <FiPlus /> Ingest Protocol
           </button>
-          <button onClick={handleSave} disabled={saving} className="btn-primary px-8 py-2.5 text-[10px] shadow-xl shadow-primary/20 disabled:opacity-20 flex items-center gap-2">
+          <button type="button" onClick={handleSave} disabled={saving} className="btn-primary px-6 py-2.5 text-[10px] shadow-xl shadow-primary/20 disabled:opacity-20 flex items-center gap-2 active:scale-95">
             <FiSave /> {saving ? 'Synchronizing...' : 'Commit All'}
           </button>
         </div>
       </div>
 
-      <div className="bg-slate-900 rounded-2xl p-6 mb-12 flex items-start gap-4 border border-slate-800 shadow-xl shadow-slate-200/50">
+      <div className="bg-slate-900 rounded-2xl p-6 mb-12 flex items-start gap-4 border border-slate-800 shadow-xl shadow-slate-200/50 hidden md:flex">
         <FiShield size={24} className="text-primary shrink-0 mt-1" />
         <div>
            <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-2">Protocol Warning</p>
@@ -104,24 +108,24 @@ export default function AdminRangesPage() {
         </div>
       </div>
 
-      <div className="clean-card overflow-x-auto shadow-2xl shadow-slate-200/50">
-        <table className="w-full text-left border-collapse">
+      <div className="clean-card shadow-2xl shadow-slate-200/50 overflow-x-auto w-full">
+        <table className="w-full text-left border-collapse min-w-[800px]">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Class/Role</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Prefix ID</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Lower Bound</th>
-              <th className="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Upper Bound</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Suffix</th>
-              <th className="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Padding</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Cycle</th>
-              <th className="px-6 py-4 w-10"></th>
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-28 whitespace-nowrap">Class/Role</th>
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-32 whitespace-nowrap">Prefix ID</th>
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-24">Lower</th>
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-24">Upper</th>
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-24">Suffix</th>
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-20 whitespace-nowrap">Padding</th>
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-28">Cycle</th>
+              <th className="px-3 py-4 w-10"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {ranges.map((range) => (
-              <tr key={range.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-6 py-4">
+              <tr key={range.id} className="hover:bg-slate-50/50 transition-colors animate-in fade-in duration-300">
+                <td className="px-3 py-3">
                   <select
                     value={range.role}
                     onChange={(e) => handleChange(range.id, 'role', e.target.value)}
@@ -131,27 +135,27 @@ export default function AdminRangesPage() {
                     <option value="senior">Senior Grade</option>
                   </select>
                 </td>
-                <td className="px-6 py-4 font-mono font-bold text-slate-900 text-sm">
-                  <input type="text" value={range.prefix} onChange={e => handleChange(range.id, 'prefix', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all uppercase" placeholder="22A91A" />
+                <td className="px-3 py-3 font-mono font-bold text-slate-900 text-xs">
+                  <input type="text" value={range.prefix} onChange={e => handleChange(range.id, 'prefix', e.target.value)} className="w-full px-2 py-1.5 rounded bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary outline-none transition-all uppercase placeholder-slate-300" placeholder="e.g. 22A91A" />
                 </td>
-                <td className="px-6 py-4">
-                  <input type="number" value={range.startNum} onChange={e => handleChange(range.id, 'startNum', parseInt(e.target.value))} className="w-20 px-3 py-2 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-mono text-sm" />
+                <td className="px-3 py-3">
+                  <input type="number" value={range.startNum} onChange={e => handleChange(range.id, 'startNum', parseInt(e.target.value) || 0)} className="w-full px-2 py-1.5 rounded bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary outline-none transition-all font-mono text-xs" />
                 </td>
-                <td className="px-4 py-4">
-                  <input type="number" value={range.endNum} onChange={e => handleChange(range.id, 'endNum', parseInt(e.target.value))} className="w-20 px-3 py-2 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-mono text-sm" />
+                <td className="px-3 py-3">
+                  <input type="number" value={range.endNum} onChange={e => handleChange(range.id, 'endNum', parseInt(e.target.value) || 0)} className="w-full px-2 py-1.5 rounded bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary outline-none transition-all font-mono text-xs" />
                 </td>
-                <td className="px-6 py-4">
-                  <input type="text" value={range.suffix} onChange={e => handleChange(range.id, 'suffix', e.target.value)} className="w-16 px-3 py-2 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-mono text-sm" />
+                <td className="px-3 py-3">
+                  <input type="text" value={range.suffix} onChange={e => handleChange(range.id, 'suffix', e.target.value)} className="w-full px-2 py-1.5 rounded bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary outline-none transition-all font-mono text-xs placeholder-slate-300" placeholder="Opt..." />
                 </td>
-                <td className="px-4 py-4">
-                  <input type="number" value={range.padLength} onChange={e => handleChange(range.id, 'padLength', parseInt(e.target.value))} className="w-16 px-3 py-2 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-mono text-sm" min="1" max="5" />
+                <td className="px-3 py-3">
+                  <input type="number" value={range.padLength} onChange={e => handleChange(range.id, 'padLength', parseInt(e.target.value) || 0)} className="w-full px-2 py-1.5 rounded bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary outline-none transition-all font-mono text-xs" min="1" max="5" />
                 </td>
-                <td className="px-6 py-4">
-                  <input type="text" value={range.academicYear} onChange={e => handleChange(range.id, 'academicYear', e.target.value)} className="w-24 px-3 py-2 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all text-[10px] font-bold uppercase tracking-widest" placeholder="2024-25" />
+                <td className="px-3 py-3">
+                  <input type="text" value={range.academicYear} onChange={e => handleChange(range.id, 'academicYear', e.target.value)} className="w-full px-2 py-1.5 rounded bg-slate-50 border border-slate-200 focus:bg-white focus:border-primary outline-none transition-all text-[10px] font-bold uppercase tracking-widest placeholder-slate-300" placeholder="2024-25" />
                 </td>
-                <td className="px-6 py-4">
-                  <button onClick={() => handleRemove(range.id)} className="p-2 rounded-lg text-slate-300 hover:bg-red-600 hover:text-white transition-all border border-transparent hover:border-red-100">
-                    <FiTrash2 size={16} />
+                <td className="px-2 py-3 text-center">
+                  <button type="button" onClick={() => handleRemove(range.id)} className="p-1.5 rounded text-slate-400 hover:bg-red-500 hover:text-white transition-all bg-white border border-slate-200 hover:border-transparent">
+                    <FiTrash2 size={14} />
                   </button>
                 </td>
               </tr>
@@ -159,7 +163,7 @@ export default function AdminRangesPage() {
           </tbody>
         </table>
       </div>
-      
+
       <div className="mt-8 flex items-center justify-between text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2">
          <p>Global Rule Registry</p>
          <p className="flex items-center gap-2"><FiInfo className="text-primary" /> Changes are committed to the centralized Firestore terminal.</p>

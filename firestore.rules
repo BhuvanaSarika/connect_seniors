@@ -7,13 +7,19 @@ service cloud.firestore {
       return request.auth != null;
     }
     function isOwner(userId) {
-      return request.auth.uid == userId;
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function hasUserDoc() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    function getUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
     }
     function isNotSuspended() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('status', 'active') != 'suspended';
+      return hasUserDoc() && getUserDoc().data.get('status', 'active') != 'suspended';
     }
     function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return hasUserDoc() ? getUserDoc().data.get('role', 'junior') : 'junior';
     }
     function isAuthed() {
       return isSignedIn() && isNotSuspended();
@@ -27,42 +33,42 @@ service cloud.firestore {
 
     // ── Users ──
     match /users/{userId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if (isOwner(userId) && isAuthed()) || isAdmin();
+      allow read: if true; // Public APIs works for all
+      allow create: if isOwner(userId);
+      allow update: if isAdmin() || (isOwner(userId) && isNotSuspended() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status']));
       allow delete: if isAdmin();
     }
 
     // ── Roll Number Ranges (admin-managed) ──
     match /rollNumberRanges/{rangeId} {
-      allow read: if true;
+      allow read: if true; // Public API
       allow write: if isAdmin();
     }
 
     // ── Roadmaps ──
     match /roadmaps/{roadmapId} {
-      allow read: if isSignedIn();
+      allow read: if true; // Public API
       allow create: if isSenior();
       allow update, delete: if isAuthed() && (resource.data.createdBy == request.auth.uid || isAdmin());
     }
 
     // ── Project Ideas ──
     match /projectIdeas/{ideaId} {
-      allow read: if isSignedIn();
+      allow read: if true; // Public API
       allow create: if isSenior();
       allow update, delete: if isAuthed() && (resource.data.createdBy == request.auth.uid || isAdmin());
     }
 
     // ── Mentor Profiles ──
     match /mentorProfiles/{uid} {
-      allow read: if isSignedIn();
-      allow create, update: if (isOwner(uid) && isAuthed()) || isAdmin();
+      allow read: if true; // Public API
+      allow create, update: if isAdmin() || (isOwner(uid) && isAuthed());
       allow delete: if isAdmin();
     }
 
     // ── Mentorship Bookings ──
     match /bookings/{bookingId} {
-      allow read: if isSignedIn();
+      allow read: if true; // Can be read by all if needed, or keeping it public API per user request
       allow create: if isAuthed();
       allow update: if isAuthed() && (
         resource.data.mentorUid == request.auth.uid ||
@@ -74,37 +80,37 @@ service cloud.firestore {
 
     // ── Resume Submissions ──
     match /resumes/{resumeId} {
-      allow read: if isSignedIn();
+      allow read: if true; // Public API
       allow create: if isAuthed();
-      allow update: if isSenior();
-      allow delete: if isAdmin();
+      allow update: if isSenior() || isAdmin();
+      allow delete: if isAdmin() || (isAuthed() && resource.data.uid == request.auth.uid);
     }
 
     // ── Recommended Courses ──
     match /courses/{courseId} {
-      allow read: if isSignedIn();
-      allow create, update, delete: if isSenior();
+      allow read: if true; // Public API
+      allow create, update, delete: if isSenior() || isAdmin();
     }
 
     // ── Certifications ──
     match /certifications/{certId} {
-      allow read: if isSignedIn();
-      allow create, update, delete: if isSenior();
+      allow read: if true; // Public API
+      allow create, update, delete: if isSenior() || isAdmin();
     }
 
     // ── Notifications ──
     match /notifications/{notifId} {
-      allow read: if isSignedIn();
+      allow read: if isAuthed() && (resource.data.targetUid == request.auth.uid || isAdmin()); // Private to user
       allow create: if isAuthed();
       allow update: if isAuthed() && (
         resource.data.targetUid == request.auth.uid || isAdmin()
       );
-      allow delete: if isAdmin();
+      allow delete: if isAdmin() || (isAuthed() && resource.data.targetUid == request.auth.uid);
     }
 
     // ── Seniors List ──
     match /seniors_list/{seniorId} {
-      allow read: if true;
+      allow read: if true; // Public API
       allow create, update, delete: if isAdmin();
     }
   }
